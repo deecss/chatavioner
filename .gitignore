@@ -1,0 +1,66 @@
+# .gitignore dla Aero-Chat
+
+# Środowisko Python
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Pliki konfiguracyjne
+.env
+*.local
+
+# Dane aplikacji
+uploads/*.pdf
+history/*.json
+feedback/*.json
+reports/*/*.pdf
+data/users.json
+data/upload_index.json
+training_data/*.jsonl
+training_data/*.json
+
+# Tymczasowe pliki
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Cache
+.cache/
+.pip/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Vector stores (tymczasowe)
+vector_store/

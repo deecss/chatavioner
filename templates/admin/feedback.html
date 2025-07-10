@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-Chat - Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">✈</span>
+                        </div>
+                        <h1 class="text-xl font-bold">Aero-Chat Admin</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
+                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex space-x-6">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-4">Menu</h3>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>👥</span>
+                        <span>Użytkownicy</span>
+                    </a>
+                    <a href="{{ url_for('admin.feedback') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
+                        <span>💬</span>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ url_for('admin.documents') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📁</span>
+                        <span>Dokumenty</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📄</span>
+                        <span>Raporty</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Feedback użytkowników</h2>
+                        <div class="flex items-center space-x-4">
+                            <select id="feedbackFilter" class="px-3 py-2 border rounded-lg">
+                                <option value="all">Wszystkie</option>
+                                <option value="positive">Pozytywne</option>
+                                <option value="negative">Negatywne</option>
+                                <option value="improve">Do poprawy</option>
+                            </select>
+                            <div class="text-sm text-gray-600">
+                                Łącznie: {{ feedback|length }} feedbacków
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 text-sm font-medium">Pozytywne</p>
+                                    <p class="text-2xl font-bold text-green-800">
+                                        {{ feedback | selectattr('type', 'equalto', 'positive') | list | length }}
+                                    </p>
+                                </div>
+                                <div class="text-green-600 text-2xl">👍</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-600 text-sm font-medium">Negatywne</p>
+                                    <p class="text-2xl font-bold text-red-800">
+                                        {{ feedback | selectattr('type', 'equalto', 'negative') | list | length }}
+                                    </p>
+                                </div>
+                                <div class="text-red-600 text-2xl">👎</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-yellow-600 text-sm font-medium">Do poprawy</p>
+                                    <p class="text-2xl font-bold text-yellow-800">
+                                        {{ feedback | selectattr('type', 'equalto', 'improve') | list | length }}
+                                    </p>
+                                </div>
+                                <div class="text-yellow-600 text-2xl">✏️</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if feedback %}
+                    <div class="space-y-4" id="feedbackList">
+                        {% for fb in feedback %}
+                        <div class="border rounded-lg p-4 feedback-item" data-type="{{ fb.type }}">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="text-2xl">
+                                            {% if fb.type == 'positive' %}👍
+                                            {% elif fb.type == 'negative' %}👎
+                                            {% else %}✏️
+                                            {% endif %}
+                                        </span>
+                                        <span class="font-medium capitalize">{{ fb.type }}</span>
+                                        <span class="text-sm text-gray-500">•</span>
+                                        <span class="text-sm text-gray-500">{{ fb.timestamp[:19] }}</span>
+                                    </div>
+                                    
+                                    {% if fb.content %}
+                                    <div class="bg-gray-50 p-3 rounded-lg mb-3">
+                                        <p class="text-sm">{{ fb.content }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                        <span>Sesja: {{ fb.session_id[:8] }}...</span>
+                                        {% if fb.message_id %}
+                                        <span>Wiadomość: {{ fb.message_id }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="viewFeedbackDetails('{{ fb.session_id }}', '{{ fb.message_id or '' }}')" 
+                                            class="text-blue-600 hover:text-blue-800 text-sm">
+                                        Szczegóły
+                                    </button>
+                                    <button onclick="markAsProcessed('{{ fb.session_id }}', '{{ fb.timestamp }}')" 
+                                            class="text-green-600 hover:text-green-800 text-sm">
+                                        Oznacz jako przetworzone
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-gray-500 text-xl mb-2">💬</div>
+                        <p class="text-gray-500">Brak feedbacku</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Filter feedback
+        document.getElementById('feedbackFilter').addEventListener('change', function() {
+            const filterValue = this.value;
+            const feedbackItems = document.querySelectorAll('.feedback-item');
+            
+            feedbackItems.forEach(item => {
+                if (filterValue === 'all' || item.dataset.type === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        function viewFeedbackDetails(sessionId, messageId) {
+            // Implement view feedback details
+            alert(`Szczegóły feedbacku - Sesja: ${sessionId}, Wiadomość: ${messageId}`);
+        }
+        
+        function markAsProcessed(sessionId, timestamp) {
+            // Implement mark as processed
+            if (confirm('Czy na pewno chcesz oznaczyć ten feedback jako przetworzony?')) {
+                alert(`Feedback oznaczony jako przetworzony - Sesja: ${sessionId}, Czas: ${timestamp}`);
+            }
+        }
+    </script>
+</body>
+</html>

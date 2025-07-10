@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-Chat - Logowanie Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <div class="flex justify-center items-center space-x-2 mb-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">✈</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900">Aero-Chat</h2>
+                </div>
+                <p class="text-gray-600">Panel Administratora</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" class="space-y-6">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700">
+                            Nazwa użytkownika
+                        </label>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Hasło
+                        </label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <button type="submit" 
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Zaloguj się
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <a href="/" class="text-blue-600 hover:text-blue-500 text-sm">
+                        ← Powrót do czatu
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center text-sm text-gray-500">
+                <p>Domyślne dane logowania:</p>
+                <p><strong>Login:</strong> admin</p>
+                <p><strong>Hasło:</strong> admin123</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

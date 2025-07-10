@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-Chat - Użytkownicy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">✈</span>
+                        </div>
+                        <h1 class="text-xl font-bold">Aero-Chat Admin</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
+                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex space-x-6">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-4">Menu</h3>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
+                        <span>👥</span>
+                        <span>Użytkownicy</span>
+                    </a>
+                    <a href="{{ url_for('admin.feedback') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>💬</span>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ url_for('admin.documents') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📁</span>
+                        <span>Dokumenty</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📄</span>
+                        <span>Raporty</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Sesje użytkowników</h2>
+                        <div class="text-sm text-gray-600">
+                            Łącznie: {{ sessions|length }} sesji
+                        </div>
+                    </div>
+                    
+                    {% if sessions %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID Sesji
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Pierwsza wiadomość
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ostatnia wiadomość
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Liczba wiadomości
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Akcje
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for session in sessions %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                    <span class="text-blue-600 font-medium">👤</span>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ session.session_id[:8] }}...
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    ID: {{ session.session_id }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ session.first_message[:19] }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ session.last_message[:19] }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            {{ session.message_count }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onclick="viewSession('{{ session.session_id }}')" 
+                                                class="text-blue-600 hover:text-blue-900 mr-3">
+                                            Podgląd
+                                        </button>
+                                        <button onclick="downloadSession('{{ session.session_id }}')" 
+                                                class="text-green-600 hover:text-green-900">
+                                            Pobierz
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-gray-500 text-xl mb-2">👥</div>
+                        <p class="text-gray-500">Brak sesji użytkowników</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Session Details Modal -->
+    <div id="sessionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Szczegóły sesji</h3>
+                <button onclick="closeSessionModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="sessionDetails" class="space-y-4">
+                <!-- Session details will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function viewSession(sessionId) {
+            fetch(`/admin/api/session/${sessionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    displaySessionDetails(data);
+                    document.getElementById('sessionModal').classList.remove('hidden');
+                    document.getElementById('sessionModal').classList.add('flex');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Błąd podczas pobierania szczegółów sesji');
+                });
+        }
+        
+        function displaySessionDetails(data) {
+            const container = document.getElementById('sessionDetails');
+            let html = `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700">Informacje o sesji</h4>
+                    <p><strong>ID:</strong> ${data.session_id}</p>
+                    <p><strong>Liczba wiadomości:</strong> ${data.history.length}</p>
+                    <p><strong>Liczba feedbacków:</strong> ${data.feedback.length}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700">Historia czatu</h4>
+                    <div class="max-h-64 overflow-y-auto space-y-2">
+            `;
+            
+            data.history.forEach((msg, index) => {
+                const isUser = msg.role === 'user';
+                html += `
+                    <div class="p-3 rounded-lg ${isUser ? 'bg-blue-100 ml-8' : 'bg-gray-100 mr-8'}">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium ${isUser ? 'text-blue-700' : 'text-gray-700'}">
+                                ${isUser ? 'Użytkownik' : 'Asystent'}
+                            </span>
+                            <span class="text-xs text-gray-500">${new Date(msg.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p class="text-sm">${msg.content.substring(0, 200)}${msg.content.length > 200 ? '...' : ''}</p>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700">Feedback</h4>
+                    <div class="space-y-2">
+            `;
+            
+            if (data.feedback.length > 0) {
+                data.feedback.forEach(fb => {
+                    const typeIcon = fb.type === 'positive' ? '👍' : fb.type === 'negative' ? '👎' : '✏️';
+                    html += `
+                        <div class="p-2 border rounded">
+                            <div class="flex items-center justify-between">
+                                <span>${typeIcon} ${fb.type}</span>
+                                <span class="text-xs text-gray-500">${new Date(fb.timestamp).toLocaleString()}</span>
+                            </div>
+                            ${fb.content ? `<p class="text-sm mt-1">${fb.content}</p>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p class="text-gray-500">Brak feedbacku</p>';
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function closeSessionModal() {
+            document.getElementById('sessionModal').classList.add('hidden');
+            document.getElementById('sessionModal').classList.remove('flex');
+        }
+        
+        function downloadSession(sessionId) {
+            // Implement download functionality
+            alert(`Pobieranie sesji ${sessionId} - funkcja do implementacji`);
+        }
+    </script>
+</body>
+</html>

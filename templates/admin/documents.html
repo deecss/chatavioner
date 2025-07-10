@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-Chat - Dokumenty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">✈</span>
+                        </div>
+                        <h1 class="text-xl font-bold">Aero-Chat Admin</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
+                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex space-x-6">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-4">Menu</h3>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>👥</span>
+                        <span>Użytkownicy</span>
+                    </a>
+                    <a href="{{ url_for('admin.feedback') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>💬</span>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ url_for('admin.documents') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
+                        <span>📁</span>
+                        <span>Dokumenty</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📄</span>
+                        <span>Raporty</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Dokumenty PDF</h2>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="refreshDocuments()" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                🔄 Odśwież
+                            </button>
+                            <div class="text-sm text-gray-600">
+                                Łącznie: {{ documents|length }} dokumentów
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if documents %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nazwa pliku
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Rozmiar
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data dodania
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Akcje
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for filename, doc_info in documents.items() %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                                    <span class="text-red-600 font-medium">📄</span>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ filename }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    PDF Document
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ "%.2f"|format(doc_info.size / 1024 / 1024) }} MB
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ doc_info.added_at[:19] }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        {% if doc_info.processed %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Przetworzony
+                                        </span>
+                                        {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Oczekuje
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onclick="previewDocument('{{ filename }}')" 
+                                                class="text-blue-600 hover:text-blue-900 mr-3">
+                                            Podgląd
+                                        </button>
+                                        <button onclick="downloadDocument('{{ filename }}')" 
+                                                class="text-green-600 hover:text-green-900 mr-3">
+                                            Pobierz
+                                        </button>
+                                        <button onclick="deleteDocument('{{ filename }}')" 
+                                                class="text-red-600 hover:text-red-900">
+                                            Usuń
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Storage Info -->
+                    <div class="mt-8 bg-gray-50 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4">Informacje o pamięci</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">
+                                    {{ "%.2f"|format(documents.values() | sum(attribute='size') / 1024 / 1024) }} MB
+                                </div>
+                                <div class="text-sm text-gray-600">Łączny rozmiar</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">
+                                    {{ documents.values() | selectattr('processed', 'equalto', true) | list | length }}
+                                </div>
+                                <div class="text-sm text-gray-600">Przetworzonych</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-yellow-600">
+                                    {{ documents.values() | selectattr('processed', 'equalto', false) | list | length }}
+                                </div>
+                                <div class="text-sm text-gray-600">Oczekujących</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-gray-500 text-xl mb-2">📁</div>
+                        <p class="text-gray-500">Brak dokumentów</p>
+                        <p class="text-sm text-gray-400 mt-2">Prześlij pliki PDF przez interfejs czatu</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Document Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Podgląd dokumentu</h3>
+                <button onclick="closePreviewModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="previewContent" class="text-center">
+                <p class="text-gray-500">Ładowanie podglądu...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function refreshDocuments() {
+            location.reload();
+        }
+        
+        function previewDocument(filename) {
+            // For PDF preview, we would typically use PDF.js or similar
+            document.getElementById('previewContent').innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-gray-500 text-xl mb-2">📄</div>
+                    <p class="text-gray-700 font-medium">${filename}</p>
+                    <p class="text-sm text-gray-500 mt-2">Podgląd PDF wymaga dodatkowej implementacji</p>
+                    <div class="mt-4">
+                        <button onclick="downloadDocument('${filename}')" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            Pobierz plik
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('previewModal').classList.remove('hidden');
+            document.getElementById('previewModal').classList.add('flex');
+        }
+        
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+            document.getElementById('previewModal').classList.remove('flex');
+        }
+        
+        function downloadDocument(filename) {
+            // Create a link to download the file
+            const link = document.createElement('a');
+            link.href = `/uploads/${filename}`;
+            link.download = filename;
+            link.click();
+        }
+        
+        function deleteDocument(filename) {
+            if (confirm(`Czy na pewno chcesz usunąć dokument "${filename}"?`)) {
+                // Implement delete functionality
+                alert(`Usuwanie dokumentu ${filename} - funkcja do implementacji`);
+            }
+        }
+    </script>
+</body>
+</html>

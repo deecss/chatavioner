@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Aero-Chat - Czat z AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto h-full flex gap-6 p-4">
+    <!-- Main Chat Container -->
+    <div class="flex-1 flex flex-col bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+        <!-- Chat Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold">🤖 Asystent AI Lotniczy</h2>
+                    <p class="text-blue-200 text-sm">Profesjonalne odpowiedzi na podstawie dokumentów technicznych</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div id="connectionStatus" class="status-indicator status-connected"></div>
+                    <span class="text-sm font-medium">Połączono</span>
+                    <div class="bg-blue-500 px-3 py-1 rounded-full text-xs font-medium">
+                        Wiadomości: <span id="messageCounter">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+            <!-- Welcome Message -->
+            <div class="text-center py-12">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <i class="fas fa-plane text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Witaj w Aero-Chat!</h3>
+                <p class="text-gray-600 max-w-lg mx-auto leading-relaxed">
+                    Jestem Twoim profesjonalnym asystentem AI do spraw lotnictwa. Zadaj pytanie o aerodynamikę, 
+                    przepisy lotnicze, nawigację, meteorologię i otrzymaj szczegółową odpowiedź na podstawie dokumentów technicznych.
+                </p>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions mt-8 max-w-2xl mx-auto">
+                    <p class="text-sm text-gray-500 mb-4">Szybkie pytania:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button type="button" class="quick-action-btn" data-question="Jak działa siła nośna w locie?">
+                            <i class="fas fa-arrow-up mr-2"></i>
+                            Siła nośna w locie
+                        </button>
+                        <button type="button" class="quick-action-btn" data-question="Jakie są podstawowe przepisy ICAO?">
+                            <i class="fas fa-book mr-2"></i>
+                            Przepisy ICAO
+                        </button>
+                        <button type="button" class="quick-action-btn" data-question="Jak czytać mapy meteorologiczne?">
+                            <i class="fas fa-cloud mr-2"></i>
+                            Meteorologia lotnicza
+                        </button>
+                        <button type="button" class="quick-action-btn" data-question="Podstawy nawigacji lotniczej">
+                            <i class="fas fa-compass mr-2"></i>
+                            Nawigacja lotnicza
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="p-6 bg-white border-t border-gray-200">
+            <div class="flex space-x-4">
+                <div class="flex-1 relative">
+                    <textarea id="messageInput" 
+                              placeholder="Zadaj pytanie o lotnictwo..." 
+                              class="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
+                              rows="1"
+                              style="min-height: 56px; max-height: 120px;"></textarea>
+                    <div class="absolute right-3 top-3 flex items-center space-x-2">
+                        <button type="button" id="sendButton" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mt-3 text-sm text-gray-500">
+                <div class="flex items-center space-x-4">
+                    <span>Naciśnij Enter aby wysłać</span>
+                    <span>Shift + Enter = nowa linia</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shield-alt text-green-500"></i>
+                    <span>Bezpieczne szyfrowanie</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="w-80 space-y-6">
+        <!-- Stats Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-chart-line mr-2 text-blue-600"></i>
+                Statystyki sesji
+            </h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Pytania zadane:</span>
+                    <span class="font-semibold text-gray-800" id="questionsCount">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Dokumenty użyte:</span>
+                    <span class="font-semibold text-gray-800" id="documentsCount">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Czas sesji:</span>
+                    <span class="font-semibold text-gray-800" id="sessionTime">0:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-4">
+                <i class="fas fa-lightbulb mr-2"></i>
+                Wskazówki
+            </h3>
+            <div class="space-y-3 text-sm text-blue-700">
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-check text-blue-600 mt-0.5"></i>
+                    <span>Zadawaj konkretne pytania dla lepszych odpowiedzi</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-check text-blue-600 mt-0.5"></i>
+                    <span>Używaj terminologii lotniczej</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-check text-blue-600 mt-0.5"></i>
+                    <span>Oceń przydatność odpowiedzi</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-check text-blue-600 mt-0.5"></i>
+                    <span>Eksportuj ważne odpowiedzi do PDF</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Files Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-file-pdf mr-2 text-red-600"></i>
+                Dokumenty
+            </h3>
+            <div class="space-y-2 text-sm" id="recentFiles">
+                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-file-pdf text-red-500"></i>
+                        <span class="text-gray-700">Ładowanie...</span>
+                    </div>
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/chat.js"></script>
+<script>
+    // Auto-resize textarea
+    document.getElementById('messageInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    
+    // Session timer
+    let sessionStart = Date.now();
+    function updateSessionTime() {
+        const elapsed = Date.now() - sessionStart;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        document.getElementById('sessionTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    setInterval(updateSessionTime, 1000);
+    
+    // Load recent files
+    fetch('/api/files')
+        .then(response => response.json())
+        .then(files => {
+            const container = document.getElementById('recentFiles');
+            if (files.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">Brak załadowanych dokumentów</p>';
+                return;
+            }
+            
+            container.innerHTML = files.slice(0, 5).map(file => `
+                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-file-pdf text-red-500"></i>
+                        <span class="text-gray-700 truncate" title="${file.name}">${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}</span>
+                    </div>
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                </div>
+            `).join('');
+        })
+        .catch(() => {
+            document.getElementById('recentFiles').innerHTML = '<p class="text-gray-500 text-center py-4">Błąd ładowania</p>';
+        });
+</script>
+{% endblock %}

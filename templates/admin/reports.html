@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-Chat - Raporty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">✈</span>
+                        </div>
+                        <h1 class="text-xl font-bold">Aero-Chat Admin</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
+                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex space-x-6">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-4">Menu</h3>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>👥</span>
+                        <span>Użytkownicy</span>
+                    </a>
+                    <a href="{{ url_for('admin.feedback') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>💬</span>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ url_for('admin.documents') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <span>📁</span>
+                        <span>Dokumenty</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
+                        <span>📄</span>
+                        <span>Raporty</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Raporty PDF</h2>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="generateReport()" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                📋 Generuj raport
+                            </button>
+                            <div class="text-sm text-gray-600">
+                                Łącznie: {{ reports|length }} raportów
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if reports %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nazwa pliku
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Sesja
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data utworzenia
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Rozmiar
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Akcje
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for report in reports %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                                    <span class="text-green-600 font-medium">📄</span>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ report.filename }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    PDF Report
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ report.session_id[:8] }}...</div>
+                                        <div class="text-sm text-gray-500">ID: {{ report.session_id }}</div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ report.created_at[:19] }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ "%.2f"|format(report.size / 1024) }} KB
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onclick="previewReport('{{ report.path }}')" 
+                                                class="text-blue-600 hover:text-blue-900 mr-3">
+                                            Podgląd
+                                        </button>
+                                        <a href="{{ url_for('admin.download_report', filepath=report.path) }}" 
+                                           class="text-green-600 hover:text-green-900 mr-3">
+                                            Pobierz
+                                        </a>
+                                        <button onclick="deleteReport('{{ report.path }}')" 
+                                                class="text-red-600 hover:text-red-900">
+                                            Usuń
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Reports Statistics -->
+                    <div class="mt-8 bg-gray-50 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4">Statystyki raportów</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">{{ reports|length }}</div>
+                                <div class="text-sm text-gray-600">Łączna liczba</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">
+                                    {{ "%.2f"|format(reports | sum(attribute='size') / 1024) }} KB
+                                </div>
+                                <div class="text-sm text-gray-600">Łączny rozmiar</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-purple-600">
+                                    {{ reports | map(attribute='session_id') | unique | list | length }}
+                                </div>
+                                <div class="text-sm text-gray-600">Różnych sesji</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-yellow-600">
+                                    {{ "%.1f"|format(reports | length / (reports | map(attribute='session_id') | unique | list | length) if reports else 0) }}
+                                </div>
+                                <div class="text-sm text-gray-600">Średnio na sesję</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-gray-500 text-xl mb-2">📄</div>
+                        <p class="text-gray-500">Brak raportów</p>
+                        <p class="text-sm text-gray-400 mt-2">Raporty są generowane automatycznie po każdej odpowiedzi</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Preview Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Podgląd raportu</h3>
+                <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="reportContent" class="text-center">
+                <p class="text-gray-500">Ładowanie podglądu...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Generate Report Modal -->
+    <div id="generateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold mb-4">Generuj zbiorczy raport</h3>
+            
+            <form id="generateForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Typ raportu
+                        </label>
+                        <select name="report_type" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="all_sessions">Wszystkie sesje</option>
+                            <option value="feedback_summary">Podsumowanie feedbacku</option>
+                            <option value="document_usage">Wykorzystanie dokumentów</option>
+                            <option value="user_activity">Aktywność użytkowników</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Okres
+                        </label>
+                        <select name="period" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="7_days">Ostatnie 7 dni</option>
+                            <option value="30_days">Ostatnie 30 dni</option>
+                            <option value="90_days">Ostatnie 3 miesiące</option>
+                            <option value="all_time">Cały czas</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Format
+                        </label>
+                        <select name="format" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="pdf">PDF</option>
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" onclick="closeGenerateModal()" 
+                            class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                        Anuluj
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        Generuj
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function previewReport(filepath) {
+            document.getElementById('reportContent').innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-gray-500 text-xl mb-2">📄</div>
+                    <p class="text-gray-700 font-medium">${filepath.split('/').pop()}</p>
+                    <p class="text-sm text-gray-500 mt-2">Podgląd PDF wymaga dodatkowej implementacji</p>
+                    <div class="mt-4">
+                        <a href="/admin/download_report/${encodeURIComponent(filepath)}" 
+                           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 inline-block">
+                            Pobierz plik
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reportModal').classList.remove('hidden');
+            document.getElementById('reportModal').classList.add('flex');
+        }
+        
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            document.getElementById('reportModal').classList.remove('flex');
+        }
+        
+        function generateReport() {
+            document.getElementById('generateModal').classList.remove('hidden');
+            document.getElementById('generateModal').classList.add('flex');
+        }
+        
+        function closeGenerateModal() {
+            document.getElementById('generateModal').classList.add('hidden');
+            document.getElementById('generateModal').classList.remove('flex');
+        }
+        
+        function deleteReport(filepath) {
+            if (confirm(`Czy na pewno chcesz usunąć raport "${filepath.split('/').pop()}"?`)) {
+                alert(`Usuwanie raportu ${filepath} - funkcja do implementacji`);
+            }
+        }
+        
+        // Generate form handler
+        document.getElementById('generateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            alert(`Generowanie raportu: ${data.report_type} za ${data.period} w formacie ${data.format}`);
+            closeGenerateModal();
+        });
+    </script>
+</body>
+</html>

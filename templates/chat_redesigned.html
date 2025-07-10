@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Avioner AI - Chat z Asystentem{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex">
+    <!-- Sidebar z informacjami użytkownika -->
+    <div class="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+        <!-- Header użytkownika -->
+        <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold">{{ current_user.username if current_user.is_authenticated else 'Gość' }}</h3>
+                    <p class="text-sm text-blue-200">{{ current_user.role if current_user.is_authenticated else 'Niezalogowany' }}</p>
+                </div>
+            </div>
+            <div class="mt-4 text-sm">
+                <div class="flex justify-between">
+                    <span>Sesja:</span>
+                    <span id="sessionTime">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statystyki sesji -->
+        <div class="p-6 border-b border-gray-200">
+            <h4 class="font-semibold text-gray-800 mb-4">Statystyki sesji</h4>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Pytania zadane:</span>
+                    <span class="font-semibold text-blue-600" id="questionsCount">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Odpowiedzi otrzymane:</span>
+                    <span class="font-semibold text-green-600" id="responsesCount">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Feedbacki wysłane:</span>
+                    <span class="font-semibold text-purple-600" id="feedbackCount">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Pozytywne oceny:</span>
+                    <span class="font-semibold text-emerald-600" id="positiveFeedback">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status połączenia -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div id="connectionStatus" class="w-3 h-3 rounded-full bg-green-500"></div>
+                <span class="text-sm text-gray-600" id="connectionText">Połączono z asystentem</span>
+            </div>
+        </div>
+
+        <!-- Ostatnia aktywność -->
+        <div class="p-6 flex-1">
+            <h4 class="font-semibold text-gray-800 mb-4">Ostatnia aktywność</h4>
+            <div id="activityLog" class="space-y-2 text-sm text-gray-600">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-circle text-green-400 text-xs"></i>
+                    <span>Połączono z systemem</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Przycisk wylogowania -->
+        <div class="p-6 border-t border-gray-200">
+            <a href="/logout" class="w-full btn bg-red-600 text-white hover:bg-red-700 flex items-center justify-center">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                Zakończ sesję
+            </a>
+        </div>
+    </div>
+
+    <!-- Główny obszar chatu -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header chatu -->
+        <div class="bg-white shadow-sm border-b border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Avioner AI</h1>
+                        <p class="text-sm text-gray-600">Inteligentny asystent lotniczy</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="clearChatBtn" class="btn bg-gray-600 text-white hover:bg-gray-700">
+                        <i class="fas fa-trash mr-2"></i>
+                        Wyczyść chat
+                    </button>
+                    <button id="exportChatBtn" class="btn bg-blue-600 text-white hover:bg-blue-700">
+                        <i class="fas fa-download mr-2"></i>
+                        Eksportuj
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Obszar wiadomości -->
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
+            <!-- Wiadomość powitalna -->
+            <div class="flex justify-center">
+                <div class="max-w-2xl text-center bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Witaj w Avioner AI!</h3>
+                    <p class="text-gray-600 mb-6">Jestem Twoim inteligentnym asystentem lotniczym. Mogę odpowiedzieć na pytania dotyczące lotnictwa, przepisów, procedur i bezpieczeństwa. Zadaj mi pytanie, a następnie oceń jakość mojej odpowiedzi.</p>
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button class="quick-question bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm hover:bg-blue-200 transition-colors" 
+                                data-question="Jakie są podstawowe przepisy ICAO dotyczące bezpieczeństwa lotów?">
+                            Przepisy ICAO
+                        </button>
+                        <button class="quick-question bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm hover:bg-green-200 transition-colors" 
+                                data-question="Wyjaśnij zasady działania siły nośnej podczas lotu">
+                            Siła nośna
+                        </button>
+                        <button class="quick-question bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm hover:bg-purple-200 transition-colors" 
+                                data-question="Jakie są procedury awaryjne podczas lądowania?">
+                            Procedury awaryjne
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Obszar wprowadzania wiadomości -->
+        <div class="bg-white border-t border-gray-200 p-6">
+            <div class="max-w-4xl mx-auto">
+                <form id="messageForm" class="flex space-x-4">
+                    <div class="flex-1 relative">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Zadaj pytanie dotyczące lotnictwa..."
+                            class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                            rows="1"
+                            maxlength="2000"></textarea>
+                        <div class="absolute bottom-2 right-2 text-xs text-gray-400">
+                            <span id="charCount">0</span>/2000
+                        </div>
+                    </div>
+                    <button type="submit" id="sendBtn" class="px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="mt-2 text-xs text-gray-500 text-center">
+                    Wszystkie pytania i odpowiedzi są monitorowane i analizowane w celach szkoleniowych
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal dla feedbacku -->
+<div id="feedbackModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Oceń odpowiedź</h3>
+            <button id="closeFeedbackModal" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mb-4">
+            <p class="text-gray-600 mb-4">Jak oceniasz jakość tej odpowiedzi?</p>
+            <div class="flex space-x-4 mb-4">
+                <button id="positiveFeedbackBtn" class="flex-1 p-4 border-2 border-green-200 text-green-700 rounded-lg hover:bg-green-50 transition-colors">
+                    <i class="fas fa-thumbs-up text-2xl mb-2"></i>
+                    <div class="font-semibold">Pomocna</div>
+                </button>
+                <button id="negativeFeedbackBtn" class="flex-1 p-4 border-2 border-red-200 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
+                    <i class="fas fa-thumbs-down text-2xl mb-2"></i>
+                    <div class="font-semibold">Niepomocna</div>
+                </button>
+            </div>
+        </div>
+        <div id="feedbackDetails" class="hidden">
+            <textarea id="feedbackText" placeholder="Opcjonalnie: opisz co można poprawić..." class="w-full p-3 border border-gray-300 rounded-lg" rows="3"></textarea>
+            <div class="mt-4 flex space-x-3">
+                <button id="submitFeedbackBtn" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Wyślij feedback</button>
+                <button id="cancelFeedbackBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/chat_new.js"></script>
+{% endblock %}
