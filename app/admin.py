@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, login_user, logout_user, current_user
-from app.models import User, ChatSession, UploadIndex
+from app.models import User, ChatSession, UploadIndex, UserSession
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -46,30 +46,91 @@ def dashboard():
 @admin_bp.route('/users')
 @login_required
 def users():
-    """Lista użytkowników i sesji"""
-    sessions_data = []
+    """Lista użytkowników i zarządzanie"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
     
-    # Przeskanuj katalog history
-    if os.path.exists('history'):
-        for filename in os.listdir('history'):
-            if filename.endswith('.json'):
-                session_id = filename.replace('.json', '')
-                chat_session = ChatSession(session_id)
-                history = chat_session.load_history()
-                
-                if history:
-                    first_message = history[0]['timestamp']
-                    last_message = history[-1]['timestamp']
-                    message_count = len(history)
-                    
-                    sessions_data.append({
-                        'session_id': session_id,
-                        'first_message': first_message,
-                        'last_message': last_message,
-                        'message_count': message_count
-                    })
+    users_list = User.get_all_users()
     
-    return render_template('admin/users.html', sessions=sessions_data)
+    # Pobierz statystyki sesji dla każdego użytkownika
+    for user in users_list:
+        user_sessions = UserSession.get_user_sessions(user.id)
+        user.sessions_count = len(user_sessions)
+        user.last_activity = None
+        
+        if user_sessions:
+            user.last_activity = user_sessions[0]['updated_at']  # Najnowsza sesja
+    
+    return render_template('admin/users.html', users=users_list)
+
+@admin_bp.route('/users/add', methods=['GET', 'POST'])
+@login_required 
+def add_user():
+    """Dodawanie nowego użytkownika"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        role = request.form.get('role', 'user')
+        
+        if not username or not password:
+            flash('Login i hasło są wymagane', 'error')
+        else:
+            user, error = User.create_user(username, password, role)
+            if user:
+                flash(f'Użytkownik {username} został utworzony pomyślnie', 'success')
+                return redirect(url_for('admin.users'))
+            else:
+                flash(f'Błąd tworzenia użytkownika: {error}', 'error')
+    
+    return render_template('admin/add_user.html')
+
+@admin_bp.route('/users/<user_id>/delete', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    """Usuwanie użytkownika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    if user_id == current_user.id:
+        return jsonify({'error': 'Nie można usunąć siebie'}), 400
+    
+    if User.delete_user(user_id):
+        flash('Użytkownik został usunięty', 'success')
+        return jsonify({'success': True})
+    else:
+        return jsonify({'error': 'Błąd usuwania użytkownika'}), 500
+
+@admin_bp.route('/users/<user_id>/sessions')
+@login_required
+def user_sessions(user_id):
+    """Sesje konkretnego użytkownika"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    user = User.get(user_id)
+    if not user:
+        flash('Użytkownik nie znaleziony', 'error')
+        return redirect(url_for('admin.users'))
+    
+    sessions = UserSession.get_user_sessions(user_id)
+    
+    # Dodaj szczegółowe dane o sesjach
+    for session_data in sessions:
+        chat_session = ChatSession(session_data['session_id'], user_id)
+        history = chat_session.load_history()
+        session_data['message_count'] = len(history)
+        
+        if history:
+            session_data['first_message'] = history[0]['timestamp']
+            session_data['last_message'] = history[-1]['timestamp']
+    
+    return render_template('admin/user_sessions.html', user=user, sessions=sessions)
 
 @admin_bp.route('/feedback')
 @login_required
@@ -77,30 +138,65 @@ def feedback():
     """Lista feedbacków"""
     feedback_data = []
     
-    # Przeskanuj katalog feedback
+    # Przeskanuj katalog feedback - nowy format z podkatalogami sesji
     if os.path.exists('feedback'):
-        for filename in os.listdir('feedback'):
-            if filename.endswith('.json'):
-                session_id = filename.replace('.json', '')
-                feedback_file = f'feedback/{filename}'
+        for item in os.listdir('feedback'):
+            item_path = os.path.join('feedback', item)
+            
+            # Sprawdź czy to katalog sesji
+            if os.path.isdir(item_path):
+                session_id = item
+                # Przeskanuj pliki w katalogu sesji
+                for feedback_file in os.listdir(item_path):
+                    if feedback_file.endswith('.json'):
+                        file_path = os.path.join(item_path, feedback_file)
+                        try:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                fb_data = json.load(f)
+                                
+                            feedback_data.append({
+                                'session_id': session_id,
+                                'timestamp': fb_data.get('timestamp'),
+                                'feedback_type': fb_data.get('feedback_type'),
+                                'section_type': fb_data.get('section_type', 'message'),
+                                'content': fb_data.get('content', '')[:100],  # Limit display
+                                'message_id': fb_data.get('message_id', ''),
+                                'section_id': fb_data.get('section_id', ''),
+                                'description': fb_data.get('description', ''),
+                                'file_name': feedback_file
+                            })
+                        except Exception as e:
+                            print(f"Błąd wczytywania feedback: {e}")
+                            continue
+            
+            # Stary format - pliki bezpośrednio w katalogu feedback
+            elif item.endswith('.json'):
+                session_id = item.replace('.json', '')
+                feedback_file = os.path.join('feedback', item)
                 
                 try:
                     with open(feedback_file, 'r', encoding='utf-8') as f:
                         session_feedback = json.load(f)
                     
-                    for fb in session_feedback:
-                        feedback_data.append({
-                            'session_id': session_id,
-                            'timestamp': fb['timestamp'],
-                            'type': fb['type'],
-                            'content': fb.get('content', ''),
-                            'message_id': fb.get('message_id', '')
-                        })
-                except:
+                    if isinstance(session_feedback, list):
+                        for fb in session_feedback:
+                            feedback_data.append({
+                                'session_id': session_id,
+                                'timestamp': fb.get('timestamp'),
+                                'feedback_type': fb.get('type', fb.get('feedback_type')),
+                                'section_type': fb.get('section_type', 'message'),
+                                'content': fb.get('content', ''),
+                                'message_id': fb.get('message_id', ''),
+                                'section_id': '',
+                                'description': '',
+                                'file_name': item
+                            })
+                except Exception as e:
+                    print(f"Błąd wczytywania starego feedback: {e}")
                     continue
     
     # Sortuj po dacie
-    feedback_data.sort(key=lambda x: x['timestamp'], reverse=True)
+    feedback_data.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
     
     return render_template('admin/feedback.html', feedback=feedback_data)
 
@@ -109,7 +205,7 @@ def feedback():
 def documents():
     """Lista dokumentów"""
     upload_index = UploadIndex()
-    documents = upload_index.load_index()
+    documents = upload_index.get_files_by_status()
     
     return render_template('admin/documents.html', documents=documents)
 
@@ -202,7 +298,7 @@ def get_admin_stats():
     
     # Liczba dokumentów
     upload_index = UploadIndex()
-    documents = upload_index.load_index()
+    documents = upload_index.get_all_files()
     stats['total_documents'] = len(documents)
     
     # Liczba feedbacków

@@ -1,0 +1,35 @@
+[
+  {
+    "session_id": "36d5fe3c-d0bd-475f-846e-831f74d05d1d",
+    "message_id": null,
+    "section_id": null,
+    "feedback_type": null,
+    "section_type": null,
+    "content": "",
+    "description": "",
+    "timestamp": "2025-07-10T19:30:38.381Z",
+    "type": "section_with_comment"
+  },
+  {
+    "session_id": "36d5fe3c-d0bd-475f-846e-831f74d05d1d",
+    "message_id": null,
+    "section_id": null,
+    "feedback_type": null,
+    "section_type": null,
+    "content": "",
+    "description": "",
+    "timestamp": "2025-07-10T19:30:45.655Z",
+    "type": "section_with_comment"
+  },
+  {
+    "session_id": "36d5fe3c-d0bd-475f-846e-831f74d05d1d",
+    "message_id": null,
+    "section_id": null,
+    "feedback_type": null,
+    "section_type": null,
+    "content": "",
+    "description": "",
+    "timestamp": "2025-07-10T19:30:47.639Z",
+    "type": "section_with_comment"
+  }
+]

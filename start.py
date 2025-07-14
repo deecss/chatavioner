@@ -33,7 +33,7 @@ def setup_directories():
     """Tworzy wymagane katalogi"""
     directories = [
         'uploads', 'history', 'feedback', 'reports', 
-        'data', 'training_data'
+        'data', 'data/user_sessions', 'training_data'
     ]
     
     for directory in directories:
@@ -96,6 +96,48 @@ def setup_admin_user():
     except Exception as e:
         print(f"❌ Błąd podczas tworzenia administratora: {e}")
 
+def setup_learning_system():
+    """Inicjalizuje system uczenia się"""
+    try:
+        print("🧠 Inicjalizacja systemu uczenia się...")
+        from utils.learning_system import LearningSystem
+        
+        learning_system = LearningSystem()
+        
+        # Sprawdź czy istnieją dane do analizy
+        history_dir = 'history'
+        if os.path.exists(history_dir):
+            sessions = [f.replace('.json', '') for f in os.listdir(history_dir) if f.endswith('.json')]
+            if sessions:
+                # Analizuj ostatnie sesje
+                print(f"📚 Analizuję {len(sessions)} sesji...")
+                analyzed_count = 0
+                
+                for session_id in sessions[-10:]:  # Ostatnie 10 sesji
+                    try:
+                        analysis = learning_system.analyze_conversation_history(session_id)
+                        if analysis:
+                            learning_system.save_learning_data(analysis)
+                            analyzed_count += 1
+                    except Exception as e:
+                        print(f"⚠️  Błąd analizy sesji {session_id}: {e}")
+                
+                print(f"✅ Przeanalizowano {analyzed_count} sesji dla systemu uczenia się")
+                
+                # Generuj globalne wzorce
+                global_patterns = learning_system.analyze_all_sessions()
+                print(f"🌐 Wygenerowano globalne wzorce dla {global_patterns.get('total_sessions', 0)} sesji")
+            else:
+                print("📝 Brak sesji do analizy - system uczenia się gotowy na nowe dane")
+        else:
+            print("📁 Tworzę katalog historii dla systemu uczenia się")
+        
+        print("🎯 System uczenia się uruchomiony pomyślnie!")
+        
+    except Exception as e:
+        print(f"❌ Błąd inicjalizacji systemu uczenia się: {e}")
+        print("⚠️  Aplikacja będzie działać bez systemu uczenia się")
+
 def main():
     """Główna funkcja uruchamiająca"""
     print("🛩️  Aero-Chat - Uruchamianie aplikacji")
@@ -113,6 +155,9 @@ def main():
     
     # Utwórz administratora
     setup_admin_user()
+    
+    # Inicjalizuj system uczenia się
+    setup_learning_system()
     
     # Importuj i uruchom aplikację
     try:

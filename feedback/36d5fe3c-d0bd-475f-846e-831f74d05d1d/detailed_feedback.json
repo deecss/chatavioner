@@ -1,0 +1,22 @@
+[
+  {
+    "session_id": "36d5fe3c-d0bd-475f-846e-831f74d05d1d",
+    "section_id": "msg_1752155328553_1_section_12",
+    "section_type": "paragraph",
+    "feedback_type": "positive",
+    "content": "",
+    "description": "puste pole",
+    "timestamp": "2025-07-10T13:50:29.868Z",
+    "type": "detailed"
+  },
+  {
+    "session_id": "36d5fe3c-d0bd-475f-846e-831f74d05d1d",
+    "section_id": "msg_1752166239958_1_section_0",
+    "section_type": "other",
+    "feedback_type": "positive",
+    "content": "Przepraszam, wystąpił błąd: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}}",
+    "description": "zajebiste",
+    "timestamp": "2025-07-10T16:55:59.186Z",
+    "type": "detailed"
+  }
+]

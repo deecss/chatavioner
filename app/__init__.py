@@ -27,7 +27,9 @@ def create_app():
     # Inicjalizacja Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'admin.login'
+    login_manager.login_view = 'main.login'
+    login_manager.login_message = 'Zaloguj się aby uzyskać dostęp do czatu'
+    login_manager.login_message_category = 'info'
     
     from app.models import User
     

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avioner AI Chat - Logowanie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            align-items: stretch;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .left-section {
+            padding: 4rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .right-section {
+            padding: 4rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo .airplane {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3));
+            animation: pulse 2s ease-in-out infinite;
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .app-description {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+            text-align: center;
+        }
+
+        .app-description h3 {
+            color: #1e40af;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .app-description p {
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.75rem;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .feature i {
+            color: #3b82f6;
+            font-size: 1rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-title h2 {
+            color: #1e40af;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-title p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+            font-weight: 500;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-error {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: rgba(248, 113, 113, 0.3);
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #16a34a;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3b82f6;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer p {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .powered-by {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .powered-by i {
+            color: #3b82f6;
+            margin: 0 0.3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .login-container {
+                grid-template-columns: 1fr;
+                padding: 0;
+            }
+            
+            .left-section, .right-section {
+                padding: 3rem 2rem;
+            }
+            
+            .left-section {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .left-section, .right-section {
+                padding: 2rem 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-section">
+            <div class="logo">
+                <div class="airplane">✈️</div>
+                <h1>Avioner AI Chat</h1>
+                <p>Inteligentny System Wsparcia Lotniczego</p>
+            </div>
+
+            <div class="app-description">
+                <h3>
+                    <i class="fas fa-brain"></i>
+                    Zaawansowany Asystent AI dla Lotnictwa
+                </h3>
+                <p>
+                    Avioner AI Chat to nowoczesna platforma wykorzystująca sztuczną inteligencję do analizy dokumentów technicznych lotniczych. 
+                    System oferuje błyskawiczne odpowiedzi na pytania dotyczące aerodynamiki, przepisów ICAO, nawigacji i meteorologii.
+                </p>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Analiza PDF</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-language"></i>
+                        <span>AI w języku PL</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-search"></i>
+                        <span>Wyszukiwanie semantyczne</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analityka sesji</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Bezpieczne</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>24/7 dostępność</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Dokumentów</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Zapytań</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="form-title">
+                <h2>Logowanie</h2>
+                <p>Wprowadź swoje dane aby uzyskać dostęp</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="form-section">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i>
+                            Nazwa użytkownika
+                        </label>
+                        <input type="text" id="username" name="username" required placeholder="Wprowadź swój login">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Hasło
+                        </label>
+                        <input type="password" id="password" name="password" required placeholder="Wprowadź swoje hasło">
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Zaloguj się do systemu
+                    </button>
+                </form>
+            </div>
+
+            <div class="footer">
+                <p>© 2025 Avioner AI Chat. Wszystkie prawa zastrzeżone.</p>
+                <div class="powered-by">
+                    Wykonał <i class="fas fa-code"></i> Avioner <i class="fas fa-copyright"></i> Własność autorska
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

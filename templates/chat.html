@@ -1,22 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Aero-Chat - Czat z AI{% endblock %}
+{% block title %}Avioner AI model v1.2 - Inteligentny Chat{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto h-full flex gap-6 p-4">
+<div class="w-full h-full flex gap-3 p-2">
+    <!-- Sessions Sidebar -->
+    <div class="w-64 space-y-3">
+        <!-- User Info -->
+        <div class="glass rounded-xl p-3">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="font-medium text-readable text-sm">{{ username }}</h3>
+                    <p class="text-xs text-readable-light">Zalogowany użytkownik</p>
+                </div>
+                <div class="ml-auto">
+                    <a href="{{ url_for('main.logout') }}" class="text-red-500 hover:text-red-600 text-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Actions -->
+        <div class="glass rounded-xl p-3">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium text-readable text-sm">Sesje</h3>
+                <button id="newSessionBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg text-xs transition-colors">
+                    <i class="fas fa-plus mr-1"></i>
+                    Nowa
+                </button>
+            </div>
+            
+            <!-- Sessions List -->
+            <div id="sessionsList" class="space-y-1 max-h-80 overflow-y-auto">
+                {% for session in sessions %}
+                <div class="session-item p-2 rounded-lg bg-white/40 border border-white/20 hover:bg-white/60 cursor-pointer transition-all"
+                     data-session-id="{{ session.session_id }}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-readable text-xs truncate">{{ session.title }}</h4>
+                            <p class="text-xs text-readable-light">{{ session.updated_at[:16] }}</p>
+                        </div>
+                        <button class="delete-session-btn text-red-400 hover:text-red-600 p-1" 
+                                data-session-id="{{ session.session_id }}">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
     <!-- Main Chat Container -->
-    <div class="flex-1 flex flex-col bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+    <div class="flex-1 flex flex-col glass rounded-xl overflow-hidden">
         <!-- Chat Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+        <div class="bg-gradient-to-r from-blue-500/20 to-blue-600/20 backdrop-blur-20 border-b border-white/20 p-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-xl font-bold">🤖 Asystent AI Lotniczy</h2>
-                    <p class="text-blue-200 text-sm">Profesjonalne odpowiedzi na podstawie dokumentów technicznych</p>
+                    <h2 class="text-lg font-bold text-neutral-900">✈ Avioner AI Assistant</h2>
+                    <p class="text-neutral-600 text-xs">Zaawansowana analiza dokumentów technicznych lotniczych</p>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2">
                     <div id="connectionStatus" class="status-indicator status-connected"></div>
-                    <span class="text-sm font-medium">Połączono</span>
-                    <div class="bg-blue-500 px-3 py-1 rounded-full text-xs font-medium">
+                    <span class="text-xs font-medium text-neutral-700">Połączono</span>
+                    <div class="bg-blue-500/20 backdrop-blur-10 border border-blue-500/30 px-2 py-1 rounded-full text-xs font-medium text-neutral-700">
                         Wiadomości: <span id="messageCounter">0</span>
                     </div>
                 </div>
@@ -24,35 +75,35 @@
         </div>
         
         <!-- Chat Messages -->
-        <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-neutral-50/30 backdrop-blur-10">
             <!-- Welcome Message -->
-            <div class="text-center py-12">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <i class="fas fa-plane text-white text-2xl"></i>
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500/80 to-blue-600/80 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-10 border border-white/20 shadow-lg">
+                    <i class="fas fa-brain text-white text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">Witaj w Aero-Chat!</h3>
-                <p class="text-gray-600 max-w-lg mx-auto leading-relaxed">
-                    Jestem Twoim profesjonalnym asystentem AI do spraw lotnictwa. Zadaj pytanie o aerodynamikę, 
+                <h3 class="text-xl font-bold text-readable mb-3">Witaj w Avioner AI!</h3>
+                <p class="text-readable-light max-w-lg mx-auto leading-relaxed text-sm">
+                    Jestem zaawansowanym asystentem AI specjalizującym się w lotnictwie. Zadaj pytanie o aerodynamikę, 
                     przepisy lotnicze, nawigację, meteorologię i otrzymaj szczegółową odpowiedź na podstawie dokumentów technicznych.
                 </p>
                 
                 <!-- Quick Actions -->
-                <div class="quick-actions mt-8 max-w-2xl mx-auto">
-                    <p class="text-sm text-gray-500 mb-4">Szybkie pytania:</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <button type="button" class="quick-action-btn" data-question="Jak działa siła nośna w locie?">
+                <div class="quick-actions mt-6 max-w-2xl mx-auto">
+                    <p class="text-xs text-readable-light mb-3">Szybkie pytania:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <button type="button" class="quick-action-btn justify-start text-readable text-xs py-2 px-3 bg-white/40 hover:bg-white/60 rounded-lg transition-all border border-white/20" data-question="Jak działa siła nośna w locie?">
                             <i class="fas fa-arrow-up mr-2"></i>
                             Siła nośna w locie
                         </button>
-                        <button type="button" class="quick-action-btn" data-question="Jakie są podstawowe przepisy ICAO?">
+                        <button type="button" class="quick-action-btn justify-start text-readable text-xs py-2 px-3 bg-white/40 hover:bg-white/60 rounded-lg transition-all border border-white/20" data-question="Jakie są podstawowe przepisy ICAO?">
                             <i class="fas fa-book mr-2"></i>
                             Przepisy ICAO
                         </button>
-                        <button type="button" class="quick-action-btn" data-question="Jak czytać mapy meteorologiczne?">
+                        <button type="button" class="quick-action-btn justify-start text-readable text-xs py-2 px-3 bg-white/40 hover:bg-white/60 rounded-lg transition-all border border-white/20" data-question="Jak czytać mapy meteorologiczne?">
                             <i class="fas fa-cloud mr-2"></i>
                             Meteorologia lotnicza
                         </button>
-                        <button type="button" class="quick-action-btn" data-question="Podstawy nawigacji lotniczej">
+                        <button type="button" class="quick-action-btn justify-start text-readable text-xs py-2 px-3 bg-white/40 hover:bg-white/60 rounded-lg transition-all border border-white/20" data-question="Podstawy nawigacji lotniczej">
                             <i class="fas fa-compass mr-2"></i>
                             Nawigacja lotnicza
                         </button>
@@ -62,65 +113,69 @@
         </div>
         
         <!-- Chat Input -->
-        <div class="p-6 bg-white border-t border-gray-200">
-            <div class="flex space-x-4">
+        <div class="p-4 glass-dark border-t border-white/20">
+            <div class="flex space-x-2">
                 <div class="flex-1 relative">
                     <textarea id="messageInput" 
                               placeholder="Zadaj pytanie o lotnictwo..." 
-                              class="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
+                              class="w-full p-3 pr-10 glass border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all text-neutral-700 placeholder-neutral-500 text-sm"
                               rows="1"
-                              style="min-height: 56px; max-height: 120px;"></textarea>
-                    <div class="absolute right-3 top-3 flex items-center space-x-2">
-                        <button type="button" id="sendButton" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i>
+                              style="min-height: 40px; max-height: 100px;"></textarea>
+                    <div class="absolute right-2 top-2 flex items-center space-x-1">
+                        <button type="button" id="sendButton" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors">
+                            <i class="fas fa-paper-plane text-sm"></i>
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-between mt-3 text-sm text-gray-500">
-                <div class="flex items-center space-x-4">
-                    <span>Naciśnij Enter aby wysłać</span>
+            <div class="flex items-center justify-between mt-2 text-xs text-neutral-500">
+                <div class="flex items-center space-x-3">
+                    <span>Enter = wyślij</span>
                     <span>Shift + Enter = nowa linia</span>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1">
                     <i class="fas fa-shield-alt text-green-500"></i>
-                    <span>Bezpieczne szyfrowanie</span>
+                    <span>Szyfrowane</span>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Sidebar -->
-    <div class="w-80 space-y-6">
+    <div class="w-64 space-y-4">
         <!-- Stats Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+        <div class="glass rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-readable mb-3">
                 <i class="fas fa-chart-line mr-2 text-blue-600"></i>
                 Statystyki sesji
             </h3>
-            <div class="space-y-4">
+            <div class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-600">Pytania zadane:</span>
-                    <span class="font-semibold text-gray-800" id="questionsCount">0</span>
+                    <span class="text-readable-light text-xs">Pytania zadane:</span>
+                    <span class="font-semibold text-readable text-xs" id="questionsCount">0</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-600">Dokumenty użyte:</span>
-                    <span class="font-semibold text-gray-800" id="documentsCount">0</span>
+                    <span class="text-readable-light text-xs">Dokumenty użyte:</span>
+                    <span class="font-semibold text-readable text-xs" id="documentsCount">0</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-600">Czas sesji:</span>
-                    <span class="font-semibold text-gray-800" id="sessionTime">0:00</span>
+                    <span class="text-readable-light text-xs">Czas sesji:</span>
+                    <span class="font-semibold text-readable text-xs" id="sessionTime">0:00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-readable-light text-xs">Aktywne połączenie:</span>
+                    <span class="font-semibold text-green-600 text-xs" id="connectionStatusText">Połączone</span>
                 </div>
             </div>
         </div>
         
         <!-- Tips Card -->
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6">
-            <h3 class="text-lg font-semibold text-blue-800 mb-4">
+        <div class="glass rounded-xl p-4 bg-gradient-to-br from-blue-50/50 to-blue-100/50 border border-blue-200/30">
+            <h3 class="text-sm font-semibold text-blue-800 mb-3">
                 <i class="fas fa-lightbulb mr-2"></i>
                 Wskazówki
             </h3>
-            <div class="space-y-3 text-sm text-blue-700">
+            <div class="space-y-2 text-xs text-blue-700">
                 <div class="flex items-start space-x-2">
                     <i class="fas fa-check text-blue-600 mt-0.5"></i>
                     <span>Zadawaj konkretne pytania dla lepszych odpowiedzi</span>
@@ -141,16 +196,16 @@
         </div>
         
         <!-- Recent Files Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+        <div class="glass rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-readable mb-3">
                 <i class="fas fa-file-pdf mr-2 text-red-600"></i>
                 Dokumenty
             </h3>
-            <div class="space-y-2 text-sm" id="recentFiles">
-                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+            <div class="space-y-1 text-xs" id="recentFiles">
+                <div class="flex items-center justify-between py-2 px-2 glass-dark rounded-lg">
                     <div class="flex items-center space-x-2">
                         <i class="fas fa-file-pdf text-red-500"></i>
-                        <span class="text-gray-700">Ładowanie...</span>
+                        <span class="text-readable-light">Ładowanie...</span>
                     </div>
                     <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                 </div>
@@ -158,27 +213,421 @@
         </div>
     </div>
 </div>
+
+<!-- Modal do feedbacku z opisem -->
+<div id="feedbackModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="glass rounded-xl p-4 max-w-md w-full mx-4 shadow-2xl">
+        <h3 class="text-base font-semibold mb-3 text-readable">Dodaj opinię</h3>
+        <div class="mb-3" id="feedbackContent" style="display: none;">
+            <label class="block text-xs font-medium text-readable-light mb-2">Fragment do oceny:</label>
+            <div class="bg-neutral-50 p-2 rounded-lg text-xs text-readable-light max-h-16 overflow-y-auto" id="feedbackContentPreview">
+                <!-- Treść sekcji będzie tu wyświetlana -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="block text-xs font-medium text-readable-light mb-2">Ocena:</label>
+            <div class="flex space-x-2">
+                <button type="button" id="feedbackPositive" class="flex items-center px-3 py-1 bg-green-100/80 backdrop-blur-10 text-green-700 rounded-lg hover:bg-green-200/80 transition-all border border-green-200/50 text-xs">
+                    <i class="fas fa-thumbs-up mr-1"></i>
+                    Przydatne
+                </button>
+                <button type="button" id="feedbackNegative" class="flex items-center px-3 py-1 bg-red-100/80 backdrop-blur-10 text-red-700 rounded-lg hover:bg-red-200/80 transition-all border border-red-200/50 text-xs">
+                    <i class="fas fa-thumbs-down mr-1"></i>
+                    Nieprzydatne
+                </button>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="feedbackDescription" class="block text-xs font-medium text-readable-light mb-2">Opis (opcjonalnie):</label>
+            <textarea id="feedbackDescription" rows="3" class="w-full p-2 glass border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-readable placeholder-neutral-500 text-xs" placeholder="Napisz co można poprawić lub co było szczególnie pomocne..."></textarea>
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button type="button" id="feedbackCancel" class="px-3 py-1 text-readable-light hover:text-readable transition-colors text-xs">Anuluj</button>
+            <button type="button" id="feedbackSubmit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs transition-colors">Wyślij opinię</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
+<script>
+    // Przekaż dane z serwera do JavaScript
+    window.SERVER_USER_ID = '{{ user_id }}';
+    window.SERVER_USERNAME = '{{ username }}';
+    window.CURRENT_SESSION_ID = null;
+    window.USER_SESSIONS = {{ sessions|tojson }};
+</script>
 <script src="/static/js/chat.js"></script>
 <script>
+    // Session Management
+    class SessionManager {
+        constructor() {
+            this.currentSessionId = null;
+            this.sessions = window.USER_SESSIONS || [];
+            this.initEventListeners();
+            this.loadCurrentSession();
+        }
+        
+        initEventListeners() {
+            // Nowa sesja
+            document.getElementById('newSessionBtn').addEventListener('click', () => {
+                this.createNewSession();
+            });
+            
+            // Kliknięcie na sesję
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.session-item')) {
+                    const sessionId = e.target.closest('.session-item').dataset.sessionId;
+                    this.switchToSession(sessionId);
+                }
+            });
+            
+            // Usuwanie sesji
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.delete-session-btn')) {
+                    e.stopPropagation();
+                    const sessionId = e.target.closest('.delete-session-btn').dataset.sessionId;
+                    this.deleteSession(sessionId);
+                }
+            });
+        }
+        
+        async createNewSession() {
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: `Nowa sesja ${new Date().toLocaleString('pl-PL', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}`
+                    })
+                });
+                
+                const newSession = await response.json();
+                if (response.ok) {
+                    this.sessions.unshift(newSession);
+                    this.renderSessions();
+                    this.switchToSession(newSession.session_id);
+                }
+            } catch (error) {
+                console.error('Błąd tworzenia sesji:', error);
+            }
+        }
+        
+        async switchToSession(sessionId) {
+            try {
+                // Ustaw aktualną sesję
+                const response = await fetch('/api/current_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId
+                    })
+                });
+                
+                if (response.ok) {
+                    this.currentSessionId = sessionId;
+                    window.CURRENT_SESSION_ID = sessionId;
+                    
+                    // Aktualizuj sessionId w ChatApp
+                    if (window.chatApp) {
+                        window.chatApp.updateSessionId(sessionId);
+                    }
+                    
+                    // Aktualizuj UI
+                    this.updateSessionUI();
+                    
+                    // Załaduj historię sesji
+                    await this.loadSessionHistory(sessionId);
+                    
+                    console.log(`✅ Przełączono na sesję: ${sessionId}`);
+                }
+            } catch (error) {
+                console.error('Błąd przełączania sesji:', error);
+            }
+        }
+        
+        async loadSessionHistory(sessionId) {
+            try {
+                const response = await fetch(`/api/sessions/${sessionId}/history`);
+                const history = await response.json();
+                
+                if (response.ok) {
+                    console.log('📜 Historia sesji:', history);
+                    
+                    // Wyczyść obecny chat
+                    const chatMessages = document.getElementById('chatMessages');
+                    chatMessages.innerHTML = '';
+                    
+                    // Dodaj wiadomości z historii
+                    if (history.length > 0) {
+                        history.forEach((message, index) => {
+                            console.log(`📝 Dodaję wiadomość ${index + 1}:`, message);
+                            
+                            // Użyj funkcji addMessage z chat.js
+                            if (window.chatApp && window.chatApp.addMessage) {
+                                window.chatApp.addMessage(message.content, message.role);
+                            } else {
+                                // Fallback - dodaj wiadomość bezpośrednio
+                                this.addMessageToChat(message.content, message.role);
+                            }
+                        });
+                    } else {
+                        // Jeśli brak historii, pokaż welcome message
+                        this.showWelcomeMessage();
+                    }
+                } else {
+                    console.error('❌ Błąd ładowania historii:', response.status);
+                }
+            } catch (error) {
+                console.error('Błąd ładowania historii:', error);
+            }
+        }
+        
+        // Funkcja fallback do dodawania wiadomości bezpośrednio
+        addMessageToChat(content, role) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            if (role === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-end mb-4">
+                        <div class="message-content user-message max-w-4xl">
+                            <div class="bg-blue-500 text-white p-4 rounded-2xl shadow-lg">
+                                <p class="whitespace-pre-wrap">${content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-start mb-4">
+                        <div class="message-content assistant-message max-w-4xl">
+                            <div class="bg-white p-4 rounded-2xl shadow-lg border border-gray-200">
+                                <div class="prose max-w-none">${content}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        showWelcomeMessage() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500/80 to-blue-600/80 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-10 border border-white/20 shadow-lg">
+                        <i class="fas fa-brain text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-readable mb-4">Witaj w Avioner AI!</h3>
+                    <p class="text-readable-light max-w-lg mx-auto leading-relaxed">
+                        Jestem zaawansowanym asystentem AI specjalizującym się w lotnictwie. Zadaj pytanie o aerodynamikę, 
+                        przepisy lotnicze, nawigację, meteorologię i otrzymaj szczegółową odpowiedź na podstawie dokumentów technicznych.
+                    </p>
+                </div>
+            `;
+        }
+        
+        async deleteSession(sessionId) {
+            if (confirm('Czy na pewno chcesz usunąć tę sesję?')) {
+                try {
+                    const response = await fetch(`/api/sessions/${sessionId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        this.sessions = this.sessions.filter(s => s.session_id !== sessionId);
+                        this.renderSessions();
+                        
+                        // Jeśli usunięto aktualną sesję, przełącz na pierwszą dostępną
+                        if (this.currentSessionId === sessionId) {
+                            if (this.sessions.length > 0) {
+                                this.switchToSession(this.sessions[0].session_id);
+                            } else {
+                                this.createNewSession();
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Błąd usuwania sesji:', error);
+                }
+            }
+        }
+        
+        updateSessionUI() {
+            // Podświetl aktualną sesję
+            document.querySelectorAll('.session-item').forEach(item => {
+                item.classList.remove('bg-blue-100/50', 'border-blue-300/50');
+                if (item.dataset.sessionId === this.currentSessionId) {
+                    item.classList.add('bg-blue-100/50', 'border-blue-300/50');
+                }
+            });
+        }
+        
+        renderSessions() {
+            const container = document.getElementById('sessionsList');
+            container.innerHTML = this.sessions.map(session => `
+                <div class="session-item p-2 rounded-lg bg-white/40 border border-white/20 hover:bg-white/60 cursor-pointer transition-all"
+                     data-session-id="${session.session_id}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-readable text-xs truncate">${session.title}</h4>
+                            <p class="text-xs text-readable-light">${session.updated_at.substring(0, 16)}</p>
+                        </div>
+                        <button class="delete-session-btn text-red-400 hover:text-red-600 p-1" 
+                                data-session-id="${session.session_id}">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            this.updateSessionUI();
+        }
+        
+        async loadCurrentSession() {
+            try {
+                const response = await fetch('/api/current_session');
+                const data = await response.json();
+                
+                if (data.session_id) {
+                    this.currentSessionId = data.session_id;
+                    window.CURRENT_SESSION_ID = data.session_id;
+                    
+                    // Aktualizuj sessionId w ChatApp
+                    if (window.chatApp) {
+                        window.chatApp.updateSessionId(data.session_id);
+                    }
+                    
+                    this.updateSessionUI();
+                    await this.loadSessionHistory(data.session_id);
+                } else if (this.sessions.length > 0) {
+                    // Przełącz na pierwszą sesję
+                    this.switchToSession(this.sessions[0].session_id);
+                } else {
+                    // Utwórz nową sesję
+                    this.createNewSession();
+                }
+            } catch (error) {
+                console.error('Błąd ładowania aktualnej sesji:', error);
+                if (this.sessions.length > 0) {
+                    this.switchToSession(this.sessions[0].session_id);
+                } else {
+                    this.createNewSession();
+                }
+            }
+        }
+        
+        // Funkcja wywoływana po pierwszym pytaniu
+        onFirstMessage() {
+            if (!this.currentSessionId) return;
+            
+            // Pobierz pierwsze pytanie z chatu
+            const firstUserMessage = document.querySelector('.user-message .whitespace-pre-wrap');
+            if (firstUserMessage) {
+                const firstQuestion = firstUserMessage.textContent.trim();
+                if (firstQuestion) {
+                    this.updateSessionTitle(this.currentSessionId, firstQuestion);
+                }
+            }
+        }
+        
+        // Funkcja do aktualizacji tytułu sesji
+        async updateSessionTitle(sessionId, title) {
+            try {
+                const response = await fetch(`/api/sessions/${sessionId}/title`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title: title })
+                });
+                
+                if (response.ok) {
+                    // Zaktualizuj tytuł w lokalnej liście sesji
+                    const sessionIndex = this.sessions.findIndex(s => s.session_id === sessionId);
+                    if (sessionIndex !== -1) {
+                        this.sessions[sessionIndex].title = title;
+                        this.renderSessions();
+                    }
+                    console.log(`✅ Zaktualizowano tytuł sesji: ${title}`);
+                }
+            } catch (error) {
+                console.error('Błąd aktualizacji tytułu sesji:', error);
+            }
+        }
+    }
+    
+    // Inicjalizacja Session Manager
+    const sessionManager = new SessionManager();
+    
+    // Udostępnij SessionManager globalnie
+    window.sessionManager = sessionManager;
+
     // Auto-resize textarea
     document.getElementById('messageInput').addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
     
-    // Session timer
+    // Session timer and stats
     let sessionStart = Date.now();
+    let questionsAsked = 0;
+    let documentsUsed = 0;
+    
     function updateSessionTime() {
         const elapsed = Date.now() - sessionStart;
         const minutes = Math.floor(elapsed / 60000);
         const seconds = Math.floor((elapsed % 60000) / 1000);
-        document.getElementById('sessionTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const hours = Math.floor(minutes / 60);
+        const displayMinutes = minutes % 60;
+        
+        let timeStr = '';
+        if (hours > 0) {
+            timeStr = `${hours}:${displayMinutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            timeStr = `${displayMinutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        document.getElementById('sessionTime').textContent = timeStr;
+    }
+    
+    function updateQuestionCount() {
+        questionsAsked++;
+        document.getElementById('questionsCount').textContent = questionsAsked;
+    }
+    
+    function updateDocumentCount(count) {
+        documentsUsed = count;
+        document.getElementById('documentsCount').textContent = documentsUsed;
     }
     
     setInterval(updateSessionTime, 1000);
+    
+    // Funkcja do aktualizacji statystyk z poziomu globalnego obiektu
+    window.updateQuestionCount = function() {
+        if (window.chatApp) {
+            window.chatApp.updateQuestionsAsked();
+        }
+    };
+    
+    window.updateDocumentCount = function(count) {
+        if (window.chatApp) {
+            window.chatApp.updateDocumentsUsed(count);
+        }
+    };
     
     // Load recent files
     fetch('/api/files')
@@ -186,22 +635,22 @@
         .then(files => {
             const container = document.getElementById('recentFiles');
             if (files.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-4">Brak załadowanych dokumentów</p>';
+                container.innerHTML = '<p class="text-readable-light text-center py-4">Brak załadowanych dokumentów</p>';
                 return;
             }
             
             container.innerHTML = files.slice(0, 5).map(file => `
-                <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-between py-2 px-2 glass-dark rounded-lg">
                     <div class="flex items-center space-x-2">
                         <i class="fas fa-file-pdf text-red-500"></i>
-                        <span class="text-gray-700 truncate" title="${file.name}">${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}</span>
+                        <span class="text-readable truncate text-xs" title="${file.name}">${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}</span>
                     </div>
                     <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                 </div>
             `).join('');
         })
         .catch(() => {
-            document.getElementById('recentFiles').innerHTML = '<p class="text-gray-500 text-center py-4">Błąd ładowania</p>';
+            document.getElementById('recentFiles').innerHTML = '<p class="text-readable-light text-center py-4">Błąd ładowania</p>';
         });
 </script>
 {% endblock %}
