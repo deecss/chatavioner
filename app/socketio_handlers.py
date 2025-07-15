@@ -105,16 +105,26 @@ def register_socketio_handlers(socketio):
             # Inicjalizuj OpenAI RAG
             rag = OpenAIRAG()
             
-            # Przygotuj kontekst
+            # Przygotuj kontekst - PEŁNA HISTORIA ROZMOWY
             history = chat_session.load_history()
             context = []
-            for msg in history[-10:]:  # Ostatnie 10 wiadomości
+            
+            print(f"🗂️ Ładuję historię rozmowy: {len(history)} wiadomości")
+            
+            # Przekaż całą historię rozmowy do asystenta
+            for msg in history:
                 context.append({
                     'role': msg['role'],
                     'content': msg['content']
                 })
             
-            # Generuj odpowiedź ze strumieniem
+            print(f"📚 Kontekst przygotowany: {len(context)} wiadomości")
+            print(f"🔍 Ostatnie 3 wiadomości: {[m['role'] + ': ' + m['content'][:50] + '...' for m in context[-3:]]}")
+            
+            # Zapisz kontekst do pliku dla debugowania
+            rag.save_conversation_context(session_id, context, message)
+            
+            # Generuj odpowiedź ze strumieniem - ASYSTENT OTRZYMUJE PEŁNY KONTEKST
             response_text = ""
             documents_used = 0
             

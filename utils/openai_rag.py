@@ -83,6 +83,13 @@ class OpenAIRAG:
                 - Bezpieczeństwem lotów
                 - Systemami awionicznymi
                 
+                ⚠️ BARDZO WAŻNE - PAMIĘĆ ROZMOWY:
+                - ZAWSZE czytaj i analizuj całą historię rozmowy
+                - Jeśli użytkownik zadaje to samo pytanie ponownie, odwołaj się do wcześniejszej odpowiedzi
+                - Jeśli użytkownik prosi o więcej szczegółów, rozbuduj poprzednią odpowiedź
+                - Jeśli użytkownik zadaje pytanie kontynuujące temat, podejmij wątek z wcześniejszej rozmowy
+                - Pamiętaj preferencje użytkownika z poprzednich odpowiedzi
+                
                 SYSTEM UCZENIA SIĘ:
                 Musisz się stale uczyć i dostosowywać do preferencji użytkownika:
                 - Zapamiętuj jakie odpowiedzi użytkownik preferuje
@@ -344,9 +351,12 @@ class OpenAIRAG:
                 
             print(f"🔍 Vector store ID: {vector_store_id}, Pliki: {len(file_ids)}")
             
-            # Przygotuj kontekst rozmowy (tylko ostatnie 3 wiadomości)
+            # Przygotuj kontekst rozmowy (pełna historia, ale ogranicz do ostatnich 20 wiadomości)
             messages = []
-            recent_context = context[-3:] if len(context) > 3 else context
+            # Zwiększ kontekst do 20 ostatnich wiadomości (10 par pytanie-odpowiedź)
+            recent_context = context[-20:] if len(context) > 20 else context
+            
+            print(f"🔍 Przygotowuję kontekst z {len(recent_context)} wiadomości (z {len(context)} całkowitych)")
             
             for msg in recent_context:
                 messages.append({
@@ -358,6 +368,26 @@ class OpenAIRAG:
             enhanced_query = query
             if learning_prompt:
                 enhanced_query = f"{learning_prompt}\n\nPYTANIE UŻYTKOWNIKA: {query}"
+            
+            # Dodaj aktualne pytanie z promptem uczenia i instrukcjami dotyczącymi historii
+            enhanced_query = query
+            if learning_prompt:
+                enhanced_query = f"{learning_prompt}\n\nPYTANIE UŻYTKOWNIKA: {query}"
+            
+            # Dodaj instrukcje dotyczące wykorzystania historii rozmowy
+            if len(context) > 2:  # Jeśli jest historia rozmowy
+                context_instruction = f"""
+                
+                INSTRUKCJE DOTYCZĄCE HISTORII ROZMOWY:
+                - Przeanalizuj całą historię rozmowy powyżej
+                - Jeśli to pytanie było już zadane, odwołaj się do wcześniejszej odpowiedzi
+                - Jeśli to kontynuacja tematu, nawiąż do wcześniejszej rozmowy  
+                - Jeśli użytkownik prosi o więcej szczegółów, rozbuduj poprzednią odpowiedź
+                - Zachowaj spójność ze stylem odpowiedzi preferowanym przez użytkownika
+                
+                PYTANIE: {query}
+                """
+                enhanced_query = context_instruction
             
             # Dodaj aktualne pytanie z promptem uczenia
             messages.append({
@@ -712,3 +742,45 @@ class OpenAIRAG:
         except Exception as e:
             print(f"❌ Błąd podczas pobierania insights: {str(e)}")
             return {}
+    
+    def save_conversation_context(self, session_id, context, current_message):
+        """Zapisuje kontekst rozmowy do pliku dla debugowania i uczenia się"""
+        try:
+            os.makedirs('history', exist_ok=True)
+            context_file = f'history/{session_id}_full_context.json'
+            
+            # Przygotuj strukturę do zapisu
+            conversation_data = {
+                'timestamp': datetime.now().isoformat(),
+                'session_id': session_id,
+                'total_messages': len(context),
+                'current_message': current_message,
+                'full_conversation': context,
+                'summary': {
+                    'user_messages': len([m for m in context if m['role'] == 'user']),
+                    'assistant_messages': len([m for m in context if m['role'] == 'assistant']),
+                    'last_3_messages': context[-3:] if len(context) >= 3 else context
+                }
+            }
+            
+            with open(context_file, 'w', encoding='utf-8') as f:
+                json.dump(conversation_data, f, ensure_ascii=False, indent=2)
+            
+            print(f"💾 Kontekst rozmowy zapisany do {context_file}")
+            print(f"📊 Statystyki: {conversation_data['summary']}")
+            
+        except Exception as e:
+            print(f"⚠️  Błąd zapisu kontekstu rozmowy: {e}")
+
+    def load_conversation_context(self, session_id):
+        """Ładuje kontekst rozmowy z pliku"""
+        try:
+            context_file = f'history/{session_id}_full_context.json'
+            if os.path.exists(context_file):
+                with open(context_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return data.get('full_conversation', [])
+            return []
+        except Exception as e:
+            print(f"⚠️  Błąd ładowania kontekstu rozmowy: {e}")
+            return []
