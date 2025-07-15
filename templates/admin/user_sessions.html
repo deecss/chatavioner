@@ -1,13 +1,148 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avioner AI Chat - Sesje użytkownika {{ user.username }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <!-- Navigation -->
+{% extends "admin/base.html" %}
+
+{% block title %}Sesje użytkownika - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li><a href="{{ url_for('admin.dashboard') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li><a href="{{ url_for('admin.users') }}" class="text-blue-600 hover:text-blue-800">Użytkownicy</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li><a href="{{ url_for('admin.user_details', user_id=user.id) }}" class="text-blue-600 hover:text-blue-800">{{ user.username }}</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li class="text-gray-900">Sesje</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-lg font-bold">
+                    {{ user.username[0].upper() }}
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">💬 Sesje użytkownika {{ user.username }}</h1>
+                    <p class="text-gray-600">Pełna historia wszystkich sesji użytkownika</p>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="exportUserSessions()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    📊 Eksportuj sesje
+                </button>
+                <a href="{{ url_for('admin.user_details', user_id=user.id) }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    ← Powrót do szczegółów
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista sesji -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b">
+            <h3 class="text-lg font-semibold">📋 Historia sesji ({{ sessions|length }})</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left p-4 font-medium text-gray-700">Data rozpoczęcia</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Czas trwania</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Wiadomości</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Zaangażowanie</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Feedbacki</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Główne tematy</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="sessionsTableBody">
+                    {% for session in sessions %}
+                    <tr class="border-b hover:bg-gray-50 session-row" data-session-id="{{ session.session_id }}">
+                        <td class="p-4">
+                            <div class="text-sm font-medium text-gray-900">{{ session.started_at[:10] }}</div>
+                            <div class="text-xs text-gray-500">{{ session.started_at[11:19] }}</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm font-medium">{{ "%.1f"|format(session.duration / 60) }}min</div>
+                            <div class="text-xs text-gray-500">
+                                {% if session.duration > 1800 %}Długa sesja
+                                {% elif session.duration > 600 %}Średnia sesja
+                                {% else %}Krótka sesja{% endif %}
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm font-medium">{{ session.user_messages }}</div>
+                            <div class="text-xs text-gray-500">{{ "%.1f"|format(session.user_messages / (session.duration / 60)) if session.duration > 0 else 0 }} na min</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-12 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ session.engagement_score }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium 
+                                    {% if session.engagement_score >= 80 %}text-green-600
+                                    {% elif session.engagement_score >= 60 %}text-yellow-600
+                                    {% else %}text-red-600{% endif %}">
+                                    {{ "%.0f"|format(session.engagement_score) }}%
+                                </span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm font-medium">{{ session.feedback_count }}</div>
+                            <div class="text-xs text-gray-500">
+                                {% if session.feedback_count > 0 %}
+                                    <span class="text-green-600">Z feedbackiem</span>
+                                {% else %}
+                                    <span class="text-gray-400">Brak feedbacku</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex flex-wrap gap-1">
+                                {% for topic in session.topics[:3] %}
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{{ topic }}</span>
+                                {% endfor %}
+                                {% if session.topics|length > 3 %}
+                                <span class="text-xs text-gray-500">+{{ session.topics|length - 3 }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('admin.session_details', session_id=session.session_id) }}" 
+                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                    📊 Szczegóły
+                                </a>
+                                <button onclick="exportSession('{{ session.session_id }}')" 
+                                        class="text-green-600 hover:text-green-800 text-sm">
+                                    📥 Eksportuj
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Funkcja eksportu pojedynczej sesji
+function exportSession(sessionId) {
+    window.location.href = `/admin/export-session-data/${sessionId}`;
+}
+
+// Funkcja eksportu wszystkich sesji użytkownika
+function exportUserSessions() {
+    window.location.href = `/admin/export-user-sessions/{{ user.id }}`;
+}
+</script>
+{% endblock %}
     <nav class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between h-16">

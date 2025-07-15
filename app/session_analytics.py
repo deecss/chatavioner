@@ -672,3 +672,446 @@ class SessionAnalytics:
         except Exception as e:
             logger.error(f"Błąd pobierania statusu użytkowników: {e}")
             return []
+
+    def get_user_growth_percentage(self):
+        """Oblicz procentowy wzrost użytkowników"""
+        try:
+            now = datetime.now()
+            last_month = now - timedelta(days=30)
+            
+            current_users = User.query.filter(User.created_at >= last_month).count()
+            previous_users = User.query.filter(User.created_at < last_month).count()
+            
+            if previous_users == 0:
+                return 100.0
+            
+            return ((current_users - previous_users) / previous_users) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania wzrostu użytkowników: {e}")
+            return 0.0
+
+    def get_daily_sessions_count(self):
+        """Liczba sesji dzisiaj"""
+        try:
+            today = datetime.now().strftime('%Y-%m-%d')
+            return ChatSession.query.filter(ChatSession.started_at.startswith(today)).count()
+        except Exception as e:
+            logger.error(f"Błąd pobierania dziennych sesji: {e}")
+            return 0
+
+    def get_average_session_duration(self):
+        """Średni czas trwania sesji w minutach"""
+        try:
+            sessions = ChatSession.query.filter(ChatSession.duration.isnot(None)).all()
+            if not sessions:
+                return 0.0
+            
+            total_duration = sum(s.duration for s in sessions)
+            return total_duration / len(sessions) / 60  # Konwertuj na minuty
+        except Exception as e:
+            logger.error(f"Błąd obliczania średniego czasu sesji: {e}")
+            return 0.0
+
+    def get_engagement_trend(self):
+        """Trend zaangażowania (porównanie z poprzednim okresem)"""
+        try:
+            now = datetime.now()
+            last_week = now - timedelta(days=7)
+            previous_week = now - timedelta(days=14)
+            
+            # Obecny tydzień
+            current_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= last_week
+            ).all()
+            
+            # Poprzedni tydzień
+            previous_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= previous_week,
+                ChatSession.started_at < last_week
+            ).all()
+            
+            current_avg = self._calculate_avg_engagement(current_sessions)
+            previous_avg = self._calculate_avg_engagement(previous_sessions)
+            
+            if previous_avg == 0:
+                return 0.0
+            
+            return ((current_avg - previous_avg) / previous_avg) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania trendu zaangażowania: {e}")
+            return 0.0
+
+    def get_response_quality_percentage(self):
+        """Procentowy wskaźnik jakości odpowiedzi na podstawie rzeczywistych feedbacków"""
+        try:
+            total_feedback = self.get_total_feedback_count()
+            if total_feedback == 0:
+                return 0.0
+            
+            positive_feedback = self.get_positive_feedback_count()
+            return (positive_feedback / total_feedback) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania jakości odpowiedzi: {e}")
+            return 0.0
+
+    def get_positive_feedback_percentage(self):
+        """Procent pozytywnych feedbacków"""
+        try:
+            # Symulacja - w rzeczywistości należałoby analizować rzeczywiste feedbacki
+            total_feedback = self.get_total_feedback_count()
+            if total_feedback == 0:
+                return 0.0
+            
+            positive_count = self.get_positive_feedback_count()
+            return (positive_count / total_feedback) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania pozytywnych feedbacków: {e}")
+            return 0.0
+
+    def get_top_topics_with_stats(self):
+        """Pobierz top tematy ze statystykami"""
+        try:
+            topics = self.analyze_topics_distribution()
+            # Dodaj dodatkowe statystyki do każdego tematu
+            for topic in topics:
+                topic['growth'] = self._calculate_topic_growth(topic['name'])
+                topic['engagement'] = self._calculate_topic_engagement(topic['name'])
+            
+            return topics[:10]
+        except Exception as e:
+            logger.error(f"Błąd pobierania tematów ze statystykami: {e}")
+            return []
+
+    def get_average_response_time(self):
+        """Średni czas odpowiedzi systemu na podstawie rzeczywistych danych"""
+        try:
+            all_response_times = []
+            
+            # Przejdź przez wszystkie sesje i oblicz rzeczywiste czasy odpowiedzi
+            for session_data in self.sessions_data.values():
+                history = session_data.get('history', [])
+                
+                for i in range(len(history) - 1):
+                    if history[i]['role'] == 'user' and history[i+1]['role'] == 'assistant':
+                        try:
+                            user_time = datetime.fromisoformat(history[i]['timestamp'])
+                            assistant_time = datetime.fromisoformat(history[i+1]['timestamp'])
+                            response_time = (assistant_time - user_time).total_seconds()
+                            if response_time > 0 and response_time < 300:  # Filtruj nieprawdopodobne czasy
+                                all_response_times.append(response_time)
+                        except:
+                            continue
+            
+            return sum(all_response_times) / len(all_response_times) if all_response_times else 0.0
+        except Exception as e:
+            logger.error(f"Błąd obliczania czasu odpowiedzi: {e}")
+            return 0.0
+
+    def get_system_uptime(self):
+        """Uptime systemu - usunięto symulację"""
+        try:
+            # Bez zewnętrznego systemu monitorowania nie można określić uptime
+            return 0.0
+        except Exception as e:
+            logger.error(f"Błąd pobierania uptime: {e}")
+            return 0.0
+
+    def get_system_errors_count(self):
+        """Liczba błędów systemu - usunięto symulację"""
+        try:
+            # Bez systemu logowania błędów nie można określić liczby błędów
+            return 0
+        except Exception as e:
+            logger.error(f"Błąd pobierania liczby błędów: {e}")
+            return 0
+
+    def get_resource_usage(self):
+        """Wykorzystanie zasobów systemu - usunięto symulację"""
+        try:
+            # Bez systemu monitorowania zasobów nie można określić wykorzystania
+            return 0.0
+        except Exception as e:
+            logger.error(f"Błąd pobierania wykorzystania zasobów: {e}")
+            return 0.0
+
+    def get_activity_growth_percentage(self):
+        """Wzrost aktywności w procentach"""
+        try:
+            now = datetime.now()
+            current_month = now.replace(day=1)
+            previous_month = (current_month - timedelta(days=1)).replace(day=1)
+            
+            current_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= current_month
+            ).count()
+            
+            previous_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= previous_month,
+                ChatSession.started_at < current_month
+            ).count()
+            
+            if previous_sessions == 0:
+                return 100.0
+            
+            return ((current_sessions - previous_sessions) / previous_sessions) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania wzrostu aktywności: {e}")
+            return 0.0
+
+    def get_predicted_users(self):
+        """Przewidywana liczba nowych użytkowników"""
+        try:
+            # Prosta prognoza na podstawie trendu
+            current_growth = self.get_user_growth_percentage()
+            current_users = User.query.count()
+            
+            # Przewidywanie na następny miesiąc
+            predicted = int(current_users * (current_growth / 100))
+            return max(0, predicted)
+        except Exception as e:
+            logger.error(f"Błąd przewidywania użytkowników: {e}")
+            return 0
+
+    def get_positive_feedback_count(self):
+        """Liczba pozytywnych feedbacków na podstawie rzeczywistych danych"""
+        try:
+            positive_count = 0
+            
+            # Przejdź przez wszystkie katalogi feedback
+            if os.path.exists('feedback'):
+                for item in os.listdir('feedback'):
+                    item_path = os.path.join('feedback', item)
+                    
+                    if os.path.isdir(item_path):
+                        # Katalog sesji
+                        for filename in os.listdir(item_path):
+                            if filename.endswith('.json'):
+                                try:
+                                    with open(os.path.join(item_path, filename), 'r', encoding='utf-8') as f:
+                                        feedback_data = json.load(f)
+                                    
+                                    if isinstance(feedback_data, list):
+                                        for fb in feedback_data:
+                                            if fb.get('feedback_type') == 'positive':
+                                                positive_count += 1
+                                    else:
+                                        if feedback_data.get('feedback_type') == 'positive':
+                                            positive_count += 1
+                                except:
+                                    continue
+                    elif item.endswith('.json'):
+                        # Plik feedback
+                        try:
+                            with open(item_path, 'r', encoding='utf-8') as f:
+                                feedback_data = json.load(f)
+                            
+                            if isinstance(feedback_data, list):
+                                for fb in feedback_data:
+                                    if fb.get('feedback_type') == 'positive':
+                                        positive_count += 1
+                            else:
+                                if feedback_data.get('feedback_type') == 'positive':
+                                    positive_count += 1
+                        except:
+                            continue
+            
+            return positive_count
+        except Exception as e:
+            logger.error(f"Błąd pobierania pozytywnych feedbacków: {e}")
+            return 0
+
+    def get_negative_feedback_count(self):
+        """Liczba negatywnych feedbacków na podstawie rzeczywistych danych"""
+        try:
+            negative_count = 0
+            
+            # Przejdź przez wszystkie katalogi feedback
+            if os.path.exists('feedback'):
+                for item in os.listdir('feedback'):
+                    item_path = os.path.join('feedback', item)
+                    
+                    if os.path.isdir(item_path):
+                        # Katalog sesji
+                        for filename in os.listdir(item_path):
+                            if filename.endswith('.json'):
+                                try:
+                                    with open(os.path.join(item_path, filename), 'r', encoding='utf-8') as f:
+                                        feedback_data = json.load(f)
+                                    
+                                    if isinstance(feedback_data, list):
+                                        for fb in feedback_data:
+                                            if fb.get('feedback_type') == 'negative':
+                                                negative_count += 1
+                                    else:
+                                        if feedback_data.get('feedback_type') == 'negative':
+                                            negative_count += 1
+                                except:
+                                    continue
+                    elif item.endswith('.json'):
+                        # Plik feedback
+                        try:
+                            with open(item_path, 'r', encoding='utf-8') as f:
+                                feedback_data = json.load(f)
+                            
+                            if isinstance(feedback_data, list):
+                                for fb in feedback_data:
+                                    if fb.get('feedback_type') == 'negative':
+                                        negative_count += 1
+                            else:
+                                if feedback_data.get('feedback_type') == 'negative':
+                                    negative_count += 1
+                        except:
+                            continue
+            
+            return negative_count
+        except Exception as e:
+            logger.error(f"Błąd pobierania negatywnych feedbacków: {e}")
+            return 0
+
+    def get_negative_feedback_percentage(self):
+        """Procent negatywnych feedbacków"""
+        try:
+            total = self.get_total_feedback_count()
+            if total == 0:
+                return 0.0
+            
+            negative = self.get_negative_feedback_count()
+            return (negative / total) * 100
+        except Exception as e:
+            logger.error(f"Błąd obliczania negatywnych feedbacków: {e}")
+            return 0.0
+
+    def get_feedback_response_rate(self):
+        """Wskaźnik odpowiedzi na feedbacki na podstawie rzeczywistych danych"""
+        try:
+            total_sessions = len(self.sessions_data)
+            if total_sessions == 0:
+                return 0.0
+            
+            sessions_with_feedback = sum(1 for session in self.sessions_data.values() 
+                                       if session.get('feedback_count', 0) > 0)
+            
+            return (sessions_with_feedback / total_sessions) * 100
+        except Exception as e:
+            logger.error(f"Błąd pobierania wskaźnika odpowiedzi: {e}")
+            return 0.0
+
+    def get_total_feedback_count(self):
+        """Łączna liczba feedbacków"""
+        try:
+            return self.get_positive_feedback_count() + self.get_negative_feedback_count()
+        except Exception as e:
+            logger.error(f"Błąd pobierania łącznej liczby feedbacków: {e}")
+            return 0
+
+    def get_activity_labels(self):
+        """Etykiety dla wykresu aktywności (ostatnie 30 dni)"""
+        try:
+            labels = []
+            for i in range(30):
+                date = datetime.now() - timedelta(days=29-i)
+                labels.append(date.strftime('%d.%m'))
+            return labels
+        except Exception as e:
+            logger.error(f"Błąd generowania etykiet aktywności: {e}")
+            return []
+
+    def get_activity_data(self):
+        """Dane aktywności dla wykresu (ostatnie 30 dni)"""
+        try:
+            data = []
+            for i in range(30):
+                date = (datetime.now() - timedelta(days=29-i)).strftime('%Y-%m-%d')
+                count = ChatSession.query.filter(
+                    ChatSession.started_at.startswith(date)
+                ).count()
+                data.append(count)
+            return data
+        except Exception as e:
+            logger.error(f"Błąd generowania danych aktywności: {e}")
+            return []
+
+    def get_recent_sessions(self, limit=10):
+        """Pobierz ostatnie sesje"""
+        try:
+            sessions = list(self.sessions_data.values())
+            # Sortuj według czasu zakończenia
+            sessions.sort(key=lambda x: x.get('end_time', ''), reverse=True)
+            
+            recent = []
+            for session in sessions[:limit]:
+                session_info = {
+                    'session_id': session['session_id'],
+                    'user_id': session.get('user_id'),
+                    'username': self._get_username(session.get('user_id')),
+                    'started_at': session.get('start_time', ''),
+                    'duration': session.get('duration', 0),
+                    'user_messages': session.get('user_messages', 0),
+                    'engagement_score': session.get('engagement_score', 0),
+                    'feedback_count': session.get('feedback_count', 0),
+                    'topics': session.get('topics', [])
+                }
+                recent.append(session_info)
+            
+            return recent
+        except Exception as e:
+            logger.error(f"Błąd pobierania ostatnich sesji: {e}")
+            return []
+
+    def get_total_sessions(self):
+        """Pobierz łączną liczbę sesji"""
+        return len(self.sessions_data)
+
+    def get_active_users_count(self):
+        """Pobierz liczbę aktywnych użytkowników"""
+        try:
+            # Użytkownicy aktywni w ostatnich 24 godzinach
+            cutoff_time = datetime.now() - timedelta(hours=24)
+            active_users = set()
+            
+            for session in self.sessions_data.values():
+                if session.get('end_time'):
+                    try:
+                        end_time = datetime.fromisoformat(session['end_time'])
+                        if end_time >= cutoff_time and session.get('user_id'):
+                            active_users.add(session['user_id'])
+                    except:
+                        continue
+            
+            return len(active_users)
+        except Exception as e:
+            logger.error(f"Błąd pobierania aktywnych użytkowników: {e}")
+            return 0
+
+    def get_average_engagement(self):
+        """Pobierz średnie zaangażowanie"""
+        try:
+            if not self.sessions_data:
+                return 0.0
+            
+            engagement_scores = [s.get('engagement_score', 0) for s in self.sessions_data.values()]
+            engagement_scores = [score for score in engagement_scores if score > 0]
+            
+            return sum(engagement_scores) / len(engagement_scores) if engagement_scores else 0.0
+        except Exception as e:
+            logger.error(f"Błąd obliczania średniego zaangażowania: {e}")
+            return 0.0
+
+    def get_total_messages(self):
+        """Pobierz łączną liczbę wiadomości"""
+        try:
+            return sum(s.get('message_count', 0) for s in self.sessions_data.values())
+        except Exception as e:
+            logger.error(f"Błąd pobierania łącznej liczby wiadomości: {e}")
+            return 0
+
+    def _get_username(self, user_id):
+        """Pobierz nazwę użytkownika"""
+        if not user_id:
+            return 'Anonim'
+        
+        try:
+            user = User.query.get(user_id)
+            return user.username if user else f'User_{user_id}'
+        except:
+            return f'User_{user_id}'

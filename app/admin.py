@@ -352,7 +352,7 @@ def analytics_dashboard():
     """Dashboard analityczny - szczegółowe statystyki"""
     analytics = SessionAnalytics()
     
-    # Pobierz kompletne statystyki
+    # Pobierz kompletne statystyki dla szablonu
     stats = {
         'active_users': analytics.get_active_users_count(),
         'user_growth': analytics.get_user_growth_percentage(),
