@@ -5,12 +5,16 @@ Panel administracyjny aplikacji Aero-Chat
 """
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, login_user, logout_user, current_user
 from app.models import User, ChatSession, UploadIndex, UserSession
+from app.session_analytics import SessionAnalytics
 
 admin_bp = Blueprint('admin', __name__)
+
+# Inicjalizuj analitykę sesji
+analytics = SessionAnalytics()
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -38,29 +42,51 @@ def logout():
 @admin_bp.route('/')
 @login_required
 def dashboard():
-    """Panel główny administratora"""
-    # Pobierz statystyki
-    stats = get_admin_stats()
+    """Panel główny administratora z rozszerzonymi statystykami"""
+    # Odśwież dane analityczne
+    analytics.load_all_data()
+    
+    # Pobierz rozszerzone statystyki
+    global_stats = analytics.get_global_statistics()
+    
+    # Dodaj dodatkowe statystyki
+    stats = {
+        **global_stats,
+        'total_users': len(User.get_all_users()),
+        'active_users_today': get_active_users_today(),
+        'avg_questions_per_session': global_stats['total_messages'] / global_stats['total_sessions'] if global_stats.get('total_sessions', 0) > 0 else 0,
+        'top_performers': get_top_performing_users(),
+        'system_health': calculate_system_health()
+    }
+    
     return render_template('admin/dashboard.html', stats=stats)
 
 @admin_bp.route('/users')
 @login_required
 def users():
-    """Lista użytkowników i zarządzanie"""
+    """Lista użytkowników z rozszerzonymi statystykami"""
     if not current_user.is_admin():
         flash('Brak uprawnień administratora', 'error')
         return redirect(url_for('admin.dashboard'))
     
+    # Odśwież dane analityczne
+    analytics.load_all_data()
+    
     users_list = User.get_all_users()
     
-    # Pobierz statystyki sesji dla każdego użytkownika
+    # Dodaj szczegółowe statystyki dla każdego użytkownika
     for user in users_list:
-        user_sessions = UserSession.get_user_sessions(user.id)
-        user.sessions_count = len(user_sessions)
+        user_stats = analytics.get_user_statistics(user.id)
+        user.sessions_count = user_stats['total_sessions']
+        user.total_messages = user_stats['total_messages']
+        user.total_time = user_stats['total_time']
+        user.avg_engagement = user_stats['avg_engagement']
+        user.favorite_topics = user_stats['favorite_topics'][:3]  # Top 3 tematy
+        user.productivity_score = user_stats['productivity_score']
         user.last_activity = None
         
-        if user_sessions:
-            user.last_activity = user_sessions[0]['updated_at']  # Najnowsza sesja
+        if user_stats['recent_sessions']:
+            user.last_activity = user_stats['recent_sessions'][0]['end_time']
     
     return render_template('admin/users.html', users=users_list)
 
@@ -108,7 +134,7 @@ def delete_user(user_id):
 @admin_bp.route('/users/<user_id>/sessions')
 @login_required
 def user_sessions(user_id):
-    """Sesje konkretnego użytkownika"""
+    """Szczegółowe sesje konkretnego użytkownika"""
     if not current_user.is_admin():
         flash('Brak uprawnień administratora', 'error')
         return redirect(url_for('admin.dashboard'))
@@ -118,19 +144,23 @@ def user_sessions(user_id):
         flash('Użytkownik nie znaleziony', 'error')
         return redirect(url_for('admin.users'))
     
-    sessions = UserSession.get_user_sessions(user_id)
+    # Odśwież dane analityczne
+    analytics.load_all_data()
     
-    # Dodaj szczegółowe dane o sesjach
-    for session_data in sessions:
-        chat_session = ChatSession(session_data['session_id'], user_id)
-        history = chat_session.load_history()
-        session_data['message_count'] = len(history)
-        
-        if history:
-            session_data['first_message'] = history[0]['timestamp']
-            session_data['last_message'] = history[-1]['timestamp']
+    # Pobierz statystyki użytkownika
+    user_stats = analytics.get_user_statistics(user_id)
     
-    return render_template('admin/user_sessions.html', user=user, sessions=sessions)
+    # Pobierz szczegółowe dane sesji
+    sessions_data = []
+    for session in user_stats['recent_sessions']:
+        session_details = analytics.get_session_details(session['session_id'])
+        if session_details:
+            sessions_data.append(session_details)
+    
+    return render_template('admin/user_sessions.html', 
+                         user=user, 
+                         sessions=sessions_data, 
+                         user_stats=user_stats)
 
 @admin_bp.route('/feedback')
 @login_required
@@ -270,6 +300,75 @@ def get_session_details(session_id):
         'history': history,
         'feedback': feedback_data
     })
+
+@admin_bp.route('/sessions/<session_id>')
+@login_required
+def session_details(session_id):
+    """Szczegółowy podgląd sesji"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    # Odśwież dane analityczne
+    analytics.load_all_data()
+    
+    session_data = analytics.get_session_details(session_id)
+    if not session_data:
+        flash('Sesja nie znaleziona', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    # Pobierz informacje o użytkowniku
+    user = None
+    if session_data['user_id']:
+        user = User.get(session_data['user_id'])
+    
+    return render_template('admin/session_details.html', 
+                         session=session_data, 
+                         user=user)
+
+@admin_bp.route('/api/sessions/<session_id>/export')
+@login_required
+def export_session_data(session_id):
+    """Eksportuj dane sesji do JSON"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    analytics.load_all_data()
+    session_data = analytics.get_session_details(session_id)
+    
+    if not session_data:
+        return jsonify({'error': 'Sesja nie znaleziona'}), 404
+    
+    return jsonify(session_data)
+
+@admin_bp.route('/analytics')
+@login_required
+def analytics_dashboard():
+    """Panel analityczny z wykresami i statystykami"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    # Odśwież dane analityczne
+    analytics.load_all_data()
+    
+    # Pobierz dane dla wykresów
+    global_stats = analytics.get_global_statistics()
+    
+    # Statystyki czasowe (ostatnie 30 dni)
+    daily_stats = get_daily_statistics()
+    
+    # Top użytkownicy
+    top_users = get_top_users_detailed()
+    
+    # Analiza tematów
+    topic_analysis = analyze_topics_distribution()
+    
+    return render_template('admin/analytics.html', 
+                         global_stats=global_stats,
+                         daily_stats=daily_stats,
+                         top_users=top_users,
+                         topic_analysis=topic_analysis)
 
 def get_admin_stats():
     """Pobiera statystyki dla panelu administratora"""
