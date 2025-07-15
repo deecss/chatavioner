@@ -441,7 +441,7 @@ def user_sessions(user_id):
     analytics.load_all_data()
     
     # Pobierz sesje użytkownika
-    sessions = analytics.get_user_sessions(user_id)
+    sessions = analytics.get_user_all_sessions(user_id)
     
     # Przekształć sesje na format wymagany przez szablon
     formatted_sessions = []
@@ -503,7 +503,7 @@ def export_user_report(user_id):
     
     # Pobierz pełne dane użytkownika
     user_stats = analytics.get_user_statistics(user_id)
-    sessions = analytics.get_user_sessions(user_id)
+    sessions = analytics.get_user_all_sessions(user_id)
     
     # Tworzenie raportu
     report = {
