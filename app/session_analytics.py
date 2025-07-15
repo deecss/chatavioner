@@ -1115,3 +1115,167 @@ class SessionAnalytics:
             return user.username if user else f'User_{user_id}'
         except:
             return f'User_{user_id}'
+    
+    def get_user_sessions_paginated(self, user_id, page=1, per_page=20):
+        """Pobierz paginowane sesje użytkownika"""
+        try:
+            sessions = self.get_user_sessions(user_id)
+            total = len(sessions)
+            
+            start = (page - 1) * per_page
+            end = start + per_page
+            
+            paginated_sessions = sessions[start:end]
+            
+            return {
+                'sessions': paginated_sessions,
+                'pagination': {
+                    'page': page,
+                    'per_page': per_page,
+                    'total': total,
+                    'pages': (total + per_page - 1) // per_page
+                }
+            }
+        except Exception as e:
+            logger.error(f"Błąd paginacji sesji użytkownika {user_id}: {e}")
+            return {'sessions': [], 'pagination': {'page': 1, 'per_page': per_page, 'total': 0, 'pages': 0}}
+
+    def get_session_complete_data(self, session_id):
+        """Pobierz kompletne dane sesji"""
+        try:
+            session = ChatSession.query.filter_by(session_id=session_id).first()
+            if not session:
+                return None
+            
+            session_data = self.analyze_session(session)
+            
+            # Dodaj historię wiadomości
+            history_file = f"/home/dee/chatavioner/history/{session_id}.json"
+            if os.path.exists(history_file):
+                with open(history_file, 'r', encoding='utf-8') as f:
+                    session_data['history'] = json.load(f)
+            
+            return session_data
+        except Exception as e:
+            logger.error(f"Błąd pobierania kompletnych danych sesji {session_id}: {e}")
+            return None
+
+    def get_complete_analytics_data(self, time_range='month'):
+        """Pobierz kompletne dane analityczne"""
+        try:
+            # Podstawowe statystyki
+            basic_stats = self.get_global_statistics()
+            
+            # Szczegółowe dane
+            detailed_data = {
+                'basic_stats': basic_stats,
+                'user_stats': self.get_top_users_detailed(),
+                'topic_analysis': self.analyze_topics_distribution(),
+                'daily_stats': self.get_daily_statistics(),
+                'engagement_trends': self.get_engagement_trends(),
+                'performance_metrics': self.get_performance_metrics()
+            }
+            
+            return detailed_data
+        except Exception as e:
+            logger.error(f"Błąd pobierania kompletnych danych analitycznych: {e}")
+            return {}
+
+    def get_users_filtered_data(self, period='month', status='all', engagement='all'):
+        """Pobierz filtrowane dane użytkowników"""
+        try:
+            users_data = []
+            
+            for user in User.query.all():
+                user_stats = self.get_user_basic_stats(user.id)
+                
+                # Filtry
+                if status != 'all':
+                    if status == 'active' and not user.is_active:
+                        continue
+                    if status == 'inactive' and user.is_active:
+                        continue
+                
+                if engagement != 'all':
+                    eng_score = user_stats['engagement_score']
+                    if engagement == 'high' and eng_score < 80:
+                        continue
+                    if engagement == 'medium' and (eng_score < 50 or eng_score >= 80):
+                        continue
+                    if engagement == 'low' and eng_score >= 50:
+                        continue
+                
+                users_data.append({
+                    'id': user.id,
+                    'username': user.username,
+                    'email': getattr(user, 'email', ''),
+                    'is_active': user.is_active,
+                    'stats': user_stats
+                })
+            
+            return users_data
+        except Exception as e:
+            logger.error(f"Błąd filtrowania danych użytkowników: {e}")
+            return []
+
+    def get_engagement_trends(self):
+        """Pobierz trendy zaangażowania"""
+        try:
+            # Podstawowa implementacja
+            return {
+                'daily_engagement': [],
+                'weekly_engagement': [],
+                'monthly_engagement': []
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania trendów zaangażowania: {e}")
+            return {}
+
+    def get_performance_metrics(self):
+        """Pobierz metryki wydajności"""
+        try:
+            return {
+                'response_times': [],
+                'success_rates': [],
+                'error_rates': []
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania metryk wydajności: {e}")
+            return {}
+
+    def get_user_all_sessions(self, user_id):
+        """Pobierz wszystkie sesje użytkownika"""
+        return self.get_user_sessions(user_id)
+
+    def get_user_all_feedback(self, user_id):
+        """Pobierz wszystkie feedbacki użytkownika"""
+        try:
+            feedbacks = []
+            # Implementacja podstawowa
+            return feedbacks
+        except Exception as e:
+            logger.error(f"Błąd pobierania feedbacków użytkownika {user_id}: {e}")
+            return []
+
+    def get_user_performance_trends(self, user_id):
+        """Pobierz trendy wydajności użytkownika"""
+        try:
+            return {
+                'daily_performance': [],
+                'weekly_performance': [],
+                'engagement_over_time': []
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania trendów wydajności użytkownika {user_id}: {e}")
+            return {}
+
+    def get_user_recent_feedback(self, user_id, limit=5):
+        """Pobierz ostatnie feedbacki użytkownika"""
+        try:
+            return []  # Podstawowa implementacja
+        except Exception as e:
+            logger.error(f"Błąd pobierania ostatnich feedbacków użytkownika {user_id}: {e}")
+            return []
+
+# Dodaj import os na początku pliku
+import os

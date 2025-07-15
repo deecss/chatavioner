@@ -13,6 +13,9 @@ from flask_login import login_required, login_user, logout_user, current_user
 from app.models import User, ChatSession, UploadIndex, UserSession
 from app.session_analytics import SessionAnalytics
 
+# Inicjalizuj instancję analytics
+analytics = SessionAnalytics()
+
 # Dodaj logger
 logger = logging.getLogger(__name__)
 
@@ -135,37 +138,6 @@ def delete_user(user_id):
         return jsonify({'success': True})
     else:
         return jsonify({'error': 'Błąd usuwania użytkownika'}), 500
-
-@admin_bp.route('/users/<user_id>/sessions')
-@login_required
-def user_sessions(user_id):
-    """Szczegółowe sesje konkretnego użytkownika"""
-    if not current_user.is_admin():
-        flash('Brak uprawnień administratora', 'error')
-        return redirect(url_for('admin.dashboard'))
-    
-    user = User.get(user_id)
-    if not user:
-        flash('Użytkownik nie znaleziony', 'error')
-        return redirect(url_for('admin.users'))
-    
-    # Odśwież dane analityczne
-    analytics.load_all_data()
-    
-    # Pobierz statystyki użytkownika
-    user_stats = analytics.get_user_statistics(user_id)
-    
-    # Pobierz szczegółowe dane sesji
-    sessions_data = []
-    for session in user_stats['recent_sessions']:
-        session_details = analytics.get_session_details(session['session_id'])
-        if session_details:
-            sessions_data.append(session_details)
-    
-    return render_template('admin/user_sessions.html', 
-                         user=user, 
-                         sessions=sessions_data, 
-                         user_stats=user_stats)
 
 @admin_bp.route('/feedback')
 @login_required
@@ -330,21 +302,6 @@ def session_details(session_id):
     return render_template('admin/session_details.html', 
                          session=session_data, 
                          user=user)
-
-@admin_bp.route('/api/sessions/<session_id>/export')
-@login_required
-def export_session_data(session_id):
-    """Eksportuj dane sesji do JSON"""
-    if not current_user.is_admin():
-        return jsonify({'error': 'Brak uprawnień'}), 403
-    
-    analytics.load_all_data()
-    session_data = analytics.get_session_details(session_id)
-    
-    if not session_data:
-        return jsonify({'error': 'Sesja nie znaleziona'}), 404
-    
-    return jsonify(session_data)
 
 @admin_bp.route('/analytics')
 @login_required
