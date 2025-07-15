@@ -535,3 +535,114 @@ class LearningSystem:
                     global_patterns['preferred_structures'][structure_pref] += 1
         
         return global_patterns
+    
+    def detect_repeated_questions(self, history: List[Dict]) -> Dict:
+        """Wykrywa powtarzające się pytania w historii"""
+        user_messages = [msg for msg in history if msg['role'] == 'user']
+        
+        # Normalizuj pytania (usuń znaki interpunkcyjne, małe litery)
+        normalized_questions = []
+        for msg in user_messages:
+            normalized = re.sub(r'[^\w\s]', '', msg['content'].lower().strip())
+            normalized_questions.append({
+                'original': msg['content'],
+                'normalized': normalized,
+                'timestamp': msg['timestamp']
+            })
+        
+        # Znajdź powtarzające się pytania
+        question_counts = Counter([q['normalized'] for q in normalized_questions])
+        repeated_questions = {q: count for q, count in question_counts.items() if count > 1}
+        
+        # Przygotuj szczegółowe informacje o powtarzających się pytaniach
+        repeated_details = {}
+        for normalized_q, count in repeated_questions.items():
+            instances = [q for q in normalized_questions if q['normalized'] == normalized_q]
+            repeated_details[normalized_q] = {
+                'count': count,
+                'instances': instances,
+                'first_asked': instances[0]['timestamp'],
+                'last_asked': instances[-1]['timestamp']
+            }
+        
+        return {
+            'total_repeated': len(repeated_questions),
+            'repeated_questions': repeated_details,
+            'repetition_rate': len(repeated_questions) / len(set(question_counts.keys())) if question_counts else 0
+        }
+    
+    def generate_context_aware_prompt(self, session_id: str, current_question: str, history: List[Dict]) -> str:
+        """Generuje prompt uwzględniający kontekst rozmowy"""
+        if not history or len(history) < 2:
+            return ""
+        
+        # Wykryj powtarzające się pytania
+        repeated_info = self.detect_repeated_questions(history)
+        
+        # Sprawdź czy obecne pytanie to powtórzenie
+        normalized_current = re.sub(r'[^\w\s]', '', current_question.lower().strip())
+        
+        prompt_parts = []
+        
+        # Jeśli to powtarzające się pytanie
+        if normalized_current in repeated_info['repeated_questions']:
+            repeat_info = repeated_info['repeated_questions'][normalized_current]
+            prompt_parts.append(f"""
+            UWAGA: Użytkownik zadał to pytanie już {repeat_info['count']} razy.
+            Pierwsze pytanie: {repeat_info['first_asked']}
+            Ostatnie pytanie: {repeat_info['last_asked']}
+            
+            Powinieneś:
+            1. Odwołać się do wcześniejszych odpowiedzi
+            2. Zapytać czy potrzebuje więcej szczegółów
+            3. Sprawdzić czy coś było niejasne w poprzednich odpowiedziach
+            4. Zaproponować inne podejście do tematu
+            """)
+        
+        # Analiza kontekstu rozmowy
+        user_messages = [msg for msg in history if msg['role'] == 'user']
+        assistant_messages = [msg for msg in history if msg['role'] == 'assistant']
+        
+        if len(user_messages) > 1:
+            prompt_parts.append(f"""
+            KONTEKST ROZMOWY:
+            - Liczba pytań użytkownika: {len(user_messages)}
+            - Liczba odpowiedzi asystenta: {len(assistant_messages)}
+            - Ostatnie pytanie: {user_messages[-2]['content'][:100]}...
+            """)
+        
+        # Wykryj wzorce w pytaniach
+        topics = self._extract_topics_from_messages(user_messages)
+        if topics:
+            prompt_parts.append(f"""
+            TEMATY ROZMOWY:
+            {', '.join(topics)}
+            
+            Zachowaj spójność tematyczną i rozbuduj wcześniejsze odpowiedzi.
+            """)
+        
+        return '\n'.join(prompt_parts)
+    
+    def _extract_topics_from_messages(self, messages: List[Dict]) -> List[str]:
+        """Wyodrębnia główne tematy z wiadomości"""
+        aviation_keywords = {
+            'siła nośna': 'aerodynamika',
+            'nawigacja': 'nawigacja lotnicza',
+            'radar': 'systemy awioniczne',
+            'meteorologia': 'meteorologia lotnicza',
+            'bezpieczeństwo': 'bezpieczeństwo lotów',
+            'silnik': 'napęd lotniczy',
+            'skrzydło': 'konstrukcja statku powietrznego',
+            'lotnisko': 'operacje lotnicze',
+            'pilot': 'pilotaż',
+            'kontrola': 'kontrola ruchu lotniczego'
+        }
+        
+        topics = set()
+        for msg in messages:
+            content = msg['content'].lower()
+            for keyword, topic in aviation_keywords.items():
+                if keyword in content:
+                    topics.add(topic)
+        
+        return list(topics)
