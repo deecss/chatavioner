@@ -122,7 +122,8 @@
         function updateTime() {
             const now = new Date();
             const timeString = now.toLocaleString('pl-PL');
-            document.title = `{% block title %}Avioner AI Chat - Admin{% endblock %} | ${timeString}`;
+            const baseTitle = document.title.split(' | ')[0]; // Pobierz tytuł podstawowy
+            document.title = `${baseTitle} | ${timeString}`;
         }
         
         // Aktualizuj czas co minutę

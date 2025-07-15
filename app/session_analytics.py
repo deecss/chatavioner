@@ -244,7 +244,8 @@ class SessionAnalytics:
                 'avg_engagement': 0,
                 'favorite_topics': [],
                 'quality_score': 0,
-                'productivity_score': 0
+                'productivity_score': 0,
+                'recent_sessions': []
             }
         
         total_time = sum(s['duration'] for s in user_sessions)
@@ -274,7 +275,7 @@ class SessionAnalytics:
             'favorite_topics': favorite_topics,
             'quality_score': avg_quality,
             'productivity_score': productivity,
-            'recent_sessions': sorted(user_sessions, key=lambda x: x['end_time'], reverse=True)[:10]
+            'recent_sessions': sorted(user_sessions, key=lambda x: x.get('end_time', ''), reverse=True)[:10]
         }
     
     def get_session_details(self, session_id):

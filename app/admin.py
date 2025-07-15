@@ -93,8 +93,9 @@ def users():
         user.productivity_score = user_stats['productivity_score']
         user.last_activity = None
         
-        if user_stats['recent_sessions']:
-            user.last_activity = user_stats['recent_sessions'][0]['end_time']
+        # Bezpieczne sprawdzenie recent_sessions
+        if user_stats.get('recent_sessions'):
+            user.last_activity = user_stats['recent_sessions'][0].get('end_time')
     
     return render_template('admin/users.html', users=users_list)
 
