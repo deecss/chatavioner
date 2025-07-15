@@ -393,51 +393,73 @@ def analytics_dashboard():
 
 # Nowe endpointy dla rozszerzonej funkcjonalności
 
-@admin_bp.route('/user/<int:user_id>')
+@admin_bp.route('/user/<user_id>')
 @login_required
 def user_details(user_id):
     """Szczegółowe informacje o użytkowniku"""
-    user = User.query.get_or_404(user_id)
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    user = User.get(user_id)
+    if not user:
+        flash('Użytkownik nie został znaleziony', 'error')
+        return redirect(url_for('admin.users'))
+    
+    # Odśwież dane analityczne
+    analytics.load_all_data()
     
     # Pobierz szczegółowe statystyki użytkownika
-    analytics = SessionAnalytics()
-    user_stats = analytics.get_user_detailed_stats(user_id)
+    user_stats = analytics.get_user_statistics(user_id)
     
-    # Pobierz ostatnie sesje
-    recent_sessions = analytics.get_user_recent_sessions(user_id, limit=10)
-    
-    # Pobierz feedbacki
-    recent_feedback = analytics.get_user_recent_feedback(user_id, limit=5)
-    
-    user_data = {
+    # Przygotuj dane użytkownika z dodatkowym kontekstem
+    enhanced_user = {
         'id': user.id,
         'username': user.username,
+        'role': getattr(user, 'role', 'user'),
+        'created_at': getattr(user, 'created_at', None),
         'email': getattr(user, 'email', None),
-        'is_active': user.is_active,
-        'created_at': user.created_at.isoformat() if hasattr(user, 'created_at') else None,
-        'stats': user_stats,
-        'recent_sessions': recent_sessions,
-        'recent_feedback': recent_feedback
+        **user_stats
     }
     
-    return render_template('admin/user_details.html', user=user_data)
+    return render_template('admin/user_details.html', user=UserData(enhanced_user))
 
-@admin_bp.route('/user/<int:user_id>/sessions')
+@admin_bp.route('/user/<user_id>/sessions')
 @login_required
 def user_sessions(user_id):
     """Lista sesji użytkownika"""
-    user = User.query.get_or_404(user_id)
-    analytics = SessionAnalytics()
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
     
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
+    user = User.get(user_id)
+    if not user:
+        flash('Użytkownik nie został znaleziony', 'error')
+        return redirect(url_for('admin.users'))
     
-    sessions = analytics.get_user_sessions_paginated(user_id, page, per_page)
+    # Odśwież dane analityczne
+    analytics.load_all_data()
+    
+    # Pobierz sesje użytkownika
+    sessions = analytics.get_user_sessions(user_id)
+    
+    # Przekształć sesje na format wymagany przez szablon
+    formatted_sessions = []
+    for session in sessions:
+        session_data = {
+            'session_id': session.get('session_id'),
+            'first_message': session.get('start_time', ''),
+            'last_message': session.get('end_time', ''),
+            'message_count': session.get('message_count', 0),
+            'duration': session.get('duration', 0),
+            'topics': session.get('topics', []),
+            'engagement_score': session.get('engagement_score', 0)
+        }
+        formatted_sessions.append(session_data)
     
     return render_template('admin/user_sessions.html', 
                          user=user, 
-                         sessions=sessions['sessions'],
-                         pagination=sessions['pagination'])
+                         sessions=formatted_sessions)
 
 @admin_bp.route('/export-session-data/<session_id>')
 @login_required
@@ -463,29 +485,48 @@ def export_session_data(session_id):
     
     return response
 
-@admin_bp.route('/export-user-report/<int:user_id>')
+@admin_bp.route('/export-user-report/<user_id>')
 @login_required
 def export_user_report(user_id):
     """Eksportuj pełny raport użytkownika"""
-    user = User.query.get_or_404(user_id)
-    analytics = SessionAnalytics()
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    user = User.get(user_id)
+    if not user:
+        flash('Użytkownik nie został znaleziony', 'error')
+        return redirect(url_for('admin.users'))
+    
+    # Odśwież dane analityczne
+    analytics.load_all_data()
     
     # Pobierz pełne dane użytkownika
-    report_data = {
-        'user_id': user_id,
-        'username': user.username,
-        'export_timestamp': datetime.now().isoformat(),
-        'summary': analytics.get_user_detailed_stats(user_id),
-        'sessions': analytics.get_user_all_sessions(user_id),
-        'feedback': analytics.get_user_all_feedback(user_id),
-        'performance_trends': analytics.get_user_performance_trends(user_id)
+    user_stats = analytics.get_user_statistics(user_id)
+    sessions = analytics.get_user_sessions(user_id)
+    
+    # Tworzenie raportu
+    report = {
+        'user_info': {
+            'id': user.id,
+            'username': user.username,
+            'role': getattr(user, 'role', 'user'),
+            'created_at': getattr(user, 'created_at', None)
+        },
+        'statistics': user_stats,
+        'sessions': sessions,
+        'generated_at': datetime.now().isoformat()
     }
     
-    response = make_response(json.dumps(report_data, indent=2, ensure_ascii=False))
-    response.headers['Content-Type'] = 'application/json'
-    response.headers['Content-Disposition'] = f'attachment; filename=user_report_{user.username}.json'
+    # Zapisz raport do pliku
+    filename = f"user_report_{user.username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    filepath = os.path.join('reports', filename)
     
-    return response
+    os.makedirs('reports', exist_ok=True)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+    
+    return send_file(filepath, as_attachment=True, download_name=filename)
 
 @admin_bp.route('/export-users')
 @login_required

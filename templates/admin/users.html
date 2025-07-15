@@ -9,35 +9,26 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">👥 Zarządzanie użytkownikami</h1>
-                <p class="text-gray-600">Szczegółowa analiza aktywności i produktywności użytkowników</p>
+                <p class="text-gray-600">Analiza aktywności i zarządzanie użytkownikami systemu</p>
             </div>
             <div class="flex space-x-3">
-                <div class="relative">
-                    <input type="text" id="searchUsers" placeholder="Szukaj użytkowników..." 
-                           class="border rounded-lg px-4 py-2 pl-10 w-64">
-                    <div class="absolute left-3 top-2.5 text-gray-400">🔍</div>
-                </div>
-                <select id="sortUsers" class="border rounded-lg px-3 py-2">
-                    <option value="activity">Sortuj wg aktywności</option>
-                    <option value="name">Sortuj wg nazwy</option>
-                    <option value="sessions">Sortuj wg sesji</option>
-                    <option value="engagement">Sortuj wg zaangażowania</option>
-                </select>
-                <button onclick="exportUserData()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                    📊 Eksportuj raport
+                <button onclick="exportUsers()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    📊 Eksportuj
                 </button>
+                <a href="{{ url_for('admin.add_user') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    ➕ Dodaj użytkownika
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Statystyki ogólne -->
+    <!-- Statystyki -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div class="bg-blue-50 p-6 rounded-lg">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-blue-600 text-sm font-medium">Wszyscy użytkownicy</p>
                     <p class="text-3xl font-bold text-blue-800">{{ stats.total_users }}</p>
-                    <p class="text-blue-600 text-sm">{{ stats.new_users_today }} nowych dzisiaj</p>
                 </div>
                 <div class="text-blue-600 text-3xl">👥</div>
             </div>
@@ -48,7 +39,6 @@
                 <div>
                     <p class="text-green-600 text-sm font-medium">Aktywni użytkownicy</p>
                     <p class="text-3xl font-bold text-green-800">{{ stats.active_users }}</p>
-                    <p class="text-green-600 text-sm">{{ "%.1f"|format(stats.activity_rate) }}% aktywności</p>
                 </div>
                 <div class="text-green-600 text-3xl">✅</div>
             </div>
@@ -59,7 +49,6 @@
                 <div>
                     <p class="text-purple-600 text-sm font-medium">Średnie zaangażowanie</p>
                     <p class="text-3xl font-bold text-purple-800">{{ "%.0f"|format(stats.avg_engagement) }}%</p>
-                    <p class="text-purple-600 text-sm">{{ "%.1f"|format(stats.engagement_trend) }}% trend</p>
                 </div>
                 <div class="text-purple-600 text-3xl">📈</div>
             </div>
@@ -68,48 +57,11 @@
         <div class="bg-yellow-50 p-6 rounded-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-yellow-600 text-sm font-medium">Produktywność</p>
-                    <p class="text-3xl font-bold text-yellow-800">{{ "%.1f"|format(stats.avg_productivity) }}</p>
-                    <p class="text-yellow-600 text-sm">pytań na sesję</p>
+                    <p class="text-yellow-600 text-sm font-medium">Nowi użytkownicy</p>
+                    <p class="text-3xl font-bold text-yellow-800">{{ stats.new_users_today }}</p>
                 </div>
-                <div class="text-yellow-600 text-3xl">⚡</div>
+                <div class="text-yellow-600 text-3xl">🆕</div>
             </div>
-        </div>
-    </div>
-
-    <!-- Filtry i kontrolki -->
-    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
-        <div class="flex flex-wrap items-center gap-4">
-            <div class="flex items-center space-x-2">
-                <label class="text-sm font-medium text-gray-700">Okres:</label>
-                <select id="timePeriod" class="border rounded px-3 py-1 text-sm">
-                    <option value="today">Dzisiaj</option>
-                    <option value="week">Ostatni tydzień</option>
-                    <option value="month">Ostatni miesiąc</option>
-                    <option value="quarter">Ostatni kwartał</option>
-                </select>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label class="text-sm font-medium text-gray-700">Status:</label>
-                <select id="statusFilter" class="border rounded px-3 py-1 text-sm">
-                    <option value="all">Wszyscy</option>
-                    <option value="active">Aktywni</option>
-                    <option value="inactive">Nieaktywni</option>
-                    <option value="new">Nowi</option>
-                </select>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label class="text-sm font-medium text-gray-700">Zaangażowanie:</label>
-                <select id="engagementFilter" class="border rounded px-3 py-1 text-sm">
-                    <option value="all">Wszystkie</option>
-                    <option value="high">Wysokie (80%+)</option>
-                    <option value="medium">Średnie (50-79%)</option>
-                    <option value="low">Niskie (<50%)</option>
-                </select>
-            </div>
-            <button onclick="applyFilters()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm">
-                Zastosuj filtry
-            </button>
         </div>
     </div>
 
@@ -118,24 +70,23 @@
         <div class="px-6 py-4 border-b">
             <h3 class="text-lg font-semibold">📋 Lista użytkowników</h3>
         </div>
+        
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="text-left p-4 font-medium text-gray-700">Użytkownik</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Rola</th>
                         <th class="text-left p-4 font-medium text-gray-700">Status</th>
-                        <th class="text-left p-4 font-medium text-gray-700">Ostatnia aktywność</th>
                         <th class="text-left p-4 font-medium text-gray-700">Sesje</th>
                         <th class="text-left p-4 font-medium text-gray-700">Wiadomości</th>
-                        <th class="text-left p-4 font-medium text-gray-700">Zaangażowanie</th>
-                        <th class="text-left p-4 font-medium text-gray-700">Produktywność</th>
-                        <th class="text-left p-4 font-medium text-gray-700">Ocena</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Ostatnia aktywność</th>
                         <th class="text-left p-4 font-medium text-gray-700">Akcje</th>
                     </tr>
                 </thead>
-                <tbody id="usersTableBody">
+                <tbody>
                     {% for user in users %}
-                    <tr class="border-b hover:bg-gray-50 user-row" data-user-id="{{ user.id }}">
+                    <tr class="border-b hover:bg-gray-50">
                         <td class="p-4">
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -144,14 +95,21 @@
                                 <div>
                                     <div class="font-medium text-gray-900">{{ user.username }}</div>
                                     <div class="text-sm text-gray-500">{{ user.email or 'Brak email' }}</div>
-                                    <div class="text-xs text-gray-400">ID: {{ user.id }}</div>
+                                    <div class="text-xs text-gray-400">ID: {{ user.id[:8] }}...</div>
                                 </div>
                             </div>
                         </td>
                         <td class="p-4">
                             <span class="px-2 py-1 rounded-full text-xs font-medium
+                                {% if user.role == 'admin' %}bg-red-100 text-red-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium
                                 {% if user.is_active %}bg-green-100 text-green-800
-                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
                                 {{ 'Aktywny' if user.is_active else 'Nieaktywny' }}
                             </span>
                             {% if user.is_new %}
@@ -159,10 +117,6 @@
                                 Nowy
                             </span>
                             {% endif %}
-                        </td>
-                        <td class="p-4">
-                            <div class="text-sm text-gray-900">{{ user.last_activity[:10] if user.last_activity else 'Nigdy' }}</div>
-                            <div class="text-xs text-gray-500">{{ user.last_activity[11:19] if user.last_activity else '' }}</div>
                         </td>
                         <td class="p-4">
                             <div class="text-sm font-medium">{{ user.total_sessions }}</div>
@@ -173,34 +127,8 @@
                             <div class="text-xs text-gray-500">{{ "%.1f"|format(user.messages_per_session) }} na sesję</div>
                         </td>
                         <td class="p-4">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-16 bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ user.engagement_score }}%"></div>
-                                </div>
-                                <span class="text-sm font-medium">{{ "%.0f"|format(user.engagement_score) }}%</span>
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex items-center space-x-2">
-                                <div class="text-sm font-medium">{{ "%.1f"|format(user.productivity_score) }}</div>
-                                <div class="text-xs text-gray-500">
-                                    {% if user.productivity_score >= 8 %}📈
-                                    {% elif user.productivity_score >= 5 %}📊
-                                    {% else %}📉{% endif %}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex items-center space-x-1">
-                                {% for i in range(1, 6) %}
-                                    {% if user.overall_rating >= i %}
-                                        <span class="text-yellow-400">⭐</span>
-                                    {% else %}
-                                        <span class="text-gray-300">⭐</span>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <div class="text-xs text-gray-500">{{ user.feedback_count }} feedbacków</div>
+                            <div class="text-sm text-gray-900">{{ user.last_activity[:10] if user.last_activity else 'Nigdy' }}</div>
+                            <div class="text-xs text-gray-500">{{ user.last_activity[11:19] if user.last_activity else '' }}</div>
                         </td>
                         <td class="p-4">
                             <div class="flex space-x-2">
@@ -212,6 +140,12 @@
                                    class="text-green-600 hover:text-green-800 text-sm">
                                     💬 Sesje
                                 </a>
+                                {% if user.id != current_user.id %}
+                                <button onclick="deleteUser('{{ user.id }}', '{{ user.username }}')" 
+                                        class="text-red-600 hover:text-red-800 text-sm">
+                                    🗑️ Usuń
+                                </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -247,470 +181,31 @@
 </div>
 
 <script>
-// Funkcja wyszukiwania
-document.getElementById('searchUsers').addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    const rows = document.querySelectorAll('.user-row');
-    
-    rows.forEach(row => {
-        const username = row.querySelector('td:first-child').textContent.toLowerCase();
-        const email = row.querySelector('td:first-child').textContent.toLowerCase();
-        
-        if (username.includes(query) || email.includes(query)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-});
-
-// Funkcja sortowania
-document.getElementById('sortUsers').addEventListener('change', function() {
-    const sortBy = this.value;
-    const tbody = document.getElementById('usersTableBody');
-    const rows = Array.from(tbody.querySelectorAll('.user-row'));
-    
-    rows.sort((a, b) => {
-        let aValue, bValue;
-        
-        switch(sortBy) {
-            case 'name':
-                aValue = a.querySelector('td:first-child .font-medium').textContent;
-                bValue = b.querySelector('td:first-child .font-medium').textContent;
-                return aValue.localeCompare(bValue);
-            case 'activity':
-                aValue = a.querySelector('td:nth-child(3)').textContent;
-                bValue = b.querySelector('td:nth-child(3)').textContent;
-                return new Date(bValue) - new Date(aValue);
-            case 'sessions':
-                aValue = parseInt(a.querySelector('td:nth-child(4) .text-sm').textContent);
-                bValue = parseInt(b.querySelector('td:nth-child(4) .text-sm').textContent);
-                return bValue - aValue;
-            case 'engagement':
-                aValue = parseFloat(a.querySelector('td:nth-child(6) .text-sm').textContent);
-                bValue = parseFloat(b.querySelector('td:nth-child(6) .text-sm').textContent);
-                return bValue - aValue;
-            default:
-                return 0;
-        }
-    });
-    
-    rows.forEach(row => tbody.appendChild(row));
-});
-
-// Funkcja eksportu danych
-function exportUserData() {
-    const timePeriod = document.getElementById('timePeriod').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const engagementFilter = document.getElementById('engagementFilter').value;
-    
-    const params = new URLSearchParams({
-        period: timePeriod,
-        status: statusFilter,
-        engagement: engagementFilter
-    });
-    
-    window.location.href = `/admin/export-users?${params.toString()}`;
-}
-
-// Funkcja stosowania filtrów
-function applyFilters() {
-    const timePeriod = document.getElementById('timePeriod').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const engagementFilter = document.getElementById('engagementFilter').value;
-    
-    const params = new URLSearchParams({
-        period: timePeriod,
-        status: statusFilter,
-        engagement: engagementFilter
-    });
-    
-    window.location.href = `/admin/users?${params.toString()}`;
-}
-
-// Aktualizacja statusu w czasie rzeczywistym
-setInterval(function() {
-    // Aktualizacja statusu aktywności użytkowników
-    fetch('/admin/api/users/status')
+function deleteUser(userId, username) {
+    if (confirm(`Czy na pewno chcesz usunąć użytkownika "${username}"? Ta operacja jest nieodwracalna.`)) {
+        fetch(`/admin/users/${userId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
         .then(response => response.json())
         .then(data => {
-            data.forEach(user => {
-                const row = document.querySelector(`[data-user-id="${user.id}"]`);
-                if (row) {
-                    const statusCell = row.querySelector('td:nth-child(2) span');
-                    if (user.is_active) {
-                        statusCell.className = 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
-                        statusCell.textContent = 'Aktywny';
-                    } else {
-                        statusCell.className = 'px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
-                        statusCell.textContent = 'Nieaktywny';
-                    }
-                }
-            });
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Błąd usuwania użytkownika: ' + (data.error || 'Nieznany błąd'));
+            }
         })
-        .catch(error => console.error('Błąd aktualizacji statusu:', error));
-}, 30000); // co 30 sekund
+        .catch(error => {
+            alert('Błąd komunikacji z serwerem');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function exportUsers() {
+    window.location.href = '/admin/export-users';
+}
 </script>
 {% endblock %}
-                    </a>
-                    <a href="{{ url_for('admin.documents') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>📁</span>
-                        <span>Dokumenty</span>
-                    </a>
-                    <a href="{{ url_for('admin.reports') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>📋</span>
-                        <span>Raporty</span>
-                    </a>
-                </nav>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="flex-1">
-                <div class="bg-white rounded-lg shadow-lg">
-                    <!-- Header -->
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-2xl font-bold text-gray-800">Zarządzanie użytkownikami</h2>
-                            <a href="{{ url_for('admin.add_user') }}" 
-                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                + Dodaj użytkownika
-                            </a>
-                        </div>
-                    </div>
-
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            <div class="p-4">
-                                {% for category, message in messages %}
-                                    <div class="p-3 mb-2 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
-                                        {{ message }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
-
-                    <!-- Users Table -->
-                    <div class="p-6">
-                        {% if users %}
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full table-auto">
-                                    <thead>
-                                        <tr class="bg-gray-50">
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Użytkownik</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rola</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data utworzenia</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sesje</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ostatnia aktywność</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        {% for user in users %}
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="flex items-center">
-                                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                                            <span class="text-blue-600 font-semibold">
-                                                                {{ user.username[0].upper() }}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
-                                                            <div class="text-sm text-gray-500">ID: {{ user.id[:8] }}...</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                                        {% if user.role == 'admin' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
-                                                        {{ user.role }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ user.created_at[:19].replace('T', ' ') if user.created_at else 'Brak danych' }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <a href="{{ url_for('admin.user_sessions', user_id=user.id) }}" 
-                                                       class="text-blue-600 hover:text-blue-800">
-                                                        {{ user.sessions_count }} sesji
-                                                    </a>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {% if user.last_activity %}
-                                                        {{ user.last_activity[:19].replace('T', ' ') }}
-                                                    {% else %}
-                                                        Brak aktywności
-                                                    {% endif %}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div class="flex space-x-2">
-                                                        <a href="{{ url_for('admin.user_sessions', user_id=user.id) }}"
-                                                           class="text-blue-600 hover:text-blue-900">Sesje</a>
-                                                        {% if user.id != current_user.id %}
-                                                            <button onclick="deleteUser('{{ user.id }}', '{{ user.username }}')"
-                                                                    class="text-red-600 hover:text-red-900">Usuń</button>
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-12">
-                                <div class="text-gray-400 text-6xl mb-4">👥</div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Brak użytkowników</h3>
-                                <p class="text-gray-500 mb-4">Dodaj pierwszego użytkownika aby rozpocząć</p>
-                                <a href="{{ url_for('admin.add_user') }}" 
-                                   class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                    Dodaj użytkownika
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function deleteUser(userId, username) {
-            if (confirm(`Czy na pewno chcesz usunąć użytkownika "${username}"? Ta operacja jest nieodwracalna.`)) {
-                fetch(`/admin/users/${userId}/delete`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Błąd usuwania użytkownika: ' + (data.error || 'Nieznany błąd'));
-                    }
-                })
-                .catch(error => {
-                    alert('Błąd komunikacji z serwerem');
-                    console.error('Error:', error);
-                });
-            }
-        }
-    </script>
-</body>
-</html>
-                    <a href="{{ url_for('admin.documents') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>📁</span>
-                        <span>Dokumenty</span>
-                    </a>
-                    <a href="{{ url_for('admin.reports') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>📄</span>
-                        <span>Raporty</span>
-                    </a>
-                </nav>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="flex-1">
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Sesje użytkowników</h2>
-                        <div class="text-sm text-gray-600">
-                            Łącznie: {{ sessions|length }} sesji
-                        </div>
-                    </div>
-                    
-                    {% if sessions %}
-                    <div class="overflow-x-auto">
-                        <table class="w-full table-auto">
-                            <thead>
-                                <tr class="bg-gray-50">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        ID Sesji
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Pierwsza wiadomość
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Ostatnia wiadomość
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Liczba wiadomości
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Akcje
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                {% for session in sessions %}
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                    <span class="text-blue-600 font-medium">👤</span>
-                                                </div>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ session.session_id[:8] }}...
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    ID: {{ session.session_id }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ session.first_message[:19] }}
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ session.last_message[:19] }}
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            {{ session.message_count }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button onclick="viewSession('{{ session.session_id }}')" 
-                                                class="text-blue-600 hover:text-blue-900 mr-3">
-                                            Podgląd
-                                        </button>
-                                        <button onclick="downloadSession('{{ session.session_id }}')" 
-                                                class="text-green-600 hover:text-green-900">
-                                            Pobierz
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-8">
-                        <div class="text-gray-500 text-xl mb-2">👥</div>
-                        <p class="text-gray-500">Brak sesji użytkowników</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Session Details Modal -->
-    <div id="sessionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold">Szczegóły sesji</h3>
-                <button onclick="closeSessionModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <div id="sessionDetails" class="space-y-4">
-                <!-- Session details will be loaded here -->
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        function viewSession(sessionId) {
-            fetch(`/admin/api/session/${sessionId}`)
-                .then(response => response.json())
-                .then(data => {
-                    displaySessionDetails(data);
-                    document.getElementById('sessionModal').classList.remove('hidden');
-                    document.getElementById('sessionModal').classList.add('flex');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Błąd podczas pobierania szczegółów sesji');
-                });
-        }
-        
-        function displaySessionDetails(data) {
-            const container = document.getElementById('sessionDetails');
-            let html = `
-                <div class="mb-4">
-                    <h4 class="font-semibold text-gray-700">Informacje o sesji</h4>
-                    <p><strong>ID:</strong> ${data.session_id}</p>
-                    <p><strong>Liczba wiadomości:</strong> ${data.history.length}</p>
-                    <p><strong>Liczba feedbacków:</strong> ${data.feedback.length}</p>
-                </div>
-                
-                <div class="mb-4">
-                    <h4 class="font-semibold text-gray-700">Historia czatu</h4>
-                    <div class="max-h-64 overflow-y-auto space-y-2">
-            `;
-            
-            data.history.forEach((msg, index) => {
-                const isUser = msg.role === 'user';
-                html += `
-                    <div class="p-3 rounded-lg ${isUser ? 'bg-blue-100 ml-8' : 'bg-gray-100 mr-8'}">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-sm font-medium ${isUser ? 'text-blue-700' : 'text-gray-700'}">
-                                ${isUser ? 'Użytkownik' : 'Asystent'}
-                            </span>
-                            <span class="text-xs text-gray-500">${new Date(msg.timestamp).toLocaleString()}</span>
-                        </div>
-                        <p class="text-sm">${msg.content.substring(0, 200)}${msg.content.length > 200 ? '...' : ''}</p>
-                    </div>
-                `;
-            });
-            
-            html += `
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <h4 class="font-semibold text-gray-700">Feedback</h4>
-                    <div class="space-y-2">
-            `;
-            
-            if (data.feedback.length > 0) {
-                data.feedback.forEach(fb => {
-                    const typeIcon = fb.type === 'positive' ? '👍' : fb.type === 'negative' ? '👎' : '✏️';
-                    html += `
-                        <div class="p-2 border rounded">
-                            <div class="flex items-center justify-between">
-                                <span>${typeIcon} ${fb.type}</span>
-                                <span class="text-xs text-gray-500">${new Date(fb.timestamp).toLocaleString()}</span>
-                            </div>
-                            ${fb.content ? `<p class="text-sm mt-1">${fb.content}</p>` : ''}
-                        </div>
-                    `;
-                });
-            } else {
-                html += '<p class="text-gray-500">Brak feedbacku</p>';
-            }
-            
-            html += `
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-        }
-        
-        function closeSessionModal() {
-            document.getElementById('sessionModal').classList.add('hidden');
-            document.getElementById('sessionModal').classList.remove('flex');
-        }
-        
-        function downloadSession(sessionId) {
-            // Implement download functionality
-            alert(`Pobieranie sesji ${sessionId} - funkcja do implementacji`);
-        }
-    </script>
-</body>
-</html>
