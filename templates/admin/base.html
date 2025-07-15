@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Avioner AI Chat - Admin{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">✈</span>
+                        </div>
+                        <h1 class="text-xl font-bold">Avioner AI Chat - Admin Panel</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-blue-200">👤 {{ current_user.username if current_user else 'Admin' }}</span>
+                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
+                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex space-x-6">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-4">📋 Menu</h3>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 
+                              {% if request.endpoint == 'admin.dashboard' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.users' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>👥</span>
+                        <span>Użytkownicy</span>
+                    </a>
+                    <a href="{{ url_for('admin.analytics_dashboard') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.analytics_dashboard' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>📈</span>
+                        <span>Analityka</span>
+                    </a>
+                    <a href="{{ url_for('admin.feedback') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.feedback' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>💬</span>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.reports' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>📄</span>
+                        <span>Raporty</span>
+                    </a>
+                    <a href="{{ url_for('admin.settings') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.settings' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>⚙️</span>
+                        <span>Ustawienia</span>
+                    </a>
+                </nav>
+                
+                <!-- Szybkie statystyki -->
+                <div class="mt-6 p-3 bg-gray-50 rounded-lg">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Szybkie statystyki</h4>
+                    <div class="space-y-1 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Aktywne sesje:</span>
+                            <span class="font-medium">{{ quick_stats.active_sessions if quick_stats else '0' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Dzisiaj:</span>
+                            <span class="font-medium">{{ quick_stats.today_sessions if quick_stats else '0' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">System:</span>
+                            <span class="font-medium text-green-600">{{ quick_stats.system_status if quick_stats else 'OK' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-8">
+        <p>&copy; 2024 Avioner AI Chat - Admin Panel | Wersja 2.0</p>
+    </footer>
+    
+    <!-- Scripts -->
+    <script>
+        // Funkcja aktualizacji czasu rzeczywistego
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('pl-PL');
+            document.title = `{% block title %}Avioner AI Chat - Admin{% endblock %} | ${timeString}`;
+        }
+        
+        // Aktualizuj czas co minutę
+        setInterval(updateTime, 60000);
+        updateTime();
+        
+        // Automatyczne odświeżanie szybkich statystyk
+        setInterval(function() {
+            fetch('/admin/api/quick-stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('.space-y-1').innerHTML = `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Aktywne sesje:</span>
+                            <span class="font-medium">${data.active_sessions}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Dzisiaj:</span>
+                            <span class="font-medium">${data.today_sessions}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">System:</span>
+                            <span class="font-medium text-green-600">${data.system_status}</span>
+                        </div>
+                    `;
+                })
+                .catch(error => console.error('Błąd aktualizacji statystyk:', error));
+        }, 30000); // co 30 sekund
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

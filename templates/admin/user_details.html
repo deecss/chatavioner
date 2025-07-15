@@ -1,0 +1,293 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Szczegóły użytkownika - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li><a href="{{ url_for('admin.dashboard') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li><a href="{{ url_for('admin.users') }}" class="text-blue-600 hover:text-blue-800">Użytkownicy</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li class="text-gray-900">{{ user.username }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header użytkownika -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    {{ user.username[0].upper() }}
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ user.username }}</h1>
+                    <p class="text-gray-600">{{ user.email or 'Brak email' }}</p>
+                    <div class="flex items-center space-x-4 mt-2">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            {% if user.is_active %}bg-green-100 text-green-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ 'Aktywny' if user.is_active else 'Nieaktywny' }}
+                        </span>
+                        <span class="text-sm text-gray-500">ID: {{ user.id }}</span>
+                        <span class="text-sm text-gray-500">Zarejestrowany: {{ user.created_at[:10] if user.created_at else 'Nieznane' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="exportUserReport()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    📊 Eksportuj raport
+                </button>
+                <button onclick="sendMessage()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    💬 Wyślij wiadomość
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kluczowe metryki -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-600 text-sm font-medium">Łączne sesje</p>
+                    <p class="text-3xl font-bold text-blue-800">{{ user.stats.total_sessions }}</p>
+                    <p class="text-blue-600 text-sm">{{ "%.1f"|format(user.stats.avg_session_duration) }}min średnia</p>
+                </div>
+                <div class="text-blue-600 text-3xl">💬</div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-600 text-sm font-medium">Wiadomości</p>
+                    <p class="text-3xl font-bold text-green-800">{{ user.stats.total_messages }}</p>
+                    <p class="text-green-600 text-sm">{{ "%.1f"|format(user.stats.messages_per_session) }} na sesję</p>
+                </div>
+                <div class="text-green-600 text-3xl">📝</div>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-600 text-sm font-medium">Zaangażowanie</p>
+                    <p class="text-3xl font-bold text-purple-800">{{ "%.0f"|format(user.stats.engagement_score) }}%</p>
+                    <p class="text-purple-600 text-sm">{{ user.stats.engagement_trend }}% trend</p>
+                </div>
+                <div class="text-purple-600 text-3xl">📈</div>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-600 text-sm font-medium">Feedbacki</p>
+                    <p class="text-3xl font-bold text-yellow-800">{{ user.stats.total_feedback }}</p>
+                    <p class="text-yellow-600 text-sm">{{ "%.1f"|format(user.stats.positive_feedback_rate) }}% pozytywnych</p>
+                </div>
+                <div class="text-yellow-600 text-3xl">👍</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Szczegółowe analizy -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Aktywność w czasie -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Aktywność w czasie</h3>
+            <canvas id="userActivityChart" height="200"></canvas>
+        </div>
+
+        <!-- Tematy zainteresowań -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">🏷️ Tematy zainteresowań</h3>
+            <div class="space-y-3">
+                {% for topic in user.stats.top_topics %}
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-700">{{ topic.name }}</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-24 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ topic.percentage }}%"></div>
+                        </div>
+                        <span class="text-sm font-medium">{{ topic.count }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Historia produktywności -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">⚡ Historia produktywności</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-blue-600">{{ "%.1f"|format(user.stats.productivity_score) }}</div>
+                <div class="text-sm text-gray-600">Aktualny wynik</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-green-600">{{ "%.1f"|format(user.stats.peak_productivity) }}</div>
+                <div class="text-sm text-gray-600">Najwyższy wynik</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-purple-600">{{ user.stats.productive_days }}</div>
+                <div class="text-sm text-gray-600">Dni produktywnych</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ostatnie sesje -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">🕐 Ostatnie sesje</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left p-3">Data</th>
+                        <th class="text-left p-3">Czas trwania</th>
+                        <th class="text-left p-3">Wiadomości</th>
+                        <th class="text-left p-3">Zaangażowanie</th>
+                        <th class="text-left p-3">Feedbacki</th>
+                        <th class="text-left p-3">Główne tematy</th>
+                        <th class="text-left p-3">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in user.recent_sessions %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3">{{ session.started_at[:19] }}</td>
+                        <td class="p-3">{{ "%.1f"|format(session.duration / 60) }}min</td>
+                        <td class="p-3">{{ session.user_messages }}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium
+                                {% if session.engagement_score >= 80 %}bg-green-100 text-green-800
+                                {% elif session.engagement_score >= 60 %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ "%.0f"|format(session.engagement_score) }}%
+                            </span>
+                        </td>
+                        <td class="p-3">{{ session.feedback_count }}</td>
+                        <td class="p-3">
+                            <div class="flex flex-wrap gap-1">
+                                {% for topic in session.topics[:3] %}
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{{ topic }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <a href="{{ url_for('admin.session_details', session_id=session.session_id) }}" 
+                               class="text-blue-600 hover:text-blue-800">
+                                Zobacz szczegóły
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Feedbacki i oceny -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold mb-4">⭐ Feedbacki i oceny</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h4 class="font-medium mb-3">Rozkład ocen</h4>
+                <div class="space-y-2">
+                    {% for rating in user.stats.rating_distribution %}
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 text-sm">{{ rating.stars }}★</span>
+                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ rating.percentage }}%"></div>
+                        </div>
+                        <span class="text-sm font-medium">{{ rating.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <h4 class="font-medium mb-3">Ostatnie komentarze</h4>
+                <div class="space-y-3 max-h-48 overflow-y-auto">
+                    {% for comment in user.recent_feedback %}
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-gray-500">{{ comment.timestamp[:19] }}</span>
+                            <span class="text-xs font-medium {{ 'text-green-600' if comment.type == 'positive' else 'text-red-600' }}">
+                                {{ 'Pozytywny' if comment.type == 'positive' else 'Negatywny' }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-700">{{ comment.content }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Wykres aktywności użytkownika
+const ctx = document.getElementById('userActivityChart').getContext('2d');
+const userActivityChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ user.stats.activity_labels | tojsonfilter | safe }},
+        datasets: [{
+            label: 'Sesje',
+            data: {{ user.stats.activity_data | tojsonfilter | safe }},
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Funkcje akcji
+function exportUserReport() {
+    window.location.href = `/admin/export-user-report/{{ user.id }}`;
+}
+
+function sendMessage() {
+    const message = prompt('Wiadomość do użytkownika:');
+    if (message) {
+        fetch('/admin/send-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: {{ user.id }},
+                message: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Wiadomość została wysłana!');
+            } else {
+                alert('Błąd wysyłania wiadomości');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

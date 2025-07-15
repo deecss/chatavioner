@@ -1,53 +1,357 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avioner AI Chat - Zarządzanie użytkownikami</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <!-- Navigation -->
-    <nav class="bg-blue-600 text-white shadow-lg">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                            <span class="text-blue-600 font-bold">✈</span>
-                        </div>
-                        <h1 class="text-xl font-bold">Avioner AI Chat - Admin</h1>
-                    </div>
+{% extends "admin/base.html" %}
+
+{% block title %}Zarządzanie użytkownikami{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">👥 Zarządzanie użytkownikami</h1>
+                <p class="text-gray-600">Szczegółowa analiza aktywności i produktywności użytkowników</p>
+            </div>
+            <div class="flex space-x-3">
+                <div class="relative">
+                    <input type="text" id="searchUsers" placeholder="Szukaj użytkowników..." 
+                           class="border rounded-lg px-4 py-2 pl-10 w-64">
+                    <div class="absolute left-3 top-2.5 text-gray-400">🔍</div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="hover:text-blue-200">← Powrót do czatu</a>
-                    <a href="{{ url_for('admin.logout') }}" class="hover:text-blue-200">Wyloguj</a>
-                </div>
+                <select id="sortUsers" class="border rounded-lg px-3 py-2">
+                    <option value="activity">Sortuj wg aktywności</option>
+                    <option value="name">Sortuj wg nazwy</option>
+                    <option value="sessions">Sortuj wg sesji</option>
+                    <option value="engagement">Sortuj wg zaangażowania</option>
+                </select>
+                <button onclick="exportUserData()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    📊 Eksportuj raport
+                </button>
             </div>
         </div>
-    </nav>
+    </div>
+
+    <!-- Statystyki ogólne -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-600 text-sm font-medium">Wszyscy użytkownicy</p>
+                    <p class="text-3xl font-bold text-blue-800">{{ stats.total_users }}</p>
+                    <p class="text-blue-600 text-sm">{{ stats.new_users_today }} nowych dzisiaj</p>
+                </div>
+                <div class="text-blue-600 text-3xl">👥</div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-600 text-sm font-medium">Aktywni użytkownicy</p>
+                    <p class="text-3xl font-bold text-green-800">{{ stats.active_users }}</p>
+                    <p class="text-green-600 text-sm">{{ "%.1f"|format(stats.activity_rate) }}% aktywności</p>
+                </div>
+                <div class="text-green-600 text-3xl">✅</div>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-600 text-sm font-medium">Średnie zaangażowanie</p>
+                    <p class="text-3xl font-bold text-purple-800">{{ "%.0f"|format(stats.avg_engagement) }}%</p>
+                    <p class="text-purple-600 text-sm">{{ "%.1f"|format(stats.engagement_trend) }}% trend</p>
+                </div>
+                <div class="text-purple-600 text-3xl">📈</div>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-6 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-600 text-sm font-medium">Produktywność</p>
+                    <p class="text-3xl font-bold text-yellow-800">{{ "%.1f"|format(stats.avg_productivity) }}</p>
+                    <p class="text-yellow-600 text-sm">pytań na sesję</p>
+                </div>
+                <div class="text-yellow-600 text-3xl">⚡</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtry i kontrolki -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center space-x-2">
+                <label class="text-sm font-medium text-gray-700">Okres:</label>
+                <select id="timePeriod" class="border rounded px-3 py-1 text-sm">
+                    <option value="today">Dzisiaj</option>
+                    <option value="week">Ostatni tydzień</option>
+                    <option value="month">Ostatni miesiąc</option>
+                    <option value="quarter">Ostatni kwartał</option>
+                </select>
+            </div>
+            <div class="flex items-center space-x-2">
+                <label class="text-sm font-medium text-gray-700">Status:</label>
+                <select id="statusFilter" class="border rounded px-3 py-1 text-sm">
+                    <option value="all">Wszyscy</option>
+                    <option value="active">Aktywni</option>
+                    <option value="inactive">Nieaktywni</option>
+                    <option value="new">Nowi</option>
+                </select>
+            </div>
+            <div class="flex items-center space-x-2">
+                <label class="text-sm font-medium text-gray-700">Zaangażowanie:</label>
+                <select id="engagementFilter" class="border rounded px-3 py-1 text-sm">
+                    <option value="all">Wszystkie</option>
+                    <option value="high">Wysokie (80%+)</option>
+                    <option value="medium">Średnie (50-79%)</option>
+                    <option value="low">Niskie (<50%)</option>
+                </select>
+            </div>
+            <button onclick="applyFilters()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm">
+                Zastosuj filtry
+            </button>
+        </div>
+    </div>
+
+    <!-- Lista użytkowników -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b">
+            <h3 class="text-lg font-semibold">📋 Lista użytkowników</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left p-4 font-medium text-gray-700">Użytkownik</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Status</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Ostatnia aktywność</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Sesje</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Wiadomości</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Zaangażowanie</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Produktywność</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Ocena</th>
+                        <th class="text-left p-4 font-medium text-gray-700">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    {% for user in users %}
+                    <tr class="border-b hover:bg-gray-50 user-row" data-user-id="{{ user.id }}">
+                        <td class="p-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    {{ user.username[0].upper() }}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900">{{ user.username }}</div>
+                                    <div class="text-sm text-gray-500">{{ user.email or 'Brak email' }}</div>
+                                    <div class="text-xs text-gray-400">ID: {{ user.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium
+                                {% if user.is_active %}bg-green-100 text-green-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ 'Aktywny' if user.is_active else 'Nieaktywny' }}
+                            </span>
+                            {% if user.is_new %}
+                            <span class="ml-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                Nowy
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm text-gray-900">{{ user.last_activity[:10] if user.last_activity else 'Nigdy' }}</div>
+                            <div class="text-xs text-gray-500">{{ user.last_activity[11:19] if user.last_activity else '' }}</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm font-medium">{{ user.total_sessions }}</div>
+                            <div class="text-xs text-gray-500">{{ "%.1f"|format(user.avg_session_duration) }}min śr.</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm font-medium">{{ user.total_messages }}</div>
+                            <div class="text-xs text-gray-500">{{ "%.1f"|format(user.messages_per_session) }} na sesję</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ user.engagement_score }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">{{ "%.0f"|format(user.engagement_score) }}%</span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="text-sm font-medium">{{ "%.1f"|format(user.productivity_score) }}</div>
+                                <div class="text-xs text-gray-500">
+                                    {% if user.productivity_score >= 8 %}📈
+                                    {% elif user.productivity_score >= 5 %}📊
+                                    {% else %}📉{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center space-x-1">
+                                {% for i in range(1, 6) %}
+                                    {% if user.overall_rating >= i %}
+                                        <span class="text-yellow-400">⭐</span>
+                                    {% else %}
+                                        <span class="text-gray-300">⭐</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="text-xs text-gray-500">{{ user.feedback_count }} feedbacków</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('admin.user_details', user_id=user.id) }}" 
+                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                    📊 Szczegóły
+                                </a>
+                                <a href="{{ url_for('admin.user_sessions', user_id=user.id) }}" 
+                                   class="text-green-600 hover:text-green-800 text-sm">
+                                    💬 Sesje
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginacja -->
+    <div class="flex justify-between items-center mt-6">
+        <div class="text-sm text-gray-700">
+            Pokazano {{ users|length }} z {{ stats.total_users }} użytkowników
+        </div>
+        <div class="flex space-x-2">
+            {% if page > 1 %}
+            <a href="?page={{ page - 1 }}" class="px-3 py-1 border rounded hover:bg-gray-50">← Poprzednia</a>
+            {% endif %}
+            
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <span class="px-3 py-1 bg-blue-500 text-white rounded">{{ p }}</span>
+                {% else %}
+                <a href="?page={{ p }}" class="px-3 py-1 border rounded hover:bg-gray-50">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}" class="px-3 py-1 border rounded hover:bg-gray-50">Następna →</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Funkcja wyszukiwania
+document.getElementById('searchUsers').addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row');
     
-    <!-- Content -->
-    <div class="container mx-auto px-4 py-6">
-        <div class="flex space-x-6">
-            <!-- Sidebar -->
-            <div class="w-64 bg-white rounded-lg shadow-lg p-4">
-                <h3 class="text-lg font-semibold mb-4">Menu</h3>
-                <nav class="space-y-2">
-                    <a href="{{ url_for('admin.dashboard') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>📊</span>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="{{ url_for('admin.users') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
-                        <span>👥</span>
-                        <span>Użytkownicy</span>
-                    </a>
-                    <a href="{{ url_for('admin.feedback') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <span>💬</span>
-                        <span>Feedback</span>
+    rows.forEach(row => {
+        const username = row.querySelector('td:first-child').textContent.toLowerCase();
+        const email = row.querySelector('td:first-child').textContent.toLowerCase();
+        
+        if (username.includes(query) || email.includes(query)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Funkcja sortowania
+document.getElementById('sortUsers').addEventListener('change', function() {
+    const sortBy = this.value;
+    const tbody = document.getElementById('usersTableBody');
+    const rows = Array.from(tbody.querySelectorAll('.user-row'));
+    
+    rows.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(sortBy) {
+            case 'name':
+                aValue = a.querySelector('td:first-child .font-medium').textContent;
+                bValue = b.querySelector('td:first-child .font-medium').textContent;
+                return aValue.localeCompare(bValue);
+            case 'activity':
+                aValue = a.querySelector('td:nth-child(3)').textContent;
+                bValue = b.querySelector('td:nth-child(3)').textContent;
+                return new Date(bValue) - new Date(aValue);
+            case 'sessions':
+                aValue = parseInt(a.querySelector('td:nth-child(4) .text-sm').textContent);
+                bValue = parseInt(b.querySelector('td:nth-child(4) .text-sm').textContent);
+                return bValue - aValue;
+            case 'engagement':
+                aValue = parseFloat(a.querySelector('td:nth-child(6) .text-sm').textContent);
+                bValue = parseFloat(b.querySelector('td:nth-child(6) .text-sm').textContent);
+                return bValue - aValue;
+            default:
+                return 0;
+        }
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+});
+
+// Funkcja eksportu danych
+function exportUserData() {
+    const timePeriod = document.getElementById('timePeriod').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const engagementFilter = document.getElementById('engagementFilter').value;
+    
+    const params = new URLSearchParams({
+        period: timePeriod,
+        status: statusFilter,
+        engagement: engagementFilter
+    });
+    
+    window.location.href = `/admin/export-users?${params.toString()}`;
+}
+
+// Funkcja stosowania filtrów
+function applyFilters() {
+    const timePeriod = document.getElementById('timePeriod').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const engagementFilter = document.getElementById('engagementFilter').value;
+    
+    const params = new URLSearchParams({
+        period: timePeriod,
+        status: statusFilter,
+        engagement: engagementFilter
+    });
+    
+    window.location.href = `/admin/users?${params.toString()}`;
+}
+
+// Aktualizacja statusu w czasie rzeczywistym
+setInterval(function() {
+    // Aktualizacja statusu aktywności użytkowników
+    fetch('/admin/api/users/status')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(user => {
+                const row = document.querySelector(`[data-user-id="${user.id}"]`);
+                if (row) {
+                    const statusCell = row.querySelector('td:nth-child(2) span');
+                    if (user.is_active) {
+                        statusCell.className = 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+                        statusCell.textContent = 'Aktywny';
+                    } else {
+                        statusCell.className = 'px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+                        statusCell.textContent = 'Nieaktywny';
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Błąd aktualizacji statusu:', error));
+}, 30000); // co 30 sekund
+</script>
+{% endblock %}
                     </a>
                     <a href="{{ url_for('admin.documents') }}" 
                        class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">

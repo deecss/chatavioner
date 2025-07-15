@@ -5,11 +5,16 @@ Panel administracyjny aplikacji Aero-Chat
 """
 import os
 import json
+import logging
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, make_response
+
 from flask_login import login_required, login_user, logout_user, current_user
 from app.models import User, ChatSession, UploadIndex, UserSession
 from app.session_analytics import SessionAnalytics
+
+# Dodaj logger
+logger = logging.getLogger(__name__)
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -370,203 +375,313 @@ def analytics_dashboard():
                          top_users=top_users,
                          topic_analysis=topic_analysis)
 
-def get_admin_stats():
-    """Pobiera statystyki dla panelu administratora"""
-    stats = {
-        'total_sessions': 0,
-        'total_messages': 0,
-        'total_documents': 0,
-        'total_feedback': 0,
-        'total_reports': 0
+# Nowe endpointy dla rozszerzonej funkcjonalności
+
+@admin_bp.route('/user/<int:user_id>')
+@login_required
+def user_details(user_id):
+    """Szczegółowe informacje o użytkowniku"""
+    user = User.query.get_or_404(user_id)
+    
+    # Pobierz szczegółowe statystyki użytkownika
+    analytics = SessionAnalytics()
+    user_stats = analytics.get_user_detailed_stats(user_id)
+    
+    # Pobierz ostatnie sesje
+    recent_sessions = analytics.get_user_recent_sessions(user_id, limit=10)
+    
+    # Pobierz feedbacki
+    recent_feedback = analytics.get_user_recent_feedback(user_id, limit=5)
+    
+    user_data = {
+        'id': user.id,
+        'username': user.username,
+        'email': getattr(user, 'email', None),
+        'is_active': user.is_active,
+        'created_at': user.created_at.isoformat() if hasattr(user, 'created_at') else None,
+        'stats': user_stats,
+        'recent_sessions': recent_sessions,
+        'recent_feedback': recent_feedback
     }
     
-    # Liczba sesji
-    if os.path.exists('history'):
-        stats['total_sessions'] = len([f for f in os.listdir('history') if f.endswith('.json')])
-    
-    # Liczba wiadomości
-    if os.path.exists('history'):
-        for filename in os.listdir('history'):
-            if filename.endswith('.json'):
-                try:
-                    with open(f'history/{filename}', 'r', encoding='utf-8') as f:
-                        history = json.load(f)
-                        stats['total_messages'] += len(history)
-                except:
-                    pass
-    
-    # Liczba dokumentów
-    upload_index = UploadIndex()
-    documents = upload_index.get_all_files()
-    stats['total_documents'] = len(documents)
-    
-    # Liczba feedbacków
-    if os.path.exists('feedback'):
-        for filename in os.listdir('feedback'):
-            if filename.endswith('.json'):
-                try:
-                    with open(f'feedback/{filename}', 'r', encoding='utf-8') as f:
-                        feedback = json.load(f)
-                        stats['total_feedback'] += len(feedback)
-                except:
-                    pass
-    
-    # Liczba raportów
-    if os.path.exists('reports'):
-        for session_dir in os.listdir('reports'):
-            session_path = os.path.join('reports', session_dir)
-            if os.path.isdir(session_path):
-                stats['total_reports'] += len([f for f in os.listdir(session_path) if f.endswith('.pdf')])
-    
-    return stats
+    return render_template('admin/user_details.html', user=user_data)
 
-def get_active_users_today():
-    """Pobiera liczbę aktywnych użytkowników dzisiaj"""
-    today = datetime.now().date()
-    active_count = 0
+@admin_bp.route('/user/<int:user_id>/sessions')
+@login_required
+def user_sessions(user_id):
+    """Lista sesji użytkownika"""
+    user = User.query.get_or_404(user_id)
+    analytics = SessionAnalytics()
     
-    analytics.load_all_data()
-    for session in analytics.sessions_data.values():
-        if session['end_time']:
-            try:
-                end_date = datetime.fromisoformat(session['end_time']).date()
-                if end_date == today:
-                    active_count += 1
-            except:
-                pass
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
     
-    return active_count
+    sessions = analytics.get_user_sessions_paginated(user_id, page, per_page)
+    
+    return render_template('admin/user_sessions.html', 
+                         user=user, 
+                         sessions=sessions['sessions'],
+                         pagination=sessions['pagination'])
 
-def get_top_performing_users():
-    """Pobiera top 5 użytkowników według zaangażowania"""
-    analytics.load_all_data()
-    users = User.get_all_users()
-    user_scores = []
+@admin_bp.route('/export-session-data/<session_id>')
+@login_required
+def export_session_data(session_id):
+    """Eksportuj dane sesji jako JSON"""
+    analytics = SessionAnalytics()
+    session_data = analytics.get_session_complete_data(session_id)
     
-    for user in users:
-        user_stats = analytics.get_user_statistics(user.id)
-        if user_stats['total_sessions'] > 0:
-            user_scores.append({
-                'username': user.username,
-                'engagement': user_stats['avg_engagement'],
-                'sessions': user_stats['total_sessions'],
-                'messages': user_stats['total_messages']
-            })
+    if not session_data:
+        flash('Sesja nie została znaleziona', 'error')
+        return redirect(url_for('admin.dashboard'))
     
-    # Sortuj według zaangażowania
-    user_scores.sort(key=lambda x: x['engagement'], reverse=True)
-    return user_scores[:5]
+    # Przygotuj dane do eksportu
+    export_data = {
+        'session_id': session_id,
+        'export_timestamp': datetime.now().isoformat(),
+        'data': session_data
+    }
+    
+    response = make_response(json.dumps(export_data, indent=2, ensure_ascii=False))
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Disposition'] = f'attachment; filename=session_{session_id[:8]}.json'
+    
+    return response
 
-def calculate_system_health():
-    """Oblicza wskaźnik zdrowia systemu"""
-    analytics.load_all_data()
-    global_stats = analytics.get_global_statistics()
+@admin_bp.route('/export-user-report/<int:user_id>')
+@login_required
+def export_user_report(user_id):
+    """Eksportuj pełny raport użytkownika"""
+    user = User.query.get_or_404(user_id)
+    analytics = SessionAnalytics()
     
-    health_score = 0
+    # Pobierz pełne dane użytkownika
+    report_data = {
+        'user_id': user_id,
+        'username': user.username,
+        'export_timestamp': datetime.now().isoformat(),
+        'summary': analytics.get_user_detailed_stats(user_id),
+        'sessions': analytics.get_user_all_sessions(user_id),
+        'feedback': analytics.get_user_all_feedback(user_id),
+        'performance_trends': analytics.get_user_performance_trends(user_id)
+    }
     
-    # Punkty za aktywność (max 40)
-    if global_stats.get('sessions_today', 0) > 0:
-        health_score += min(global_stats['sessions_today'] * 5, 40)
+    response = make_response(json.dumps(report_data, indent=2, ensure_ascii=False))
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Disposition'] = f'attachment; filename=user_report_{user.username}.json'
     
-    # Punkty za zaangażowanie (max 30)
-    avg_engagement = global_stats.get('avg_engagement', 0)
-    health_score += min(avg_engagement * 0.3, 30)
-    
-    # Punkty za feedback (max 20)
-    feedback_rate = global_stats.get('feedback_rate', 0)
-    health_score += min(feedback_rate * 10, 20)
-    
-    # Punkty za różnorodność tematów (max 10)
-    topic_count = len(global_stats.get('popular_topics', []))
-    health_score += min(topic_count, 10)
-    
-    return min(health_score, 100)
+    return response
 
-def get_daily_statistics():
-    """Pobiera statystyki dzienne dla ostatnich 30 dni"""
-    analytics.load_all_data()
-    daily_data = {}
+@admin_bp.route('/export-users')
+@login_required
+def export_users():
+    """Eksportuj dane użytkowników z filtrami"""
+    period = request.args.get('period', 'month')
+    status = request.args.get('status', 'all')
+    engagement = request.args.get('engagement', 'all')
     
-    # Przygotuj dane dla ostatnich 30 dni
+    analytics = SessionAnalytics()
+    users_data = analytics.get_users_filtered_data(period, status, engagement)
+    
+    export_data = {
+        'export_timestamp': datetime.now().isoformat(),
+        'filters': {
+            'period': period,
+            'status': status,
+            'engagement': engagement
+        },
+        'users': users_data
+    }
+    
+    response = make_response(json.dumps(export_data, indent=2, ensure_ascii=False))
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Disposition'] = f'attachment; filename=users_export_{period}.json'
+    
+    return response
+
+@admin_bp.route('/export-analytics')
+@login_required
+def export_analytics():
+    """Eksportuj dane analityczne"""
+    range_param = request.args.get('range', 'month')
+    
+    analytics = SessionAnalytics()
+    analytics_data = analytics.get_complete_analytics_data(range_param)
+    
+    export_data = {
+        'export_timestamp': datetime.now().isoformat(),
+        'range': range_param,
+        'analytics': analytics_data
+    }
+    
+    response = make_response(json.dumps(export_data, indent=2, ensure_ascii=False))
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Disposition'] = f'attachment; filename=analytics_{range_param}.json'
+    
+    return response
+
+# API endpointy dla aktualizacji w czasie rzeczywistym
+
+@admin_bp.route('/api/quick-stats')
+@login_required
+def api_quick_stats():
+    """API dla szybkich statystyk"""
+    analytics = SessionAnalytics()
+    stats = analytics.get_quick_stats()
+    
+    return jsonify({
+        'active_sessions': stats.get('active_sessions', 0),
+        'today_sessions': stats.get('today_sessions', 0),
+        'system_status': stats.get('system_status', 'OK')
+    })
+
+@admin_bp.route('/api/users/status')
+@login_required
+def api_users_status():
+    """API dla statusu użytkowników"""
+    analytics = SessionAnalytics()
+    users_status = analytics.get_users_current_status()
+    
+    return jsonify(users_status)
+
+@admin_bp.route('/send-message', methods=['POST'])
+@login_required
+def send_message():
+    """Wyślij wiadomość do użytkownika"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    message = data.get('message')
+    
+    if not user_id or not message:
+        return jsonify({'success': False, 'error': 'Brakuje danych'})
+    
+    # Tutaj można dodać logikę wysyłania wiadomości
+    # Na przykład przez WebSocket lub email
+    
+    return jsonify({'success': True})
+
+# Metody pomocnicze dla nowych endpointów
+
+def get_user_detailed_stats(self, user_id):
+    """Pobierz szczegółowe statystyki użytkownika"""
+    sessions = self.get_user_sessions(user_id)
+    
+    if not sessions:
+        return self._get_empty_user_stats()
+    
+    total_sessions = len(sessions)
+    total_messages = sum(s.get('user_messages', 0) for s in sessions)
+    total_duration = sum(s.get('duration', 0) for s in sessions)
+    
+    # Oblicz zaangażowanie
+    engagement_scores = [s.get('engagement_score', 0) for s in sessions if s.get('engagement_score')]
+    avg_engagement = sum(engagement_scores) / len(engagement_scores) if engagement_scores else 0
+    
+    # Pobierz feedbacki
+    feedback_data = self.get_user_feedback_summary(user_id)
+    
+    # Analiza tematów
+    topics = self.analyze_user_topics(sessions)
+    
+    # Trendy produktywności
+    productivity_trends = self.calculate_user_productivity_trends(sessions)
+    
+    return {
+        'total_sessions': total_sessions,
+        'total_messages': total_messages,
+        'avg_session_duration': total_duration / total_sessions if total_sessions > 0 else 0,
+        'messages_per_session': total_messages / total_sessions if total_sessions > 0 else 0,
+        'engagement_score': avg_engagement,
+        'engagement_trend': self.calculate_engagement_trend(sessions),
+        'total_feedback': feedback_data['total'],
+        'positive_feedback_rate': feedback_data['positive_rate'],
+        'top_topics': topics,
+        'productivity_score': productivity_trends['current'],
+        'peak_productivity': productivity_trends['peak'],
+        'productive_days': productivity_trends['productive_days'],
+        'rating_distribution': feedback_data['rating_distribution'],
+        'activity_labels': self.get_user_activity_labels(sessions),
+        'activity_data': self.get_user_activity_data(sessions)
+    }
+
+def get_user_sessions(self, user_id):
+    """Pobierz wszystkie sesje użytkownika"""
+    try:
+        sessions = []
+        for session in ChatSession.query.filter_by(user_id=user_id).order_by(ChatSession.started_at.desc()).all():
+            session_data = self.analyze_session(session)
+            sessions.append(session_data)
+        return sessions
+    except Exception as e:
+        logger.error(f"Błąd pobierania sesji użytkownika {user_id}: {e}")
+        return []
+
+def get_user_recent_sessions(self, user_id, limit=10):
+    """Pobierz ostatnie sesje użytkownika"""
+    sessions = self.get_user_sessions(user_id)
+    return sessions[:limit]
+
+def get_user_feedback_summary(self, user_id):
+    """Pobierz podsumowanie feedbacków użytkownika"""
+    # Implementacja analizy feedbacków
+    return {
+        'total': 0,
+        'positive_rate': 0,
+        'rating_distribution': []
+    }
+
+def analyze_user_topics(self, sessions):
+    """Analizuj tematy dla użytkownika"""
+    topics = {}
+    for session in sessions:
+        for topic in session.get('topics', []):
+            topics[topic] = topics.get(topic, 0) + 1
+    
+    # Sortuj i formatuj
+    sorted_topics = sorted(topics.items(), key=lambda x: x[1], reverse=True)[:10]
+    total = sum(topics.values())
+    
+    return [{
+        'name': topic,
+        'count': count,
+        'percentage': (count / total * 100) if total > 0 else 0
+    } for topic, count in sorted_topics]
+
+def calculate_user_productivity_trends(self, sessions):
+    """Oblicz trendy produktywności użytkownika"""
+    if not sessions:
+        return {'current': 0, 'peak': 0, 'productive_days': 0}
+    
+    scores = [s.get('productivity_score', 0) for s in sessions]
+    
+    return {
+        'current': scores[0] if scores else 0,
+        'peak': max(scores) if scores else 0,
+        'productive_days': len([s for s in scores if s > 5])
+    }
+
+def get_user_activity_labels(self, sessions):
+    """Pobierz etykiety aktywności użytkownika"""
+    # Ostatnie 30 dni
+    dates = []
     for i in range(30):
-        date = (datetime.now() - timedelta(days=i)).date()
-        daily_data[date.isoformat()] = {
-            'sessions': 0,
-            'messages': 0,
-            'users': set(),
-            'feedback': 0
-        }
-    
-    # Przelicz sesje
-    for session in analytics.sessions_data.values():
-        if session['end_time']:
-            try:
-                end_date = datetime.fromisoformat(session['end_time']).date()
-                date_str = end_date.isoformat()
-                
-                if date_str in daily_data:
-                    daily_data[date_str]['sessions'] += 1
-                    daily_data[date_str]['messages'] += session['user_messages']
-                    daily_data[date_str]['feedback'] += session['feedback_count']
-                    if session['user_id']:
-                        daily_data[date_str]['users'].add(session['user_id'])
-            except:
-                pass
-    
-    # Konwertuj set na liczby
-    for date_data in daily_data.values():
-        date_data['users'] = len(date_data['users'])
-    
-    return daily_data
+        date = datetime.now() - timedelta(days=i)
+        dates.append(date.strftime('%Y-%m-%d'))
+    return list(reversed(dates))
 
-def get_top_users_detailed():
-    """Pobiera szczegółowe dane top użytkowników"""
-    analytics.load_all_data()
-    users = User.get_all_users()
-    user_details = []
+def get_user_activity_data(self, sessions):
+    """Pobierz dane aktywności użytkownika"""
+    # Zlicz sesje per dzień
+    daily_sessions = {}
+    for session in sessions:
+        date = session.get('started_at', '')[:10]
+        daily_sessions[date] = daily_sessions.get(date, 0) + 1
     
-    for user in users:
-        user_stats = analytics.get_user_statistics(user.id)
-        if user_stats['total_sessions'] > 0:
-            user_details.append({
-                'user_id': user.id,
-                'username': user.username,
-                'total_sessions': user_stats['total_sessions'],
-                'total_messages': user_stats['total_messages'],
-                'total_time': user_stats['total_time'],
-                'avg_engagement': user_stats['avg_engagement'],
-                'productivity_score': user_stats['productivity_score'],
-                'favorite_topics': user_stats['favorite_topics'],
-                'quality_score': user_stats['quality_score']
-            })
+    # Wypełnij ostatnie 30 dni
+    data = []
+    for i in range(30):
+        date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+        data.append(daily_sessions.get(date, 0))
     
-    return sorted(user_details, key=lambda x: x['avg_engagement'], reverse=True)
+    return list(reversed(data))
 
-def analyze_topics_distribution():
-    """Analizuje rozkład tematów w systemie"""
-    analytics.load_all_data()
-    topic_stats = {}
-    
-    for session in analytics.sessions_data.values():
-        for topic in session['topics']:
-            if topic not in topic_stats:
-                topic_stats[topic] = {
-                    'count': 0,
-                    'sessions': 0,
-                    'avg_engagement': 0,
-                    'total_engagement': 0
-                }
-            
-            topic_stats[topic]['count'] += 1
-            topic_stats[topic]['sessions'] += 1
-            topic_stats[topic]['total_engagement'] += session['engagement_score']
-    
-    # Oblicz średnie zaangażowanie
-    for topic, stats in topic_stats.items():
-        if stats['sessions'] > 0:
-            stats['avg_engagement'] = stats['total_engagement'] / stats['sessions']
-    
-    # Sortuj według popularności
-    sorted_topics = sorted(topic_stats.items(), key=lambda x: x[1]['count'], reverse=True)
-    
-    return dict(sorted_topics)
+# Dodaj te metody do klasy SessionAnalytics

@@ -408,3 +408,266 @@ class SessionAnalytics:
             'active_users': len(set(s['user_id'] for s in all_sessions if s['user_id'])),
             'feedback_rate': (total_feedback / total_sessions) if total_sessions > 0 else 0
         }
+    
+    def get_active_users_today(self):
+        """Pobierz aktywnych użytkowników dzisiaj"""
+        try:
+            today = datetime.now().strftime('%Y-%m-%d')
+            active_users = []
+            
+            for session in ChatSession.query.filter(ChatSession.started_at.startswith(today)).all():
+                if session.user_id and session.user_id not in active_users:
+                    active_users.append(session.user_id)
+            
+            return len(active_users)
+        except Exception as e:
+            logger.error(f"Błąd pobierania aktywnych użytkowników: {e}")
+            return 0
+
+    def get_top_performing_users(self):
+        """Pobierz najlepszych użytkowników"""
+        try:
+            users = []
+            for user in User.query.all():
+                user_stats = self.get_user_basic_stats(user.id)
+                if user_stats['total_sessions'] > 0:
+                    users.append({
+                        'username': user.username,
+                        'engagement': user_stats['engagement_score'],
+                        'sessions': user_stats['total_sessions']
+                    })
+            
+            return sorted(users, key=lambda x: x['engagement'], reverse=True)[:5]
+        except Exception as e:
+            logger.error(f"Błąd pobierania top użytkowników: {e}")
+            return []
+
+    def calculate_system_health(self):
+        """Oblicz zdrowie systemu"""
+        try:
+            # Podstawowe metryki zdrowia
+            total_sessions = ChatSession.query.count()
+            active_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= datetime.now() - timedelta(hours=1)
+            ).count()
+            
+            # Wskaźnik zdrowia (0-100)
+            health_score = min(100, (active_sessions / max(1, total_sessions)) * 1000)
+            
+            return {
+                'score': health_score,
+                'status': 'healthy' if health_score > 80 else 'warning' if health_score > 50 else 'critical',
+                'active_sessions': active_sessions,
+                'total_sessions': total_sessions
+            }
+        except Exception as e:
+            logger.error(f"Błąd obliczania zdrowia systemu: {e}")
+            return {'score': 0, 'status': 'unknown', 'active_sessions': 0, 'total_sessions': 0}
+
+    def get_daily_statistics(self):
+        """Pobierz dzienne statystyki"""
+        try:
+            today = datetime.now().strftime('%Y-%m-%d')
+            
+            # Sesje dzisiaj
+            today_sessions = ChatSession.query.filter(
+                ChatSession.started_at.startswith(today)
+            ).all()
+            
+            # Oblicz podstawowe statystyki
+            total_sessions = len(today_sessions)
+            total_messages = sum(s.user_messages for s in today_sessions if s.user_messages)
+            avg_duration = sum(s.duration for s in today_sessions if s.duration) / max(1, total_sessions)
+            
+            return {
+                'date': today,
+                'total_sessions': total_sessions,
+                'total_messages': total_messages,
+                'avg_duration': avg_duration,
+                'active_users': self.get_active_users_today()
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania dziennych statystyk: {e}")
+            return {'date': datetime.now().strftime('%Y-%m-%d'), 'total_sessions': 0, 'total_messages': 0, 'avg_duration': 0, 'active_users': 0}
+
+    def get_top_users_detailed(self):
+        """Pobierz szczegółowe dane top użytkowników"""
+        try:
+            users_data = []
+            
+            for user in User.query.all():
+                user_stats = self.get_user_basic_stats(user.id)
+                if user_stats['total_sessions'] > 0:
+                    users_data.append({
+                        'id': user.id,
+                        'username': user.username,
+                        'total_sessions': user_stats['total_sessions'],
+                        'total_messages': user_stats['total_messages'],
+                        'avg_engagement': user_stats['engagement_score'],
+                        'avg_session_duration': user_stats['avg_session_duration'],
+                        'feedback_count': user_stats.get('feedback_count', 0),
+                        'productivity_score': user_stats.get('productivity_score', 0),
+                        'overall_rating': user_stats.get('overall_rating', 0)
+                    })
+            
+            return sorted(users_data, key=lambda x: x['avg_engagement'], reverse=True)
+        except Exception as e:
+            logger.error(f"Błąd pobierania szczegółowych danych użytkowników: {e}")
+            return []
+
+    def analyze_topics_distribution(self):
+        """Analizuj rozkład tematów"""
+        try:
+            topics = {}
+            
+            # Pobierz wszystkie sesje z ostatnich 30 dni
+            cutoff_date = datetime.now() - timedelta(days=30)
+            recent_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= cutoff_date
+            ).all()
+            
+            for session in recent_sessions:
+                session_topics = self.extract_topics_from_session(session)
+                for topic in session_topics:
+                    topics[topic] = topics.get(topic, 0) + 1
+            
+            # Sortuj i formatuj
+            sorted_topics = sorted(topics.items(), key=lambda x: x[1], reverse=True)[:10]
+            total = sum(topics.values())
+            
+            return [{
+                'name': topic,
+                'count': count,
+                'percentage': (count / total * 100) if total > 0 else 0
+            } for topic, count in sorted_topics]
+        except Exception as e:
+            logger.error(f"Błąd analizy tematów: {e}")
+            return []
+
+    def extract_topics_from_session(self, session):
+        """Wyodrębnij tematy z sesji"""
+        try:
+            # Podstawowa analiza tematów na podstawie wiadomości
+            topics = []
+            
+            # Pobierz historię z pliku
+            history_file = f"/home/dee/chatavioner/history/{session.session_id}.json"
+            if os.path.exists(history_file):
+                with open(history_file, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+                    
+                # Analizuj wiadomości użytkownika
+                for message in history:
+                    if message.get('role') == 'user':
+                        content = message.get('content', '').lower()
+                        
+                        # Podstawowe słowa kluczowe
+                        if any(word in content for word in ['lot', 'samolot', 'pilot']):
+                            topics.append('Lotnictwo')
+                        if any(word in content for word in ['prawo', 'przepis', 'regulacja']):
+                            topics.append('Prawo lotnicze')
+                        if any(word in content for word in ['pogoda', 'wiatr', 'chmury']):
+                            topics.append('Meteorologia')
+                        if any(word in content for word in ['silnik', 'mechanika', 'awaria']):
+                            topics.append('Technika')
+                        if any(word in content for word in ['licencja', 'egzamin', 'szkolenie']):
+                            topics.append('Szkolenie')
+            
+            return list(set(topics))  # Usuń duplikaty
+        except Exception as e:
+            logger.error(f"Błąd wyodrębniania tematów: {e}")
+            return []
+
+    def get_user_basic_stats(self, user_id):
+        """Pobierz podstawowe statystyki użytkownika"""
+        try:
+            user_sessions = ChatSession.query.filter_by(user_id=user_id).all()
+            
+            if not user_sessions:
+                return {
+                    'total_sessions': 0,
+                    'total_messages': 0,
+                    'avg_session_duration': 0,
+                    'engagement_score': 0,
+                    'feedback_count': 0,
+                    'productivity_score': 0,
+                    'overall_rating': 0
+                }
+            
+            total_sessions = len(user_sessions)
+            total_messages = sum(s.user_messages for s in user_sessions if s.user_messages)
+            total_duration = sum(s.duration for s in user_sessions if s.duration)
+            
+            # Oblicz engagement
+            engagement_scores = []
+            for session in user_sessions:
+                if session.engagement_score:
+                    engagement_scores.append(session.engagement_score)
+            
+            avg_engagement = sum(engagement_scores) / len(engagement_scores) if engagement_scores else 0
+            
+            return {
+                'total_sessions': total_sessions,
+                'total_messages': total_messages,
+                'avg_session_duration': total_duration / total_sessions if total_sessions > 0 else 0,
+                'engagement_score': avg_engagement,
+                'feedback_count': sum(s.feedback_count for s in user_sessions if s.feedback_count),
+                'productivity_score': total_messages / total_sessions if total_sessions > 0 else 0,
+                'overall_rating': 4.0  # Domyślna ocena
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania podstawowych statystyk użytkownika {user_id}: {e}")
+            return {'total_sessions': 0, 'total_messages': 0, 'avg_session_duration': 0, 'engagement_score': 0, 'feedback_count': 0, 'productivity_score': 0, 'overall_rating': 0}
+
+    def get_quick_stats(self):
+        """Pobierz szybkie statystyki dla API"""
+        try:
+            now = datetime.now()
+            today = now.strftime('%Y-%m-%d')
+            
+            # Aktywne sesje (ostatnia godzina)
+            active_sessions = ChatSession.query.filter(
+                ChatSession.started_at >= now - timedelta(hours=1)
+            ).count()
+            
+            # Sesje dzisiaj
+            today_sessions = ChatSession.query.filter(
+                ChatSession.started_at.startswith(today)
+            ).count()
+            
+            return {
+                'active_sessions': active_sessions,
+                'today_sessions': today_sessions,
+                'system_status': 'OK'
+            }
+        except Exception as e:
+            logger.error(f"Błąd pobierania szybkich statystyk: {e}")
+            return {'active_sessions': 0, 'today_sessions': 0, 'system_status': 'ERROR'}
+
+    def get_users_current_status(self):
+        """Pobierz aktualny status użytkowników"""
+        try:
+            users_status = []
+            now = datetime.now()
+            
+            for user in User.query.all():
+                # Sprawdź ostatnią aktywność
+                last_session = ChatSession.query.filter_by(user_id=user.id).order_by(ChatSession.started_at.desc()).first()
+                
+                is_active = False
+                if last_session:
+                    last_activity = datetime.fromisoformat(last_session.started_at.replace('Z', '+00:00'))
+                    is_active = (now - last_activity).total_seconds() < 3600  # Aktywny jeśli ostatnia sesja w ciągu godziny
+                
+                users_status.append({
+                    'id': user.id,
+                    'is_active': is_active
+                })
+            
+            return users_status
+        except Exception as e:
+            logger.error(f"Błąd pobierania statusu użytkowników: {e}")
+            return []
+
+# Dodaj import os na początku pliku
+import os
