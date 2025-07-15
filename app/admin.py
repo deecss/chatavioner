@@ -13,6 +13,12 @@ from flask_login import login_required, login_user, logout_user, current_user
 from app.models import User, ChatSession, UploadIndex, UserSession
 from app.session_analytics import SessionAnalytics
 
+class UserData:
+    """Klasa wrapper dla danych użytkownika"""
+    def __init__(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
 # Inicjalizuj instancję analytics
 analytics = SessionAnalytics()
 
@@ -82,22 +88,67 @@ def users():
     
     users_list = User.get_all_users()
     
-    # Dodaj szczegółowe statystyki dla każdego użytkownika
+    # Przygotowanie danych użytkowników z dodatkowymi statystykami
+    enhanced_users = []
+    
     for user in users_list:
         user_stats = analytics.get_user_statistics(user.id)
-        user.sessions_count = user_stats['total_sessions']
-        user.total_messages = user_stats['total_messages']
-        user.total_time = user_stats['total_time']
-        user.avg_engagement = user_stats['avg_engagement']
-        user.favorite_topics = user_stats['favorite_topics'][:3]  # Top 3 tematy
-        user.productivity_score = user_stats['productivity_score']
-        user.last_activity = None
+        
+        # Tworzenie obiektu z rozszerzonymi danymi
+        enhanced_user = {
+            'id': user.id,
+            'username': user.username,
+            'role': getattr(user, 'role', 'user'),
+            'created_at': getattr(user, 'created_at', None),
+            'email': getattr(user, 'email', None),
+            
+            # Dane z analytics
+            'sessions_count': user_stats.get('total_sessions', 0),
+            'total_sessions': user_stats.get('total_sessions', 0),
+            'total_messages': user_stats.get('total_messages', 0),
+            'total_time': user_stats.get('total_time', 0),
+            'avg_session_duration': user_stats.get('avg_session_duration', 0),
+            'avg_engagement': user_stats.get('avg_engagement', 0),
+            'favorite_topics': user_stats.get('favorite_topics', [])[:3],
+            'productivity_score': user_stats.get('productivity_score', 0),
+            'quality_score': user_stats.get('quality_score', 0),
+            'feedback_count': user_stats.get('feedback_count', 0),
+            
+            # Dodatkowe atrybuty wymagane przez template
+            'is_active': user_stats.get('is_active', False),
+            'is_new': user_stats.get('is_new', False),
+            'messages_per_session': user_stats.get('messages_per_session', 0),
+            'engagement_score': user_stats.get('avg_engagement', 0),
+            'overall_rating': user_stats.get('overall_rating', 0),
+            'last_activity': None
+        }
         
         # Bezpieczne sprawdzenie recent_sessions
         if user_stats.get('recent_sessions'):
-            user.last_activity = user_stats['recent_sessions'][0].get('end_time')
+            enhanced_user['last_activity'] = user_stats['recent_sessions'][0].get('end_time')
+        
+        enhanced_users.append(UserData(enhanced_user))
     
-    return render_template('admin/users.html', users=users_list)
+    # Przygotowanie statystyk dla szablonu
+    stats = {
+        'total_users': len(enhanced_users),
+        'new_users_today': len([u for u in enhanced_users if getattr(u, 'is_new', False)]),
+        'active_users': len([u for u in enhanced_users if getattr(u, 'is_active', False)]),
+        'activity_rate': (len([u for u in enhanced_users if getattr(u, 'is_active', False)]) / len(enhanced_users) * 100) if enhanced_users else 0,
+        'avg_engagement': sum([getattr(u, 'avg_engagement', 0) for u in enhanced_users]) / len(enhanced_users) if enhanced_users else 0,
+        'engagement_trend': 5.2,  # Przykładowa wartość trendu
+        'avg_productivity': sum([getattr(u, 'productivity_score', 0) for u in enhanced_users]) / len(enhanced_users) if enhanced_users else 0
+    }
+    
+    # Paginacja
+    page = 1
+    total_pages = 1
+    
+    return render_template('admin/users.html', 
+                         users=enhanced_users, 
+                         stats=stats, 
+                         page=page, 
+                         total_pages=total_pages)
 
 @admin_bp.route('/users/add', methods=['GET', 'POST'])
 @login_required 

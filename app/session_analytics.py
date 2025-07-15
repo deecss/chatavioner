@@ -275,7 +275,13 @@ class SessionAnalytics:
             'favorite_topics': favorite_topics,
             'quality_score': avg_quality,
             'productivity_score': productivity,
-            'recent_sessions': sorted(user_sessions, key=lambda x: x.get('end_time', ''), reverse=True)[:10]
+            'recent_sessions': sorted(user_sessions, key=lambda x: x.get('end_time', ''), reverse=True)[:10],
+            # Dodatkowe atrybuty wymagane przez template
+            'is_active': len([s for s in user_sessions if s.get('end_time', '').startswith(datetime.now().strftime('%Y-%m-%d'))]) > 0,
+            'is_new': len(user_sessions) <= 3,  # Nowy jeśli ma 3 lub mniej sesji
+            'messages_per_session': total_messages / len(user_sessions) if user_sessions else 0,
+            'overall_rating': min(5, max(1, avg_quality)),  # Ocena na skali 1-5
+            'feedback_count': total_feedback
         }
     
     def get_session_details(self, session_id):
