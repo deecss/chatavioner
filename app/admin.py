@@ -58,10 +58,10 @@ def dashboard():
     stats = {
         **global_stats,
         'total_users': len(User.get_all_users()),
-        'active_users_today': get_active_users_today(),
+        'active_users_today': analytics.get_active_users_today(),
         'avg_questions_per_session': global_stats['total_messages'] / global_stats['total_sessions'] if global_stats.get('total_sessions', 0) > 0 else 0,
-        'top_performers': get_top_performing_users(),
-        'system_health': calculate_system_health()
+        'top_performers': analytics.get_top_performing_users(),
+        'system_health': analytics.calculate_system_health()
     }
     
     return render_template('admin/dashboard.html', stats=stats)
@@ -349,31 +349,38 @@ def export_session_data(session_id):
 @admin_bp.route('/analytics')
 @login_required
 def analytics_dashboard():
-    """Panel analityczny z wykresami i statystykami"""
-    if not current_user.is_admin():
-        flash('Brak uprawnień administratora', 'error')
-        return redirect(url_for('admin.dashboard'))
+    """Dashboard analityczny - szczegółowe statystyki"""
+    analytics = SessionAnalytics()
     
-    # Odśwież dane analityczne
-    analytics.load_all_data()
+    # Pobierz kompletne statystyki
+    stats = {
+        'active_users': analytics.get_active_users_count(),
+        'user_growth': analytics.get_user_growth_percentage(),
+        'daily_sessions': analytics.get_daily_sessions_count(),
+        'avg_session_duration': analytics.get_average_session_duration(),
+        'avg_engagement': analytics.get_average_engagement(),
+        'engagement_trend': analytics.get_engagement_trend(),
+        'response_quality': analytics.get_response_quality_percentage(),
+        'positive_feedback': analytics.get_positive_feedback_percentage(),
+        'top_topics': analytics.get_top_topics_with_stats(),
+        'top_users': analytics.get_top_users_detailed(),
+        'avg_response_time': analytics.get_average_response_time(),
+        'system_uptime': analytics.get_system_uptime(),
+        'system_errors': analytics.get_system_errors_count(),
+        'resource_usage': analytics.get_resource_usage(),
+        'activity_growth': analytics.get_activity_growth_percentage(),
+        'predicted_users': analytics.get_predicted_users(),
+        'positive_feedback_count': analytics.get_positive_feedback_count(),
+        'negative_feedback_count': analytics.get_negative_feedback_count(),
+        'positive_feedback_percentage': analytics.get_positive_feedback_percentage(),
+        'negative_feedback_percentage': analytics.get_negative_feedback_percentage(),
+        'feedback_response_rate': analytics.get_feedback_response_rate(),
+        'recent_sessions': analytics.get_recent_sessions(20),
+        'activity_labels': analytics.get_activity_labels(),
+        'activity_data': analytics.get_activity_data()
+    }
     
-    # Pobierz dane dla wykresów
-    global_stats = analytics.get_global_statistics()
-    
-    # Statystyki czasowe (ostatnie 30 dni)
-    daily_stats = get_daily_statistics()
-    
-    # Top użytkownicy
-    top_users = get_top_users_detailed()
-    
-    # Analiza tematów
-    topic_analysis = analyze_topics_distribution()
-    
-    return render_template('admin/analytics.html', 
-                         global_stats=global_stats,
-                         daily_stats=daily_stats,
-                         top_users=top_users,
-                         topic_analysis=topic_analysis)
+    return render_template('admin/analytics.html', stats=stats)
 
 # Nowe endpointy dla rozszerzonej funkcjonalności
 

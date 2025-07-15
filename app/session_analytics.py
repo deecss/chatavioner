@@ -3,12 +3,16 @@
 """
 Analityka sesji użytkowników dla panelu administratora
 """
+import logging
 import os
 import json
 from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 from typing import Dict, List, Optional
 from app.models import ChatSession, User, UserSession
+
+# Skonfiguruj logger
+logger = logging.getLogger(__name__)
 
 class SessionAnalytics:
     """Klasa do analizy sesji użytkowników"""
@@ -49,7 +53,7 @@ class SessionAnalytics:
                             'engagement_score': self._calculate_engagement_score(history, session_id)
                         }
                     except Exception as e:
-                        print(f"Błąd ładowania sesji {session_id}: {e}")
+                        logger.error(f"Błąd ładowania sesji {session_id}: {e}")
                         continue
     
     def _extract_user_id(self, history):
@@ -668,6 +672,3 @@ class SessionAnalytics:
         except Exception as e:
             logger.error(f"Błąd pobierania statusu użytkowników: {e}")
             return []
-
-# Dodaj import os na początku pliku
-import os
