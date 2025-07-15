@@ -1,0 +1,208 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Szczegóły Sesji - {{ session.session_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li><a href="{{ url_for('admin.dashboard') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li><a href="{{ url_for('admin.users') }}" class="text-blue-600 hover:text-blue-800">Użytkownicy</a></li>
+            <li><span class="text-gray-500">/</span></li>
+            <li class="text-gray-900">Sesja {{ session.session_id[:8] }}...</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                    📊 Szczegóły Sesji
+                </h1>
+                <p class="text-gray-600">ID: {{ session.session_id }}</p>
+                {% if user %}
+                <p class="text-sm text-gray-500">Użytkownik: {{ user.username }}</p>
+                {% endif %}
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('admin.export_session_data', session_id=session.session_id) }}" 
+                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    📥 Eksportuj JSON
+                </a>
+                <button onclick="window.print()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    🖨️ Drukuj
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statystyki sesji -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-blue-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-600 text-sm font-medium">Wiadomości</p>
+                    <p class="text-2xl font-bold text-blue-800">{{ session.user_messages }}</p>
+                </div>
+                <div class="text-blue-600 text-2xl">💬</div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-600 text-sm font-medium">Czas trwania</p>
+                    <p class="text-2xl font-bold text-green-800">{{ (session.duration // 60) }}min</p>
+                </div>
+                <div class="text-green-600 text-2xl">⏱️</div>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-600 text-sm font-medium">Zaangażowanie</p>
+                    <p class="text-2xl font-bold text-purple-800">{{ "%.0f"|format(session.engagement_score) }}%</p>
+                </div>
+                <div class="text-purple-600 text-2xl">📈</div>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-600 text-sm font-medium">Feedbacki</p>
+                    <p class="text-2xl font-bold text-yellow-800">{{ session.feedback_count }}</p>
+                </div>
+                <div class="text-yellow-600 text-2xl">👍</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dodatkowe metryki -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Metryki wydajności -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Metryki wydajności</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Średni czas odpowiedzi:</span>
+                    <span class="font-semibold">{{ "%.1f"|format(session.performance_metrics.avg_response_time) }}s</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Pytania na godzinę:</span>
+                    <span class="font-semibold">{{ "%.1f"|format(session.performance_metrics.messages_per_hour) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Wskaźnik ukończenia:</span>
+                    <span class="font-semibold">{{ "%.1f"|format(session.performance_metrics.completion_rate * 100) }}%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Jakość interakcji:</span>
+                    <span class="font-semibold">{{ "%.1f"|format(session.performance_metrics.interaction_quality * 100) }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tematy i powtórzenia -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">🏷️ Analiza tematów</h3>
+            <div class="space-y-3">
+                <div>
+                    <p class="text-sm text-gray-600 mb-2">Główne tematy:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for topic in session.topics %}
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ topic }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600">Powtarzające się pytania:</p>
+                    <p class="text-lg font-semibold">{{ session.repeated_questions.total_repeated }}</p>
+                    <p class="text-xs text-gray-500">Wskaźnik powtarzalności: {{ "%.1f"|format(session.repeated_questions.repetition_rate * 100) }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jakość odpowiedzi -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">⭐ Jakość odpowiedzi</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <p class="text-2xl font-bold text-green-600">{{ session.response_quality.positive_feedback }}</p>
+                <p class="text-sm text-gray-600">Pozytywne</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-bold text-red-600">{{ session.response_quality.negative_feedback }}</p>
+                <p class="text-sm text-gray-600">Negatywne</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-bold text-blue-600">{{ "%.1f"|format(session.response_quality.quality_score) }}%</p>
+                <p class="text-sm text-gray-600">Wskaźnik jakości</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pełny chat -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold mb-4">💬 Pełna historia rozmowy</h3>
+        <div class="space-y-4 max-h-96 overflow-y-auto">
+            {% for message in session.history %}
+            <div class="flex {{ 'justify-end' if message.role == 'user' else 'justify-start' }}">
+                <div class="max-w-3xl">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="text-xs font-medium {{ 'text-blue-600' if message.role == 'user' else 'text-gray-600' }}">
+                            {{ 'Użytkownik' if message.role == 'user' else 'Asystent' }}
+                        </span>
+                        <span class="text-xs text-gray-500">{{ message.timestamp[:19] }}</span>
+                    </div>
+                    <div class="p-3 rounded-lg {{ 'bg-blue-500 text-white' if message.role == 'user' else 'bg-gray-100 text-gray-800' }}">
+                        {% if message.role == 'user' %}
+                            <p class="whitespace-pre-wrap">{{ message.content }}</p>
+                        {% else %}
+                            <div class="prose max-w-none">{{ message.content|safe }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Szczegółowe feedbacki -->
+    {% if session.detailed_feedback %}
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+        <h3 class="text-lg font-semibold mb-4">📝 Szczegółowe feedbacki</h3>
+        <div class="space-y-4">
+            {% for feedback in session.detailed_feedback %}
+            <div class="border-l-4 {{ 'border-green-500' if feedback.feedback_type == 'positive' else 'border-red-500' }} pl-4 py-2">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium {{ 'text-green-600' if feedback.feedback_type == 'positive' else 'text-red-600' }}">
+                        {{ 'Pozytywny' if feedback.feedback_type == 'positive' else 'Negatywny' }} feedback
+                    </span>
+                    <span class="text-xs text-gray-500">{{ feedback.timestamp[:19] }}</span>
+                </div>
+                {% if feedback.description %}
+                <p class="text-sm text-gray-700 mb-2">{{ feedback.description }}</p>
+                {% endif %}
+                <p class="text-xs text-gray-500">Sekcja: {{ feedback.section_type }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+@media print {
+    .no-print {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

@@ -419,3 +419,154 @@ def get_admin_stats():
                 stats['total_reports'] += len([f for f in os.listdir(session_path) if f.endswith('.pdf')])
     
     return stats
+
+def get_active_users_today():
+    """Pobiera liczbę aktywnych użytkowników dzisiaj"""
+    today = datetime.now().date()
+    active_count = 0
+    
+    analytics.load_all_data()
+    for session in analytics.sessions_data.values():
+        if session['end_time']:
+            try:
+                end_date = datetime.fromisoformat(session['end_time']).date()
+                if end_date == today:
+                    active_count += 1
+            except:
+                pass
+    
+    return active_count
+
+def get_top_performing_users():
+    """Pobiera top 5 użytkowników według zaangażowania"""
+    analytics.load_all_data()
+    users = User.get_all_users()
+    user_scores = []
+    
+    for user in users:
+        user_stats = analytics.get_user_statistics(user.id)
+        if user_stats['total_sessions'] > 0:
+            user_scores.append({
+                'username': user.username,
+                'engagement': user_stats['avg_engagement'],
+                'sessions': user_stats['total_sessions'],
+                'messages': user_stats['total_messages']
+            })
+    
+    # Sortuj według zaangażowania
+    user_scores.sort(key=lambda x: x['engagement'], reverse=True)
+    return user_scores[:5]
+
+def calculate_system_health():
+    """Oblicza wskaźnik zdrowia systemu"""
+    analytics.load_all_data()
+    global_stats = analytics.get_global_statistics()
+    
+    health_score = 0
+    
+    # Punkty za aktywność (max 40)
+    if global_stats.get('sessions_today', 0) > 0:
+        health_score += min(global_stats['sessions_today'] * 5, 40)
+    
+    # Punkty za zaangażowanie (max 30)
+    avg_engagement = global_stats.get('avg_engagement', 0)
+    health_score += min(avg_engagement * 0.3, 30)
+    
+    # Punkty za feedback (max 20)
+    feedback_rate = global_stats.get('feedback_rate', 0)
+    health_score += min(feedback_rate * 10, 20)
+    
+    # Punkty za różnorodność tematów (max 10)
+    topic_count = len(global_stats.get('popular_topics', []))
+    health_score += min(topic_count, 10)
+    
+    return min(health_score, 100)
+
+def get_daily_statistics():
+    """Pobiera statystyki dzienne dla ostatnich 30 dni"""
+    analytics.load_all_data()
+    daily_data = {}
+    
+    # Przygotuj dane dla ostatnich 30 dni
+    for i in range(30):
+        date = (datetime.now() - timedelta(days=i)).date()
+        daily_data[date.isoformat()] = {
+            'sessions': 0,
+            'messages': 0,
+            'users': set(),
+            'feedback': 0
+        }
+    
+    # Przelicz sesje
+    for session in analytics.sessions_data.values():
+        if session['end_time']:
+            try:
+                end_date = datetime.fromisoformat(session['end_time']).date()
+                date_str = end_date.isoformat()
+                
+                if date_str in daily_data:
+                    daily_data[date_str]['sessions'] += 1
+                    daily_data[date_str]['messages'] += session['user_messages']
+                    daily_data[date_str]['feedback'] += session['feedback_count']
+                    if session['user_id']:
+                        daily_data[date_str]['users'].add(session['user_id'])
+            except:
+                pass
+    
+    # Konwertuj set na liczby
+    for date_data in daily_data.values():
+        date_data['users'] = len(date_data['users'])
+    
+    return daily_data
+
+def get_top_users_detailed():
+    """Pobiera szczegółowe dane top użytkowników"""
+    analytics.load_all_data()
+    users = User.get_all_users()
+    user_details = []
+    
+    for user in users:
+        user_stats = analytics.get_user_statistics(user.id)
+        if user_stats['total_sessions'] > 0:
+            user_details.append({
+                'user_id': user.id,
+                'username': user.username,
+                'total_sessions': user_stats['total_sessions'],
+                'total_messages': user_stats['total_messages'],
+                'total_time': user_stats['total_time'],
+                'avg_engagement': user_stats['avg_engagement'],
+                'productivity_score': user_stats['productivity_score'],
+                'favorite_topics': user_stats['favorite_topics'],
+                'quality_score': user_stats['quality_score']
+            })
+    
+    return sorted(user_details, key=lambda x: x['avg_engagement'], reverse=True)
+
+def analyze_topics_distribution():
+    """Analizuje rozkład tematów w systemie"""
+    analytics.load_all_data()
+    topic_stats = {}
+    
+    for session in analytics.sessions_data.values():
+        for topic in session['topics']:
+            if topic not in topic_stats:
+                topic_stats[topic] = {
+                    'count': 0,
+                    'sessions': 0,
+                    'avg_engagement': 0,
+                    'total_engagement': 0
+                }
+            
+            topic_stats[topic]['count'] += 1
+            topic_stats[topic]['sessions'] += 1
+            topic_stats[topic]['total_engagement'] += session['engagement_score']
+    
+    # Oblicz średnie zaangażowanie
+    for topic, stats in topic_stats.items():
+        if stats['sessions'] > 0:
+            stats['avg_engagement'] = stats['total_engagement'] / stats['sessions']
+    
+    # Sortuj według popularności
+    sorted_topics = sorted(topic_stats.items(), key=lambda x: x[1]['count'], reverse=True)
+    
+    return dict(sorted_topics)
