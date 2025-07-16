@@ -232,6 +232,36 @@ class OpenAIRAG:
         except Exception as e:
             print(f"❌ Błąd podczas czyszczenia pamięci: {str(e)}")
 
+    def cancel_active_runs(self, thread_id):
+        """Anuluje wszystkie aktywne runy w wątku"""
+        try:
+            print(f"🔍 Sprawdzam aktywne runy w wątku {thread_id}")
+            
+            # Pobierz wszystkie runy w wątku
+            runs = self.client.beta.threads.runs.list(thread_id=thread_id)
+            
+            active_runs = []
+            for run in runs.data:
+                if run.status in ['queued', 'in_progress', 'requires_action']:
+                    active_runs.append(run.id)
+                    
+            # Anuluj aktywne runy
+            for run_id in active_runs:
+                try:
+                    self.client.beta.threads.runs.cancel(thread_id=thread_id, run_id=run_id)
+                    print(f"⚠️  Anulowano aktywny run: {run_id}")
+                except Exception as e:
+                    print(f"❌ Nie udało się anulować run {run_id}: {e}")
+                    
+            if active_runs:
+                print(f"✅ Anulowano {len(active_runs)} aktywnych runów")
+                time.sleep(1)  # Krótkie opóźnienie aby anulowanie się dokończyło
+            else:
+                print("✅ Brak aktywnych runów do anulowania")
+                
+        except Exception as e:
+            print(f"❌ Błąd podczas anulowania aktywnych runów: {str(e)}")
+
     def select_relevant_documents(self, query, max_docs=5):  # Zmniejszono z 10 do 5
         """Wybiera najistotniejsze dokumenty dla zapytania"""
         print(f"🔍 Wybieranie dokumentów dla zapytania: {query[:50]}...")
@@ -424,6 +454,9 @@ class OpenAIRAG:
             
             while retry_count < max_retries:
                 try:
+                    # Sprawdź czy wątek ma aktywne runy i je anuluj
+                    self.cancel_active_runs(thread.id)
+                    
                     # Przygotuj parametry dla run
                     run_params = {
                         'thread_id': thread.id,
