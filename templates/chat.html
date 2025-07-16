@@ -311,9 +311,21 @@
                 
                 const newSession = await response.json();
                 if (response.ok) {
+                    console.log('✅ Utworzono nową sesję:', newSession);
                     this.sessions.unshift(newSession);
                     this.renderSessions();
-                    this.switchToSession(newSession.session_id);
+                    
+                    // Wyczyść chat przed przełączeniem
+                    const chatMessages = document.getElementById('chatMessages');
+                    if (chatMessages) {
+                        chatMessages.innerHTML = '';
+                    }
+                    
+                    // Przełącz na nową sesję
+                    await this.switchToSession(newSession.session_id);
+                    
+                    // Przeładuj listę sesji żeby pokazać nową
+                    await this.loadUserSessions();
                 }
             } catch (error) {
                 console.error('Błąd tworzenia sesji:', error);
@@ -544,7 +556,17 @@
             }
         }
         
-        // Funkcja do aktualizacji tytułu sesji
+        // Funkcja do aktualizacji tytułu sesji z UI (wywołana przez socket)
+        updateSessionTitleInUI(sessionId, title) {
+            const sessionIndex = this.sessions.findIndex(s => s.session_id === sessionId);
+            if (sessionIndex !== -1) {
+                this.sessions[sessionIndex].title = title;
+                this.renderSessions();
+                console.log(`✅ Zaktualizowano tytuł sesji w UI: ${title}`);
+            }
+        }
+        
+        // Funkcja do aktualizacji tytułu sesji (API call)
         async updateSessionTitle(sessionId, title) {
             try {
                 const response = await fetch(`/api/sessions/${sessionId}/title`, {
@@ -575,6 +597,10 @@
     
     // Udostępnij SessionManager globalnie
     window.sessionManager = sessionManager;
+    
+    // Inicjalizacja Chat App
+    const chatApp = new ChatApp();
+    window.chatApp = chatApp;
 
     // Auto-resize textarea
     document.getElementById('messageInput').addEventListener('input', function() {
@@ -628,29 +654,5 @@
             window.chatApp.updateDocumentsUsed(count);
         }
     };
-    
-    // Load recent files
-    fetch('/api/files')
-        .then(response => response.json())
-        .then(files => {
-            const container = document.getElementById('recentFiles');
-            if (files.length === 0) {
-                container.innerHTML = '<p class="text-readable-light text-center py-4">Brak załadowanych dokumentów</p>';
-                return;
-            }
-            
-            container.innerHTML = files.slice(0, 5).map(file => `
-                <div class="flex items-center justify-between py-2 px-2 glass-dark rounded-lg">
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-file-pdf text-red-500"></i>
-                        <span class="text-readable truncate text-xs" title="${file.name}">${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}</span>
-                    </div>
-                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                </div>
-            `).join('');
-        })
-        .catch(() => {
-            document.getElementById('recentFiles').innerHTML = '<p class="text-readable-light text-center py-4">Błąd ładowania</p>';
-        });
 </script>
 {% endblock %}

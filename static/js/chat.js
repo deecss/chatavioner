@@ -74,6 +74,12 @@ class ChatApp {
         this.socket.on('generating_start', (data) => {
             console.log('🔄 Otrzymano generating_start:', data);
         });
+        
+        // Obsługa aktualizacji tytułu sesji
+        this.socket.on('session_title_updated', (data) => {
+            console.log('🏷️ Otrzymano session_title_updated:', data);
+            this.handleSessionTitleUpdated(data);
+        });
     }
 
     initElements() {
@@ -193,8 +199,21 @@ class ChatApp {
         
         // Sprawdź czy mamy aktywną sesję
         if (!this.sessionId && !window.CURRENT_SESSION_ID) {
-            console.log('❌ Brak aktywnej sesji');
-            alert('Brak aktywnej sesji. Utwórz nową sesję.');
+            console.log('❌ Brak aktywnej sesji - próbuję utworzyć nową');
+            
+            // Automatycznie utwórz nową sesję
+            if (window.sessionManager) {
+                window.sessionManager.createNewSession().then(() => {
+                    console.log('✅ Utworzono nową sesję, ponawiam wysyłanie wiadomości');
+                    // Ponów wysłanie wiadomości po utworzeniu sesji
+                    setTimeout(() => {
+                        this.messageInput.value = message;
+                        this.sendMessage();
+                    }, 500);
+                });
+            } else {
+                alert('Brak aktywnej sesji. Utwórz nową sesję.');
+            }
             return;
         }
         
@@ -601,7 +620,7 @@ class ChatApp {
                 if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tagName)) {
                     // Każdy nagłówek jako osobna sekcja
                     sections.push(node.outerHTML);
-                } else if (tagName === 'p') {
+                } else if (node.tagName.toLowerCase() === 'p') {
                     // Każdy akapit jako osobna sekcja
                     sections.push(node.outerHTML);
                 } else if (['ul', 'ol'].includes(tagName)) {

@@ -88,9 +88,31 @@ def register_socketio_handlers(socketio):
                 emit('error', {'message': 'Brak aktywnej sesji. Utwórz nową sesję.'})
                 return
             
-            # Zapisz wiadomość użytkownika
+            # Utwórz sesję czatu z poprawnym user_id
             chat_session = ChatSession(session_id, current_user.id)
+            
+            # Sprawdź czy to pierwsza wiadomość w sesji
+            history = chat_session.load_history()
+            is_first_message = len([msg for msg in history if msg['role'] == 'user' and msg.get('user_id') == current_user.id]) == 0
+            
+            # Zapisz wiadomość użytkownika
             chat_session.save_message(message, 'user')
+            
+            # Jeśli to pierwsza wiadomość, zaktualizuj tytuł sesji
+            if is_first_message:
+                # Skróć wiadomość do maksymalnie 50 znaków dla tytułu
+                title = message[:50] + "..." if len(message) > 50 else message
+                print(f"🏷️ Aktualizuję tytuł sesji na: {title}")
+                
+                # Aktualizuj tytuł sesji
+                from app.models import UserSession
+                UserSession.update_session_title(current_user.id, session_id, title)
+                
+                # Powiadom frontend o zmianie tytułu
+                emit('session_title_updated', {
+                    'session_id': session_id,
+                    'new_title': title
+                })
             
             # Wyślij potwierdzenie
             emit('message_received', {
@@ -105,18 +127,22 @@ def register_socketio_handlers(socketio):
             # Inicjalizuj OpenAI RAG
             rag = OpenAIRAG()
             
-            # Przygotuj kontekst - PEŁNA HISTORIA ROZMOWY
+            # Przygotuj kontekst - PEŁNA HISTORIA ROZMOWY TYLKO DLA TEJ SESJI I TEGO UŻYTKOWNIKA
             history = chat_session.load_history()
             context = []
             
-            print(f"🗂️ Ładuję historię rozmowy: {len(history)} wiadomości")
+            print(f"🗂️ Ładuję historię rozmowy dla sesji {session_id}: {len(history)} wiadomości")
             
-            # Przekaż całą historię rozmowy do asystenta
+            # Przekaż całą historię rozmowy do asystenta - filtruj tylko dla tego user_id
             for msg in history:
-                context.append({
-                    'role': msg['role'],
-                    'content': msg['content']
-                })
+                if msg.get('user_id') == current_user.id:  # Tylko wiadomości tego użytkownika
+                    context.append({
+                        'role': msg['role'],
+                        'content': msg['content']
+                    })
+            
+            print(f"📚 Kontekst przygotowany dla user {current_user.id}: {len(context)} wiadomości")
+            print(f"🔍 Ostatnie 3 wiadomości: {[m['role'] + ': ' + m['content'][:50] + '...' for m in context[-3:]]}")
             
             print(f"📚 Kontekst przygotowany: {len(context)} wiadomości")
             print(f"🔍 Ostatnie 3 wiadomości: {[m['role'] + ': ' + m['content'][:50] + '...' for m in context[-3:]]}")
