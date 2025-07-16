@@ -324,11 +324,11 @@
                     // Przełącz na nową sesję
                     await this.switchToSession(newSession.session_id);
                     
-                    // Przeładuj listę sesji żeby pokazać nową
-                    await this.loadUserSessions();
+                    console.log(`✅ Przełączono na nową sesję: ${newSession.session_id}`);
                 }
             } catch (error) {
                 console.error('Błąd tworzenia sesji:', error);
+                alert('Nie udało się utworzyć nowej sesji. Spróbuj ponownie.');
             }
         }
         
@@ -563,6 +563,16 @@
                 this.sessions[sessionIndex].title = title;
                 this.renderSessions();
                 console.log(`✅ Zaktualizowano tytuł sesji w UI: ${title}`);
+            }
+        }
+        
+        // Funkcja do aktualizacji tytułu sesji w liście (wywoływana z chat.js)
+        updateSessionTitleInList(sessionId, newTitle) {
+            const sessionIndex = this.sessions.findIndex(s => s.session_id === sessionId);
+            if (sessionIndex !== -1) {
+                this.sessions[sessionIndex].title = newTitle;
+                this.renderSessions();
+                console.log(`✅ Zaktualizowano tytuł sesji w liście: ${newTitle}`);
             }
         }
         
