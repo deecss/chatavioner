@@ -400,6 +400,7 @@ class OpenAIRAG:
                 
                 # Zwróć odpowiedź jako generator dla zachowania zgodności
                 def rejection_generator():
+                    print(f"🚫 Zwracam wiadomość odmowy: {rejection_message[:100]}...")
                     yield rejection_message
                 
                 return rejection_generator()

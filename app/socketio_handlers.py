@@ -153,7 +153,10 @@ def register_socketio_handlers(socketio):
             response_text = ""
             documents_used = 0
             
+            print(f"🔄 Rozpoczynam pętlę generowania odpowiedzi...")
+            
             for chunk in rag.generate_response_stream(message, context, session_id):
+                print(f"📨 Otrzymano chunk: {chunk[:50]}...")
                 response_text += chunk
                 # Wyślij surowy chunk (markdown)
                 emit('response_chunk', {'chunk': chunk, 'message_id': message_id})
@@ -161,6 +164,8 @@ def register_socketio_handlers(socketio):
                 # Sprawdź czy użyto dokumentów (można to zrobić w rag.py)
                 if hasattr(rag, 'last_documents_used'):
                     documents_used = rag.last_documents_used
+            
+            print(f"✅ Pętla generowania zakończona. Długość odpowiedzi: {len(response_text)}")
             
             # Wyślij informacje o użytych dokumentach
             emit('documents_used', {'count': documents_used})
