@@ -366,6 +366,9 @@
                         window.chatApp.updateSessionId(sessionId);
                     }
                     
+                    // Resetuj statystyki sesji
+                    resetSessionStats();
+                    
                     // Aktualizuj UI
                     this.updateSessionUI();
                     
@@ -393,8 +396,15 @@
                     
                     // Dodaj wiadomości z historii
                     if (history.length > 0) {
+                        let userQuestionsCount = 0;
+                        
                         history.forEach((message, index) => {
                             console.log(`📝 Dodaję wiadomość ${index + 1}:`, message);
+                            
+                            // Policz pytania użytkownika
+                            if (message.role === 'user') {
+                                userQuestionsCount++;
+                            }
                             
                             // Użyj funkcji addMessage z chat.js
                             if (window.chatApp && window.chatApp.addMessage) {
@@ -404,6 +414,20 @@
                                 this.addMessageToChat(message.content, message.role);
                             }
                         });
+                        
+                        // Zaktualizuj statystyki w obu miejscach
+                        if (window.chatApp) {
+                            window.chatApp.questionsAsked = userQuestionsCount;
+                            if (window.chatApp.questionsCount) {
+                                window.chatApp.questionsCount.textContent = userQuestionsCount;
+                            }
+                        }
+                        
+                        // Zaktualizuj też lokalne statystyki
+                        questionsAsked = userQuestionsCount;
+                        document.getElementById('questionsCount').textContent = userQuestionsCount;
+                        
+                        console.log(`📊 Zaktualizowano statystyki: ${userQuestionsCount} pytań`);
                     } else {
                         // Jeśli brak historii, pokaż welcome message
                         this.showWelcomeMessage();
@@ -534,6 +558,9 @@
                     if (window.chatApp) {
                         window.chatApp.updateSessionId(data.session_id);
                     }
+                    
+                    // Resetuj statystyki sesji
+                    resetSessionStats();
                     
                     this.updateSessionUI();
                     await this.loadSessionHistory(data.session_id);
@@ -669,6 +696,19 @@
     function updateDocumentCount(count) {
         documentsUsed = count;
         document.getElementById('documentsCount').textContent = documentsUsed;
+    }
+    
+    function resetSessionStats() {
+        sessionStart = Date.now();
+        questionsAsked = 0;
+        documentsUsed = 0;
+        
+        // Zaktualizuj UI
+        document.getElementById('questionsCount').textContent = '0';
+        document.getElementById('documentsCount').textContent = '0';
+        document.getElementById('sessionTime').textContent = '0:00';
+        
+        console.log('🔄 Zresetowano statystyki sesji w UI');
     }
     
     setInterval(updateSessionTime, 1000);

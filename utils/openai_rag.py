@@ -352,13 +352,24 @@ class OpenAIRAG:
         try:
             print(f"🔍 Rozpoczynam generowanie odpowiedzi dla: {query[:50]}...")
             
+            # Wyciągnij user_id z kontekstu (jeśli dostępny)
+            user_id = None
+            if context:
+                # Znajdź pierwszą wiadomość z user_id
+                for msg in context:
+                    if isinstance(msg, dict) and 'user_id' in msg:
+                        user_id = msg['user_id']
+                        break
+            
+            print(f"🆔 User ID z kontekstu: {user_id}")
+            
             # ANALIZUJ PREFERENCJE UŻYTKOWNIKA I UCZEŚSIA SIĘ
             print("🧠 Analizuję preferencje użytkownika...")
-            learning_prompt = self.learning_system.generate_learning_prompt(session_id, query)
+            learning_prompt = self.learning_system.generate_learning_prompt(session_id, query, user_id)
             print(f"📚 Prompt uczenia: {learning_prompt}")
             
             # Zapisz analizę sesji dla przyszłego uczenia
-            session_analysis = self.learning_system.analyze_conversation_history(session_id)
+            session_analysis = self.learning_system.analyze_conversation_history(session_id, user_id)
             if session_analysis:
                 self.learning_system.save_learning_data(session_analysis)
                 print("💾 Zapisano dane uczenia")
@@ -381,48 +392,49 @@ class OpenAIRAG:
                 
             print(f"🔍 Vector store ID: {vector_store_id}, Pliki: {len(file_ids)}")
             
-            # Przygotuj kontekst rozmowy (pełna historia, ale ogranicz do ostatnich 20 wiadomości)
+            # Przygotuj kontekst rozmowy (pełna historia, zwiększ do 30 wiadomości)
             messages = []
-            # Zwiększ kontekst do 20 ostatnich wiadomości (10 par pytanie-odpowiedź)
-            recent_context = context[-20:] if len(context) > 20 else context
+            # Zwiększ kontekst do 30 ostatnich wiadomości (15 par pytanie-odpowiedź)
+            recent_context = context[-30:] if len(context) > 30 else context
             
             print(f"🔍 Przygotowuję kontekst z {len(recent_context)} wiadomości (z {len(context)} całkowitych)")
+            print(f"📚 Pierwsze pytanie w sesji: {context[0]['content'][:100] if context else 'Brak kontekstu'}...")
+            print(f"📚 Ostatnie pytanie w sesji: {context[-1]['content'][:100] if context else 'Brak kontekstu'}...")
             
             for msg in recent_context:
                 messages.append({
                     "role": msg["role"],
                     "content": msg["content"]
                 })
-            
-            # Dodaj prompt uczenia do pytania użytkownika zamiast jako system
-            enhanced_query = query
-            if learning_prompt:
-                enhanced_query = f"{learning_prompt}\n\nPYTANIE UŻYTKOWNIKA: {query}"
-            
-            # Dodaj aktualne pytanie z promptem uczenia i instrukcjami dotyczącymi historii
-            enhanced_query = query
-            if learning_prompt:
-                enhanced_query = f"{learning_prompt}\n\nPYTANIE UŻYTKOWNIKA: {query}"
-            
-            # Dodaj instrukcje dotyczące wykorzystania historii rozmowy
-            if len(context) > 2:  # Jeśli jest historia rozmowy
+                
+            # Dodaj szczegółowe instrukcje dotyczące kontekstu sesji
+            context_instruction = ""
+            if len(context) > 1:  # Jeśli jest historia rozmowy
+                first_question = context[0]['content'] if context[0]['role'] == 'user' else "Brak pierwszego pytania"
                 context_instruction = f"""
                 
-                INSTRUKCJE DOTYCZĄCE HISTORII ROZMOWY:
-                - Przeanalizuj całą historię rozmowy powyżej
-                - Jeśli to pytanie było już zadane, odwołaj się do wcześniejszej odpowiedzi
-                - Jeśli to kontynuacja tematu, nawiąż do wcześniejszej rozmowy  
-                - Jeśli użytkownik prosi o więcej szczegółów, rozbuduj poprzednią odpowiedź
+                WAŻNE INSTRUKCJE DOTYCZĄCE KONTEKSTU SESJI:
+                - Pamiętaj, że to kontynuacja rozmowy - przeanalizuj całą historię powyżej
+                - Pierwsze pytanie użytkownika w tej sesji to: "{first_question}"
+                - Jeśli użytkownik pyta o coś, co było wcześniej omawiane, odwołaj się do tego
+                - Jeśli użytkownik pyta o pierwsze pytanie, odpowiedz konkretnie
                 - Zachowaj spójność ze stylem odpowiedzi preferowanym przez użytkownika
+                - Nawiązuj do wcześniejszych tematów gdy to właściwe
                 
-                PYTANIE: {query}
+                AKTUALNE PYTANIE: {query}
                 """
-                enhanced_query = context_instruction
+            else:
+                context_instruction = f"PYTANIE: {query}"
+            
+            # Kombinuj prompt uczenia z instrukcjami kontekstu
+            final_query = context_instruction
+            if learning_prompt:
+                final_query = f"{learning_prompt}\n\n{context_instruction}"
             
             # Dodaj aktualne pytanie z promptem uczenia
             messages.append({
                 "role": "user",
-                "content": enhanced_query
+                "content": final_query
             })
             
             print(f"🔍 Przygotowano {len(messages)} wiadomości w kontekście (z promptem uczenia)")

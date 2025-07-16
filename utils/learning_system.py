@@ -25,16 +25,21 @@ class LearningSystem:
         for directory in ['data']:
             os.makedirs(directory, exist_ok=True)
     
-    def analyze_conversation_history(self, session_id: str) -> Dict:
+    def analyze_conversation_history(self, session_id: str, user_id: int = None) -> Dict:
         """Analizuje historię rozmowy dla danej sesji"""
-        chat_session = ChatSession(session_id)
+        chat_session = ChatSession(session_id, user_id)
         history = chat_session.load_history()
         
         if not history:
             return {}
         
+        # Filtruj wiadomości dla konkretnego użytkownika jeśli user_id podane
+        if user_id:
+            history = [msg for msg in history if msg.get('user_id') == user_id]
+        
         analysis = {
             'session_id': session_id,
+            'user_id': user_id,
             'total_messages': len(history),
             'user_patterns': self._extract_user_patterns(history),
             'response_patterns': self._extract_response_patterns(history),
@@ -355,9 +360,9 @@ class LearningSystem:
         except Exception as e:
             print(f"❌ Błąd zapisywania danych uczenia: {e}")
     
-    def get_user_preferences(self, session_id: str) -> Dict:
+    def get_user_preferences(self, session_id: str, user_id: int = None) -> Dict:
         """Pobiera preferencje użytkownika na podstawie historii"""
-        analysis = self.analyze_conversation_history(session_id)
+        analysis = self.analyze_conversation_history(session_id, user_id)
         
         if not analysis:
             return self._get_default_preferences()
@@ -375,6 +380,7 @@ class LearningSystem:
             'common_topics': analysis['topic_progression'],
             'response_structure_preference': self._determine_structure_preference(analysis),
             'session_id': session_id,
+            'user_id': user_id,
             'updated_at': datetime.now().isoformat()
         }
         
@@ -415,9 +421,9 @@ class LearningSystem:
         # Domyślnie strukturowana odpowiedź
         return 'structured'
     
-    def generate_learning_prompt(self, session_id: str, current_query: str) -> str:
+    def generate_learning_prompt(self, session_id: str, current_query: str, user_id: int = None) -> str:
         """Generuje prompt uczenia na podstawie preferencji użytkownika"""
-        preferences = self.get_user_preferences(session_id)
+        preferences = self.get_user_preferences(session_id, user_id)
         
         prompt_parts = [
             "KONTEKST UCZENIA UŻYTKOWNIKA:",

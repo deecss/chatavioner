@@ -175,6 +175,26 @@ class ChatApp {
         this.sessionId = sessionId;
         window.CURRENT_SESSION_ID = sessionId;
         console.log(`🔄 Zaktualizowano session ID: ${sessionId}`);
+        
+        // Resetuj statystyki sesji przy przełączeniu
+        this.resetSessionStats();
+    }
+
+    // Metoda do resetowania statystyk sesji
+    resetSessionStats() {
+        this.questionsAsked = 0;
+        this.documentsUsed = 0;
+        this.sessionStartTime = Date.now();
+        
+        // Zaktualizuj UI
+        if (this.questionsCount) {
+            this.questionsCount.textContent = '0';
+        }
+        if (this.documentsCount) {
+            this.documentsCount.textContent = '0';
+        }
+        
+        console.log('🔄 Zresetowano statystyki sesji');
     }
 
     // Obsługa aktualizacji tytułu sesji
