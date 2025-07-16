@@ -401,6 +401,13 @@ class OpenAIRAG:
             print(f"📚 Pierwsze pytanie w sesji: {context[0]['content'][:100] if context else 'Brak kontekstu'}...")
             print(f"📚 Ostatnie pytanie w sesji: {context[-1]['content'][:100] if context else 'Brak kontekstu'}...")
             
+            # Wyświetl streszczenie całej historii
+            if len(context) > 0:
+                user_questions = [msg['content'][:50] + "..." for msg in context if msg['role'] == 'user']
+                print(f"📋 Wszystkie pytania użytkownika w sesji ({len(user_questions)}):")
+                for i, q in enumerate(user_questions, 1):
+                    print(f"   {i}. {q}")
+            
             for msg in recent_context:
                 messages.append({
                     "role": msg["role"],

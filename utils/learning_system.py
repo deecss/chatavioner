@@ -458,9 +458,9 @@ class LearningSystem:
         
         return "\n".join(prompt_parts)
     
-    def update_preferences_from_feedback(self, session_id: str, feedback_data: Dict):
+    def update_preferences_from_feedback(self, session_id: str, feedback_data: Dict, user_id: int = None):
         """Aktualizuje preferencje na podstawie feedbacku"""
-        preferences = self.get_user_preferences(session_id)
+        preferences = self.get_user_preferences(session_id, user_id)
         
         # Analiza pozytywnego feedbacku
         if feedback_data.get('feedback') == 'positive':

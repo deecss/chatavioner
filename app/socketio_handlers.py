@@ -211,7 +211,7 @@ def register_socketio_handlers(socketio):
             # SYSTEM UCZENIA SIĘ - Aktualizuj preferencje na podstawie feedbacku
             try:
                 learning_system = LearningSystem()
-                learning_system.update_preferences_from_feedback(session_id, feedback_data)
+                learning_system.update_preferences_from_feedback(session_id, feedback_data, current_user.id)
                 print(f"🧠 Zaktualizowano preferencje uczenia dla sesji {session_id}")
             except Exception as e:
                 print(f"⚠️ Błąd aktualizacji systemu uczenia się: {e}")
@@ -260,7 +260,7 @@ def register_socketio_handlers(socketio):
             
             # SYSTEM UCZENIA SIĘ - Aktualizuj preferencje na podstawie ogólnego feedbacku
             learning_system = LearningSystem()
-            learning_system.update_preferences_from_feedback(session_id, feedback_data)
+            learning_system.update_preferences_from_feedback(session_id, feedback_data, current_user.id)
             print(f"🧠 Zaktualizowano preferencje uczenia dla sesji {session_id} (overall feedback)")
             
             # Zapisz feedback do pliku
@@ -310,7 +310,7 @@ def register_socketio_handlers(socketio):
             
             # SYSTEM UCZENIA SIĘ - Aktualizuj preferencje na podstawie szczegółowego feedbacku
             learning_system = LearningSystem()
-            learning_system.update_preferences_from_feedback(session_id, feedback_data)
+            learning_system.update_preferences_from_feedback(session_id, feedback_data, current_user.id)
             print(f"🧠 Zaktualizowano preferencje uczenia dla sesji {session_id} (detailed feedback)")
             
             # Zapisz feedback do pliku
