@@ -265,7 +265,19 @@
             this.currentSessionId = null;
             this.sessions = window.USER_SESSIONS || [];
             this.initEventListeners();
-            this.loadCurrentSession();
+            this.waitForChatApp();
+        }
+        
+        // Czekaj na załadowanie ChatApp
+        waitForChatApp() {
+            const checkChatApp = () => {
+                if (window.chatApp) {
+                    this.loadCurrentSession();
+                } else {
+                    setTimeout(checkChatApp, 100);
+                }
+            };
+            checkChatApp();
         }
         
         initEventListeners() {
@@ -608,9 +620,7 @@
     // Udostępnij SessionManager globalnie
     window.sessionManager = sessionManager;
     
-    // Inicjalizacja Chat App
-    const chatApp = new ChatApp();
-    window.chatApp = chatApp;
+    // ChatApp będzie zainicjalizowany przez chat.js po załadowaniu DOM
 
     // Auto-resize textarea
     document.getElementById('messageInput').addEventListener('input', function() {

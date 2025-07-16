@@ -1,113 +1,5 @@
 [
   {
-    "session_id": "b159189d-4329-43b5-8dab-478248ae01a0",
-    "total_messages": 13,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "siła",
-          5
-        ],
-        [
-          "nosna",
-          3
-        ],
-        [
-          "działa",
-          3
-        ],
-        [
-          "nośna",
-          3
-        ],
-        [
-          "locie",
-          3
-        ],
-        [
-          "opracowanie",
-          1
-        ],
-        [
-          "temat",
-          1
-        ],
-        [
-          "siły",
-          1
-        ],
-        [
-          "nosnej",
-          1
-        ],
-        [
-          "sila",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.142857142857143,
-        "min_length": 2,
-        "max_length": 6,
-        "preferred_range": "short"
-      },
-      "request_types": {
-        "explanations": 3
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2353.3333333333335,
-        "min_length": 2128,
-        "max_length": 2525,
-        "word_count_avg": 322.1666666666667
-      },
-      "structure_types": {
-        "has_headers": 0.0,
-        "has_lists": 0.0,
-        "has_examples": 0.5,
-        "has_formulas": 0.6666666666666666,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 6,
-        "practical": 1,
-        "examples": 3,
-        "procedures": 2,
-        "references": 3
-      },
-      "formatting_patterns": {
-        "html_tags": 0,
-        "markdown_headers": 53,
-        "bullet_points": 37,
-        "numbered_lists": 0,
-        "bold_text": 98,
-        "italic_text": 98
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "aerodynamika",
-      "aerodynamika",
-      "aerodynamika"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 3,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T13:00:46.221607"
-  },
-  {
     "session_id": "4fb360af-a094-4775-a091-f2be7275a73a",
     "total_messages": 8,
     "user_patterns": {
@@ -11084,5 +10976,74 @@
       "application": 0
     },
     "timestamp": "2025-07-16T13:55:01.942369"
+  },
+  {
+    "session_id": "804bd635-96ce-411a-ab96-dc061cd1fb04",
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "sila",
+          1
+        ],
+        [
+          "nosna",
+          1
+        ],
+        [
+          "szybowcach",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.0,
+        "min_length": 4,
+        "max_length": 4,
+        "preferred_range": "short"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 0
+      },
+      "structure_types": {
+        "has_headers": 0,
+        "has_lists": 0,
+        "has_examples": 0,
+        "has_formulas": 0,
+        "has_summaries": 0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 0,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 0,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 0,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-16T14:11:39.746876"
   }
 ]

@@ -177,6 +177,14 @@ class ChatApp {
         console.log(`🔄 Zaktualizowano session ID: ${sessionId}`);
     }
 
+    // Obsługa aktualizacji tytułu sesji
+    handleSessionTitleUpdated(data) {
+        console.log('🏷️ Obsługa aktualizacji tytułu sesji:', data);
+        if (window.sessionManager && data.session_id && data.title) {
+            window.sessionManager.updateSessionTitleInUI(data.session_id, data.title);
+        }
+    }
+
     generateSessionId() {
         return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
@@ -842,7 +850,7 @@ class ChatApp {
             negativeBtn?.classList.add('bg-red-500', 'text-white');
         }
         
-        if this.currentFeedback) {
+        if (this.currentFeedback) {
             this.currentFeedback.type = type;
         }
     }
