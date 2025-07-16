@@ -144,8 +144,9 @@ def get_session_history(session_id):
 @main_bp.route('/api/current_session')
 @login_required
 def get_current_session():
-    """Pobiera aktualną sesję z session storage"""
-    session_id = session.get('current_session_id')
+    """Pobiera aktualną sesję użytkownika"""
+    from app.models import UserSession
+    session_id = UserSession.get_current_session(current_user.id)
     if session_id:
         return jsonify({'session_id': session_id})
     return jsonify({'session_id': None})
@@ -153,12 +154,13 @@ def get_current_session():
 @main_bp.route('/api/current_session', methods=['POST'])
 @login_required
 def set_current_session():
-    """Ustawia aktualną sesję w session storage"""
+    """Ustawia aktualną sesję użytkownika"""
+    from app.models import UserSession
     data = request.get_json()
     session_id = data.get('session_id')
     
     if session_id:
-        session['current_session_id'] = session_id
+        UserSession.set_current_session(current_user.id, session_id)
         return jsonify({'message': 'Sesja ustawiona pomyślnie'})
     
     return jsonify({'error': 'Brak session_id'}), 400
@@ -215,7 +217,7 @@ def submit_feedback():
     if not data or 'type' not in data:
         return jsonify({'error': 'Brakuje danych feedbacku'}), 400
     
-    session_id = session.get('current_session_id')
+    session_id = UserSession.get_current_session(current_user.id)
     if not session_id:
         return jsonify({'error': 'Brak aktywnej sesji'}), 400
     
@@ -240,7 +242,7 @@ def get_history():
 @login_required
 def clear_history():
     """Endpoint do czyszczenia historii aktualnej sesji"""
-    session_id = session.get('current_session_id')
+    session_id = UserSession.get_current_session(current_user.id)
     if not session_id:
         return jsonify({'error': 'Brak aktywnej sesji'}), 400
     
@@ -329,7 +331,7 @@ def get_learning_status():
         from utils.learning_system import LearningSystem
         
         learning_system = LearningSystem()
-        session_id = session.get('current_session_id')
+        session_id = UserSession.get_current_session(current_user.id)
         
         if not session_id:
             return jsonify({'error': 'Brak aktywnej sesji'}), 400

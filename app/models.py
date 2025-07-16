@@ -10,6 +10,10 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+# Przechowywanie aktualnej sesji dla każdego użytkownika
+# user_id -> session_id
+USER_CURRENT_SESSIONS = {}
+
 class User(UserMixin):
     """Model użytkownika do autoryzacji administratora"""
     
@@ -341,6 +345,24 @@ class UserSession:
             return True
         except:
             return False
+    
+    @staticmethod
+    def get_current_session(user_id):
+        """Pobiera aktualną sesję użytkownika"""
+        return USER_CURRENT_SESSIONS.get(user_id)
+    
+    @staticmethod
+    def set_current_session(user_id, session_id):
+        """Ustawia aktualną sesję użytkownika"""
+        USER_CURRENT_SESSIONS[user_id] = session_id
+        print(f"🔄 Ustawiono aktualną sesję dla użytkownika {user_id}: {session_id}")
+    
+    @staticmethod
+    def clear_current_session(user_id):
+        """Usuwa aktualną sesję użytkownika"""
+        if user_id in USER_CURRENT_SESSIONS:
+            del USER_CURRENT_SESSIONS[user_id]
+            print(f"🗑️ Wyczyszczono aktualną sesję dla użytkownika {user_id}")
 
 class ChatSession:
     """Model sesji czatu"""

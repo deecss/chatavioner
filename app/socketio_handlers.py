@@ -12,7 +12,7 @@ from datetime import datetime
 from flask import session, request
 from flask_socketio import emit, disconnect
 from flask_login import current_user
-from app.models import ChatSession
+from app.models import ChatSession, UserSession
 from utils.openai_rag import OpenAIRAG
 from utils.learning_system import LearningSystem
 
@@ -34,15 +34,15 @@ def register_socketio_handlers(socketio):
     """Rejestruje handlery WebSocket"""
     
     @socketio.on('connect')
-    def handle_connect():
+    def handle_connect(auth=None):
         """Obsługuje połączenie WebSocket"""
         if not current_user.is_authenticated:
             print("⚠️  Nieautoryzowane połączenie WebSocket")
             disconnect()
             return
         
-        current_session_id = session.get('current_session_id', 'brak')
-        print(f"🔌 Użytkownik {current_user.username} połączony: {current_session_id}")
+        current_session_id = UserSession.get_current_session(current_user.id)
+        print(f"🔌 Użytkownik {current_user.username} (ID: {current_user.id}) połączony: {current_session_id}")
         print(f"🔗 Socket SID: {request.sid}")
         emit('connected', {
             'message': 'Połączono z serwerem', 
@@ -80,11 +80,11 @@ def register_socketio_handlers(socketio):
                 emit('error', {'message': 'Wiadomość nie może być pusta'})
                 return
             
-            session_id = session.get('current_session_id')
-            print(f"🔑 Current Session ID: {session_id}")
+            session_id = UserSession.get_current_session(current_user.id)
+            print(f"🔑 Current Session ID for user {current_user.id}: {session_id}")
             
             if not session_id:
-                print("❌ Brak current_session_id")
+                print("❌ Brak current_session_id dla użytkownika")
                 emit('error', {'message': 'Brak aktywnej sesji. Utwórz nową sesję.'})
                 return
             
@@ -193,7 +193,7 @@ def register_socketio_handlers(socketio):
                 emit('error', {'message': 'Musisz być zalogowany'})
                 return
             
-            session_id = session.get('current_session_id')
+            session_id = UserSession.get_current_session(current_user.id)
             if not session_id:
                 emit('error', {'message': 'Brak aktywnej sesji'})
                 return
