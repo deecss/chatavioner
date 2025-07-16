@@ -383,6 +383,27 @@ class OpenAIRAG:
         try:
             print(f"🔍 Rozpoczynam generowanie odpowiedzi dla: {query[:50]}...")
             
+            # Sprawdź czy pytanie dotyczy lotnictwa (sprawdzenie na poziomie aplikacji)
+            if not self.is_aviation_related(query):
+                print(f"⚠️  Pytanie nie dotyczy lotnictwa: {query[:100]}...")
+                rejection_message = ("Przepraszam, ale jestem asystentem specjalizującym się wyłącznie w tematyce lotniczej. "
+                                   "Mogę pomóc w następujących obszarach:\n"
+                                   "- Pilotaż i procedury lotnicze\n"
+                                   "- Aerodynamika i mechanika lotu\n"
+                                   "- Nawigacja i komunikacja\n"
+                                   "- Meteorologia lotnicza\n"
+                                   "- Przepisy i certyfikacja\n"
+                                   "- Bezpieczeństwo lotów\n"
+                                   "- Awionika i systemy pokładowe\n"
+                                   "- Maintenance i serwis\n\n"
+                                   "Proszę zadać pytanie związane z lotnictwem.")
+                
+                # Zwróć odpowiedź jako generator dla zachowania zgodności
+                def rejection_generator():
+                    yield rejection_message
+                
+                return rejection_generator()
+            
             # Wyciągnij user_id z kontekstu (jeśli dostępny)
             user_id = None
             if context:
