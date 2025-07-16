@@ -1,158 +1,5 @@
 [
   {
-    "session_id": "804bd635-96ce-411a-ab96-dc061cd1fb04",
-    "total_messages": 2,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "sila",
-          1
-        ],
-        [
-          "nosna",
-          1
-        ],
-        [
-          "szybowcach",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 259.0,
-        "min_length": 259,
-        "max_length": 259,
-        "word_count_avg": 26.0
-      },
-      "structure_types": {
-        "has_headers": 0.0,
-        "has_lists": 0.0,
-        "has_examples": 0.0,
-        "has_formulas": 0.0,
-        "has_summaries": 0.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 0,
-        "examples": 0,
-        "procedures": 0,
-        "references": 0
-      },
-      "formatting_patterns": {
-        "html_tags": 0,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 0,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T14:17:39.329086"
-  },
-  {
-    "session_id": "5516e0f5-c98f-4342-9ed1-f6a02c486812",
-    "total_messages": 4,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "siła",
-          1
-        ],
-        [
-          "nosna",
-          1
-        ],
-        [
-          "szybowcach",
-          1
-        ],
-        [
-          "turbulencje",
-          1
-        ],
-        [
-          "opisz",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 3.0,
-        "min_length": 2,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "medium"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 5831.0,
-        "min_length": 3622,
-        "max_length": 8040,
-        "word_count_avg": 658.0
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 1.0,
-        "has_examples": 1.0,
-        "has_formulas": 0.5,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 2,
-        "examples": 2,
-        "procedures": 1,
-        "references": 2
-      },
-      "formatting_patterns": {
-        "html_tags": 274,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 34,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T14:17:39.340802"
-  },
-  {
     "session_id": "b159189d-4329-43b5-8dab-478248ae01a0",
     "total_messages": 13,
     "user_patterns": {
@@ -10988,5 +10835,157 @@
       "application": 0
     },
     "timestamp": "2025-07-16T15:11:29.007546"
+  },
+  {
+    "session_id": "9ccd1871-bbac-4e45-a8d7-c1d1bf6b90f0",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "front",
+          1
+        ],
+        [
+          "zokludowany",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 5.0,
+        "min_length": 5,
+        "max_length": 5,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 0
+      },
+      "structure_types": {
+        "has_headers": 0,
+        "has_lists": 0,
+        "has_examples": 0,
+        "has_formulas": 0,
+        "has_summaries": 0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 0,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 0,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 0,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-16T15:17:08.085884"
+  },
+  {
+    "session_id": "9ccd1871-bbac-4e45-a8d7-c1d1bf6b90f0",
+    "user_id": null,
+    "total_messages": 3,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "front",
+          2
+        ],
+        [
+          "zokludowany",
+          1
+        ],
+        [
+          "sprawdz",
+          1
+        ],
+        [
+          "termin",
+          1
+        ],
+        [
+          "occluded",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.5,
+        "min_length": 4,
+        "max_length": 5,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 1714.0,
+        "min_length": 1714,
+        "max_length": 1714,
+        "word_count_avg": 207.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 1.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 1,
+        "procedures": 0,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 36,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 2,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-16T15:19:34.521976"
   }
 ]
