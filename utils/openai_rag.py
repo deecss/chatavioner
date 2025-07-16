@@ -74,14 +74,45 @@ class OpenAIRAG:
             assistant = self.client.beta.assistants.create(
                 name="Aero-Chat Assistant",
                 instructions="""Jesteś ekspertem w dziedzinie lotnictwa i awioniki z zaawansowanym systemem uczenia się. 
-                Twoje zadanie to odpowiadanie na pytania związane z:
-                - Zasadami lotu i aerodynamiką
-                - Konstrukcją i systemami statków powietrznych
-                - Przepisami lotniczymi (ICAO, EASA, FAA)
-                - Nawigacją lotniczą
-                - Meteorologią lotniczą
-                - Bezpieczeństwem lotów
-                - Systemami awionicznymi
+                
+                🚨 SUROWE OGRANICZENIE TEMATYCZNE:
+                ODPOWIADASZ WYŁĄCZNIE NA PYTANIA Z DZIEDZINY LOTNICTWA!
+                
+                Tematy dozwolone:
+                - Zasady lotu i aerodynamika
+                - Konstrukcja i systemy statków powietrznych
+                - Przepisy lotnicze (ICAO, EASA, FAA, polskie)
+                - Nawigacja lotnicza
+                - Meteorologia lotnicza
+                - Bezpieczeństwo lotów
+                - Systemy awioniczne
+                - Historia lotnictwa
+                - Licencje pilota
+                - Procedury lotnicze
+                - Komunikacja lotnicza
+                - Planowanie lotów
+                - Operacje lotniskowe
+                - Szkolenia lotnicze
+                - Certyfikacja lotnicza
+                - Maintenance i obsługa techniczna
+                - Współczesne technologie lotnicze
+                
+                ❌ KATEGORYCZNIE ODRZUCAJ pytania o:
+                - Tematykę niezwiązaną z lotnictwem
+                - Inne rodzaje transportu (samochody, pociągi, statki)
+                - Politykę, ekonomię (chyba że bezpośrednio związane z lotnictwem)
+                - Medycynę (chyba że medycyna lotnicza)
+                - Inne dziedziny nauki i techniki
+                - Rozrywkę, filmy, gry
+                - Życie osobiste, porady życiowe
+                - Inne tematy spoza lotnictwa
+                
+                🛑 REAKCJA NA PYTANIA SPOZA LOTNICTWA:
+                Jeśli pytanie nie dotyczy lotnictwa, odpowiedz DOKŁADNIE:
+                
+                "<p><strong>Przepraszam, ale jestem wyspecjalizowanym asystentem lotniczym.</strong></p>
+                <p>Mogę odpowiadać wyłącznie na pytania związane z lotnictwem, awionik, przepisami lotniczymi, nawigacją, meteorologią lotniczą, bezpieczeństwem lotów i związanymi tematami.</p>
+                <p>Proszę zadaj pytanie dotyczące lotnictwa, a chętnie pomogę!</p>"
                 
                 ⚠️ BARDZO WAŻNE - PAMIĘĆ ROZMOWY:
                 - ZAWSZE czytaj i analizuj całą historię rozmowy
@@ -363,7 +394,7 @@ class OpenAIRAG:
             
             print(f"🆔 User ID z kontekstu: {user_id}")
             
-            # ANALIZUJ PREFERENCJE UŻYTKOWNIKA I UCZEŚSIA SIĘ
+            # ANALIZUJ PREFERENCJE UŻYTKOWNIKA I UCZEŚSIA
             print("🧠 Analizuję preferencje użytkownika...")
             learning_prompt = self.learning_system.generate_learning_prompt(session_id, query, user_id)
             print(f"📚 Prompt uczenia: {learning_prompt}")
@@ -420,6 +451,8 @@ class OpenAIRAG:
                 first_question = context[0]['content'] if context[0]['role'] == 'user' else "Brak pierwszego pytania"
                 context_instruction = f"""
                 
+                🚨 PRZYPOMNIENIE: ODPOWIADASZ WYŁĄCZNIE NA PYTANIA LOTNICZE!
+                
                 WAŻNE INSTRUKCJE DOTYCZĄCE KONTEKSTU SESJI:
                 - Pamiętaj, że to kontynuacja rozmowy - przeanalizuj całą historię powyżej
                 - Pierwsze pytanie użytkownika w tej sesji to: "{first_question}"
@@ -428,10 +461,21 @@ class OpenAIRAG:
                 - Zachowaj spójność ze stylem odpowiedzi preferowanym przez użytkownika
                 - Nawiązuj do wcześniejszych tematów gdy to właściwe
                 
+                🛑 SPRAWDŹ CZY PYTANIE DOTYCZY LOTNICTWA:
+                Jeśli pytanie poniżej NIE dotyczy lotnictwa, awioniki, przepisów lotniczych, nawigacji lotniczej, meteorologii lotniczej, bezpieczeństwa lotów lub związanych tematów, odpowiedz DOKŁADNIE standardową formułą odmowy.
+                
                 AKTUALNE PYTANIE: {query}
                 """
             else:
-                context_instruction = f"PYTANIE: {query}"
+                context_instruction = f"""
+                
+                🚨 PRZYPOMNIENIE: ODPOWIADASZ WYŁĄCZNIE NA PYTANIA LOTNICZE!
+                
+                🛑 SPRAWDŹ CZY PYTANIE DOTYCZY LOTNICTWA:
+                Jeśli pytanie poniżej NIE dotyczy lotnictwa, awioniki, przepisów lotniczych, nawigacji lotniczej, meteorologii lotniczej, bezpieczeństwa lotów lub związanych tematów, odpowiedz DOKŁADNIE standardową formułą odmowy.
+                
+                PYTANIE: {query}
+                """
             
             # Kombinuj prompt uczenia z instrukcjami kontekstu
             final_query = context_instruction
@@ -836,3 +880,62 @@ class OpenAIRAG:
         except Exception as e:
             print(f"⚠️  Błąd ładowania kontekstu rozmowy: {e}")
             return []
+    
+    def is_aviation_related(self, query: str) -> bool:
+        """Sprawdza czy pytanie dotyczy lotnictwa"""
+        aviation_keywords = [
+            # Polskie terminy lotnicze
+            'lotnictwo', 'pilot', 'samolot', 'śmigłowiec', 'helikopter', 'szybowiec',
+            'silnik', 'skrzydło', 'kadłub', 'usterzenie', 'podwozie', 'aerodynamika',
+            'siła nośna', 'opór', 'ciąg', 'lot', 'lądowanie', 'start', 'wzlot',
+            'nawigacja', 'GPS', 'radar', 'radio', 'komunikacja', 'wieża', 'kontrola',
+            'meteorologia', 'pogoda', 'turbulencje', 'wiatr', 'chmury', 'widoczność',
+            'ICAO', 'EASA', 'FAA', 'ULC', 'przepisy', 'certyfikacja', 'licencja',
+            'VFR', 'IFR', 'ATPL', 'PPL', 'CPL', 'IR', 'MEP', 'SEP',
+            'lotnisko', 'pas', 'tower', 'hangar', 'terminal', 'ramp',
+            'awionika', 'autopilot', 'transponder', 'altimetr', 'prędkościomierz',
+            'bezpieczeństwo', 'wypadek', 'incydent', 'śledztwo', 'raport',
+            'szkolenie', 'instruktor', 'egzamin', 'kurs', 'symulator',
+            'maintenance', 'przegląd', 'naprawa', 'serwis', 'części',
+            'paliwo', 'tankowanie', 'masa', 'balans', 'środek ciężkości',
+            'przestrzeń', 'powietrzna', 'trasa', 'plan', 'lotu',
+            
+            # Angielskie terminy lotnicze
+            'aviation', 'aircraft', 'airplane', 'helicopter', 'glider', 'pilot',
+            'engine', 'wing', 'fuselage', 'landing', 'takeoff', 'flight',
+            'navigation', 'weather', 'airport', 'runway', 'control', 'tower',
+            'avionics', 'autopilot', 'altimeter', 'airspeed', 'attitude',
+            'VOR', 'NDB', 'ILS', 'DME', 'ADF', 'HSI', 'CDI',
+            'turbulence', 'ceiling', 'visibility', 'crosswind', 'headwind',
+            'approach', 'departure', 'cruise', 'descent', 'climb',
+            'checklist', 'procedure', 'emergency', 'malfunction', 'failure',
+            'certification', 'training', 'instructor', 'student', 'solo',
+            'ground', 'school', 'simulator', 'logbook', 'hours',
+            'maintenance', 'inspection', 'repair', 'overhaul', 'AD',
+            'airworthiness', 'registration', 'insurance', 'hangar',
+            'fuel', 'weight', 'balance', 'loading', 'performance',
+            'aerodynamics', 'lift', 'drag', 'thrust', 'stall'
+        ]
+        
+        # Sprawdź czy pytanie zawiera słowa kluczowe lotnicze
+        query_lower = query.lower()
+        for keyword in aviation_keywords:
+            if keyword in query_lower:
+                return True
+        
+        # Sprawdź czy pytanie zawiera typowe frazesy lotnicze
+        aviation_phrases = [
+            'jak działa', 'co to jest', 'zasada', 'procedura', 'jak wykonać',
+            'jakie są', 'kiedy', 'gdzie', 'dlaczego', 'w lotnictwie',
+            'w samolocie', 'podczas lotu', 'na lotnisku', 'w powietrzu',
+            'pilot', 'kontroler', 'mechanik', 'instruktor', 'egzaminator'
+        ]
+        
+        for phrase in aviation_phrases:
+            if phrase in query_lower:
+                # Jeśli zawiera frazę lotniczą, sprawdź kontekst
+                for keyword in aviation_keywords:
+                    if keyword in query_lower:
+                        return True
+        
+        return False
