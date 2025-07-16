@@ -187,8 +187,24 @@ class User(UserMixin):
             return False
     
     def is_admin(self):
-        """Sprawdza czy użytkownik jest administratorem"""
+        """Sprawdza czy użytkownik ma uprawnienia administratora"""
         return self.role == 'admin'
+    
+    def is_authenticated(self):
+        """Wymagane przez Flask-Login"""
+        return True
+    
+    def is_active(self):
+        """Wymagane przez Flask-Login"""
+        return True
+    
+    def is_anonymous(self):
+        """Wymagane przez Flask-Login"""
+        return False
+    
+    def get_id(self):
+        """Wymagane przez Flask-Login"""
+        return str(self.id)
     
     @staticmethod
     def create_default_admin():

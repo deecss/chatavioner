@@ -67,10 +67,12 @@ def dashboard():
     stats = {
         **global_stats,
         'total_users': len(User.get_all_users()),
-        'active_users_today': analytics.get_active_users_today(),
+        'active_users_today': global_stats.get('active_users_today', 0),
         'avg_questions_per_session': global_stats['total_messages'] / global_stats['total_sessions'] if global_stats.get('total_sessions', 0) > 0 else 0,
-        'top_performers': analytics.get_top_performing_users(),
-        'system_health': analytics.calculate_system_health()
+        'top_performers': global_stats.get('top_performers', []),
+        'system_health': 'OK',
+        'sessions_today': global_stats.get('sessions_today', 0),
+        'avg_session_duration': global_stats.get('avg_session_duration', 0)
     }
     
     return render_template('admin/dashboard.html', stats=stats)
@@ -582,163 +584,25 @@ def export_analytics():
 @login_required
 def api_quick_stats():
     """API dla szybkich statystyk"""
-    analytics = SessionAnalytics()
-    stats = analytics.get_quick_stats()
-    
-    return jsonify({
-        'active_sessions': stats.get('active_sessions', 0),
-        'today_sessions': stats.get('today_sessions', 0),
-        'system_status': stats.get('system_status', 'OK')
-    })
-
-@admin_bp.route('/api/users/status')
-@login_required
-def api_users_status():
-    """API dla statusu użytkowników"""
-    analytics = SessionAnalytics()
-    users_status = analytics.get_users_current_status()
-    
-    return jsonify(users_status)
-
-@admin_bp.route('/send-message', methods=['POST'])
-@login_required
-def send_message():
-    """Wyślij wiadomość do użytkownika"""
-    data = request.get_json()
-    user_id = data.get('user_id')
-    message = data.get('message')
-    
-    if not user_id or not message:
-        return jsonify({'success': False, 'error': 'Brakuje danych'})
-    
-    # Tutaj można dodać logikę wysyłania wiadomości
-    # Na przykład przez WebSocket lub email
-    
-    return jsonify({'success': True})
-
-# Metody pomocnicze dla nowych endpointów
-
-def get_user_detailed_stats(self, user_id):
-    """Pobierz szczegółowe statystyki użytkownika"""
-    sessions = self.get_user_sessions(user_id)
-    
-    if not sessions:
-        return self._get_empty_user_stats()
-    
-    total_sessions = len(sessions)
-    total_messages = sum(s.get('user_messages', 0) for s in sessions)
-    total_duration = sum(s.get('duration', 0) for s in sessions)
-    
-    # Oblicz zaangażowanie
-    engagement_scores = [s.get('engagement_score', 0) for s in sessions if s.get('engagement_score')]
-    avg_engagement = sum(engagement_scores) / len(engagement_scores) if engagement_scores else 0
-    
-    # Pobierz feedbacki
-    feedback_data = self.get_user_feedback_summary(user_id)
-    
-    # Analiza tematów
-    topics = self.analyze_user_topics(sessions)
-    
-    # Trendy produktywności
-    productivity_trends = self.calculate_user_productivity_trends(sessions)
-    
-    return {
-        'total_sessions': total_sessions,
-        'total_messages': total_messages,
-        'avg_session_duration': total_duration / total_sessions if total_sessions > 0 else 0,
-        'messages_per_session': total_messages / total_sessions if total_sessions > 0 else 0,
-        'engagement_score': avg_engagement,
-        'engagement_trend': self.calculate_engagement_trend(sessions),
-        'total_feedback': feedback_data['total'],
-        'positive_feedback_rate': feedback_data['positive_rate'],
-        'top_topics': topics,
-        'productivity_score': productivity_trends['current'],
-        'peak_productivity': productivity_trends['peak'],
-        'productive_days': productivity_trends['productive_days'],
-        'rating_distribution': feedback_data['rating_distribution'],
-        'activity_labels': self.get_user_activity_labels(sessions),
-        'activity_data': self.get_user_activity_data(sessions)
-    }
-
-def get_user_sessions(self, user_id):
-    """Pobierz wszystkie sesje użytkownika"""
     try:
-        sessions = []
-        for session in ChatSession.query.filter_by(user_id=user_id).order_by(ChatSession.started_at.desc()).all():
-            session_data = self.analyze_session(session)
-            sessions.append(session_data)
-        return sessions
+        analytics = SessionAnalytics()
+        
+        # Podstawowe statystyki
+        global_stats = analytics.get_global_statistics()
+        
+        # Przygotuj bezpieczne dane
+        stats = {
+            'active_sessions': global_stats.get('active_sessions', 0),
+            'today_sessions': global_stats.get('sessions_today', 0),
+            'system_status': 'OK'
+        }
+        
+        return jsonify(stats)
+        
     except Exception as e:
-        logger.error(f"Błąd pobierania sesji użytkownika {user_id}: {e}")
-        return []
-
-def get_user_recent_sessions(self, user_id, limit=10):
-    """Pobierz ostatnie sesje użytkownika"""
-    sessions = self.get_user_sessions(user_id)
-    return sessions[:limit]
-
-def get_user_feedback_summary(self, user_id):
-    """Pobierz podsumowanie feedbacków użytkownika"""
-    # Implementacja analizy feedbacków
-    return {
-        'total': 0,
-        'positive_rate': 0,
-        'rating_distribution': []
-    }
-
-def analyze_user_topics(self, sessions):
-    """Analizuj tematy dla użytkownika"""
-    topics = {}
-    for session in sessions:
-        for topic in session.get('topics', []):
-            topics[topic] = topics.get(topic, 0) + 1
-    
-    # Sortuj i formatuj
-    sorted_topics = sorted(topics.items(), key=lambda x: x[1], reverse=True)[:10]
-    total = sum(topics.values())
-    
-    return [{
-        'name': topic,
-        'count': count,
-        'percentage': (count / total * 100) if total > 0 else 0
-    } for topic, count in sorted_topics]
-
-def calculate_user_productivity_trends(self, sessions):
-    """Oblicz trendy produktywności użytkownika"""
-    if not sessions:
-        return {'current': 0, 'peak': 0, 'productive_days': 0}
-    
-    scores = [s.get('productivity_score', 0) for s in sessions]
-    
-    return {
-        'current': scores[0] if scores else 0,
-        'peak': max(scores) if scores else 0,
-        'productive_days': len([s for s in scores if s > 5])
-    }
-
-def get_user_activity_labels(self, sessions):
-    """Pobierz etykiety aktywności użytkownika"""
-    # Ostatnie 30 dni
-    dates = []
-    for i in range(30):
-        date = datetime.now() - timedelta(days=i)
-        dates.append(date.strftime('%Y-%m-%d'))
-    return list(reversed(dates))
-
-def get_user_activity_data(self, sessions):
-    """Pobierz dane aktywności użytkownika"""
-    # Zlicz sesje per dzień
-    daily_sessions = {}
-    for session in sessions:
-        date = session.get('started_at', '')[:10]
-        daily_sessions[date] = daily_sessions.get(date, 0) + 1
-    
-    # Wypełnij ostatnie 30 dni
-    data = []
-    for i in range(30):
-        date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
-        data.append(daily_sessions.get(date, 0))
-    
-    return list(reversed(data))
-
-# Dodaj te metody do klasy SessionAnalytics
+        logger.error(f"Błąd w api_quick_stats: {e}")
+        return jsonify({
+            'active_sessions': 0,
+            'today_sessions': 0,
+            'system_status': 'Error'
+        })
