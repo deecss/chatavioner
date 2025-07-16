@@ -105,7 +105,6 @@ def register_socketio_handlers(socketio):
                 print(f"🏷️ Aktualizuję tytuł sesji na: {title}")
                 
                 # Aktualizuj tytuł sesji
-                from app.models import UserSession
                 UserSession.update_session_title(current_user.id, session_id, title)
                 
                 # Powiadom frontend o zmianie tytułu

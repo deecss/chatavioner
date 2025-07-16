@@ -52,7 +52,29 @@ class LearningSystem:
     
     def _extract_user_patterns(self, history: List[Dict]) -> Dict:
         """Wyodrębnia wzorce w pytaniach użytkownika"""
-        user_messages = [msg for msg in history if msg['role'] == 'user']
+        if not history:
+            return {
+                'common_keywords': [],
+                'question_length': {'avg': 0, 'min': 0, 'max': 0},
+                'request_types': {},
+                'follow_up_patterns': [],
+                'preferred_detail_level': 'medium'
+            }
+        
+        # Filtruj tylko poprawne wiadomości użytkownika
+        user_messages = []
+        for msg in history:
+            if isinstance(msg, dict) and msg.get('role') == 'user' and msg.get('content'):
+                user_messages.append(msg)
+        
+        if not user_messages:
+            return {
+                'common_keywords': [],
+                'question_length': {'avg': 0, 'min': 0, 'max': 0},
+                'request_types': {},
+                'follow_up_patterns': [],
+                'preferred_detail_level': 'medium'
+            }
         
         patterns = {
             'common_keywords': self._find_common_keywords(user_messages),
@@ -66,7 +88,27 @@ class LearningSystem:
     
     def _extract_response_patterns(self, history: List[Dict]) -> Dict:
         """Analizuje wzorce w odpowiedziach asystenta"""
-        assistant_messages = [msg for msg in history if msg['role'] == 'assistant']
+        if not history:
+            return {
+                'response_length': {'avg': 0, 'min': 0, 'max': 0},
+                'structure_types': {},
+                'content_types': {},
+                'formatting_patterns': {}
+            }
+        
+        # Filtruj tylko poprawne wiadomości asystenta
+        assistant_messages = []
+        for msg in history:
+            if isinstance(msg, dict) and msg.get('role') == 'assistant' and msg.get('content'):
+                assistant_messages.append(msg)
+        
+        if not assistant_messages:
+            return {
+                'response_length': {'avg': 0, 'min': 0, 'max': 0},
+                'structure_types': {},
+                'content_types': {},
+                'formatting_patterns': {}
+            }
         
         patterns = {
             'response_length': self._analyze_response_length(assistant_messages),
@@ -79,43 +121,57 @@ class LearningSystem:
     
     def _find_common_keywords(self, messages: List[Dict]) -> List[Tuple[str, int]]:
         """Znajduje najczęściej używane słowa kluczowe"""
-        all_text = ' '.join([msg['content'].lower() for msg in messages])
+        if not messages:
+            return []
         
-        # Usuń typowe słowa i znaki interpunkcyjne
-        stop_words = {
-            'jak', 'co', 'czy', 'kiedy', 'gdzie', 'dlaczego', 'który', 'która', 'które',
-            'w', 'na', 'do', 'z', 'za', 'o', 'przy', 'dla', 'przez', 'od', 'po',
-            'jest', 'są', 'było', 'będzie', 'może', 'można', 'powinien', 'powinna',
-            'i', 'a', 'ale', 'lub', 'oraz', 'to', 'ta', 'te', 'ten', 'tej', 'tym'
-        }
-        
-        words = re.findall(r'\b\w+\b', all_text)
-        words = [word for word in words if len(word) > 3 and word not in stop_words]
-        
-        return Counter(words).most_common(20)
+        try:
+            all_text = ' '.join([msg.get('content', '').lower() for msg in messages if msg.get('content')])
+            
+            if not all_text:
+                return []
+            
+            # Usuń typowe słowa i znaki interpunkcyjne
+            stop_words = {
+                'jak', 'co', 'czy', 'kiedy', 'gdzie', 'dlaczego', 'który', 'która', 'które',
+                'w', 'na', 'do', 'z', 'za', 'o', 'przy', 'dla', 'przez', 'od', 'po',
+                'jest', 'są', 'było', 'będzie', 'może', 'można', 'powinien', 'powinna',
+                'i', 'a', 'ale', 'lub', 'oraz', 'to', 'ta', 'te', 'ten', 'tej', 'tym'
+            }
+            
+            words = re.findall(r'\b\w+\b', all_text)
+            words = [word for word in words if len(word) > 3 and word not in stop_words]
+            
+            return Counter(words).most_common(20)
+        except Exception as e:
+            print(f"❌ Błąd w _find_common_keywords: {e}")
+            return []
     
     def _analyze_question_length(self, messages: List[Dict]) -> Dict:
         """Analizuje długość pytań użytkownika"""
-        lengths = [len(msg['content'].split()) for msg in messages]
-        
-        if not lengths:
+        try:
+            lengths = [len(msg.get('content', '').split()) for msg in messages if msg.get('content')]
+            
+            if not lengths:
+                return {'avg_length': 0, 'preferred_range': 'short'}
+            
+            avg_length = sum(lengths) / len(lengths)
+            
+            if avg_length < 5:
+                preferred_range = 'short'
+            elif avg_length < 15:
+                preferred_range = 'medium'
+            else:
+                preferred_range = 'long'
+            
+            return {
+                'avg_length': avg_length,
+                'min_length': min(lengths),
+                'max_length': max(lengths),
+                'preferred_range': preferred_range
+            }
+        except Exception as e:
+            print(f"❌ Błąd w _analyze_question_length: {e}")
             return {'avg_length': 0, 'preferred_range': 'short'}
-        
-        avg_length = sum(lengths) / len(lengths)
-        
-        if avg_length < 5:
-            preferred_range = 'short'
-        elif avg_length < 15:
-            preferred_range = 'medium'
-        else:
-            preferred_range = 'long'
-        
-        return {
-            'avg_length': avg_length,
-            'min_length': min(lengths),
-            'max_length': max(lengths),
-            'preferred_range': preferred_range
-        }
     
     def _categorize_request_types(self, messages: List[Dict]) -> Dict:
         """Kategoryzuje typy próśb użytkownika"""
@@ -132,8 +188,8 @@ class LearningSystem:
         
         categories = defaultdict(int)
         
-        for msg in messages:
-            content = msg['content'].lower()
+        for msg in self._filter_valid_messages(messages):
+            content = self._get_safe_content(msg).lower()
             for category, pattern in request_patterns.items():
                 if re.search(pattern, content):
                     categories[category] += 1
@@ -652,3 +708,18 @@ class LearningSystem:
                     topics.add(topic)
         
         return list(topics)
+    
+    def _get_safe_content(self, msg: Dict) -> str:
+        """Bezpiecznie pobiera content z wiadomości"""
+        if not isinstance(msg, dict):
+            return ''
+        return msg.get('content', '')
+    
+    def _filter_valid_messages(self, messages: List[Dict], role: str = None) -> List[Dict]:
+        """Filtruje tylko poprawne wiadomości"""
+        valid_messages = []
+        for msg in messages:
+            if isinstance(msg, dict) and msg.get('content'):
+                if role is None or msg.get('role') == role:
+                    valid_messages.append(msg)
+        return valid_messages

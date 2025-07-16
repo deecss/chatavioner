@@ -380,8 +380,21 @@ class ChatSession:
         
         try:
             with open(self.history_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
+                data = json.load(f)
+            
+            # Sprawdź format pliku
+            if isinstance(data, list):
+                # Stary format - lista wiadomości
+                return data
+            elif isinstance(data, dict) and 'full_conversation' in data:
+                # Nowy format - słownik z kluczem full_conversation
+                return data['full_conversation']
+            else:
+                # Nieznany format
+                print(f"⚠️  Nieznany format pliku historii: {self.history_file}")
+                return []
+        except Exception as e:
+            print(f"❌ Błąd ładowania historii z {self.history_file}: {e}")
             return []
     
     def save_message(self, message, role='user'):
