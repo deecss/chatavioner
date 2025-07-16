@@ -495,8 +495,8 @@
                      data-session-id="${session.session_id}">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-medium text-readable text-xs truncate">${session.title}</h4>
-                            <p class="text-xs text-readable-light">${session.updated_at.substring(0, 16)}</p>
+                            <h4 class="font-medium text-readable text-xs truncate">${session.title || 'Nowa sesja'}</h4>
+                            <p class="text-xs text-readable-light">${session.updated_at ? session.updated_at.substring(0, 16) : 'Teraz'}</p>
                         </div>
                         <button class="delete-session-btn text-red-400 hover:text-red-600 p-1" 
                                 data-session-id="${session.session_id}">

@@ -204,7 +204,7 @@ class ChatApp {
             // Automatycznie utwórz nową sesję
             if (window.sessionManager) {
                 window.sessionManager.createNewSession().then(() => {
-                    console.log('✅ Utworzono nową sesję, ponawiam wysyłanie wiadomości');
+                    console.log('✅ Utworzono nową sesję, ponawiam wysłanie wiadomości');
                     // Ponów wysłanie wiadomości po utworzeniu sesji
                     setTimeout(() => {
                         this.messageInput.value = message;
@@ -842,7 +842,7 @@ class ChatApp {
             negativeBtn?.classList.add('bg-red-500', 'text-white');
         }
         
-        if (this.currentFeedback) {
+        if this.currentFeedback) {
             this.currentFeedback.type = type;
         }
     }

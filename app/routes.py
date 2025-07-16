@@ -81,7 +81,8 @@ def create_session():
         return jsonify({
             'session_id': user_session.session_id,
             'title': user_session.title,
-            'created_at': user_session.created_at
+            'created_at': user_session.created_at,
+            'updated_at': user_session.updated_at
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
