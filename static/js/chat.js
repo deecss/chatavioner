@@ -255,7 +255,7 @@ class ChatApp {
         this.socket.emit('send_message', messageData);
 
         // Aktualizuj statystyki
-        this.updateQuestionsAsked();
+        this.updateQuestionsAsked(message);
     }
 
     generateMessageId() {
@@ -719,7 +719,7 @@ class ChatApp {
         }
     }
 
-    updateQuestionsAsked() {
+    updateQuestionsAsked(messageContent = null) {
         this.questionsAsked++;
         if (this.questionsCount) {
             this.questionsCount.textContent = this.questionsAsked;
@@ -727,7 +727,7 @@ class ChatApp {
         
         // Aktualizuj tytuł sesji po pierwszym pytaniu
         if (this.questionsAsked === 1 && window.sessionManager) {
-            window.sessionManager.onFirstMessage();
+            window.sessionManager.onFirstMessage(messageContent);
         }
     }
 

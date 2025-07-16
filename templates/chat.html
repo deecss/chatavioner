@@ -555,16 +555,24 @@
         }
         
         // Funkcja wywoływana po pierwszym pytaniu
-        onFirstMessage() {
+        onFirstMessage(firstQuestion = null) {
             if (!this.currentSessionId) return;
             
-            // Pobierz pierwsze pytanie z chatu
-            const firstUserMessage = document.querySelector('.user-message .whitespace-pre-wrap');
-            if (firstUserMessage) {
-                const firstQuestion = firstUserMessage.textContent.trim();
-                if (firstQuestion) {
-                    this.updateSessionTitle(this.currentSessionId, firstQuestion);
+            let questionText = firstQuestion;
+            
+            // Jeśli nie przekazano pytania, spróbuj pobrać z chatu
+            if (!questionText) {
+                const firstUserMessage = document.querySelector('.user-message .prose');
+                if (firstUserMessage) {
+                    questionText = firstUserMessage.textContent.trim();
                 }
+            }
+            
+            if (questionText) {
+                console.log(`🏷️ Aktualizuję tytuł sesji na: ${questionText}`);
+                this.updateSessionTitle(this.currentSessionId, questionText);
+            } else {
+                console.log('❌ Nie znaleziono treści pierwszego pytania');
             }
         }
         
@@ -591,6 +599,7 @@
         // Funkcja do aktualizacji tytułu sesji (API call)
         async updateSessionTitle(sessionId, title) {
             try {
+                console.log(`🏷️ Wysyłam żądanie aktualizacji tytułu sesji: ${sessionId} -> ${title}`);
                 const response = await fetch(`/api/sessions/${sessionId}/title`, {
                     method: 'PUT',
                     headers: {
@@ -607,9 +616,11 @@
                         this.renderSessions();
                     }
                     console.log(`✅ Zaktualizowano tytuł sesji: ${title}`);
+                } else {
+                    console.error(`❌ Błąd HTTP ${response.status} przy aktualizacji tytułu sesji`);
                 }
             } catch (error) {
-                console.error('Błąd aktualizacji tytułu sesji:', error);
+                console.error('❌ Błąd aktualizacji tytułu sesji:', error);
             }
         }
     }
