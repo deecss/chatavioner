@@ -1,200 +1,5 @@
 [
   {
-    "session_id": "93fa2128-5908-4a2d-bd31-0856ef054186",
-    "user_id": null,
-    "total_messages": 10,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "działa",
-          4
-        ],
-        [
-          "siła",
-          4
-        ],
-        [
-          "nośna",
-          4
-        ],
-        [
-          "locie",
-          4
-        ],
-        [
-          "czytać",
-          1
-        ],
-        [
-          "mapy",
-          1
-        ],
-        [
-          "meteorologiczne",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 5.6,
-        "min_length": 4,
-        "max_length": 6,
-        "preferred_range": "medium"
-      },
-      "request_types": {
-        "explanations": 4
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2096.4,
-        "min_length": 1962,
-        "max_length": 2190,
-        "word_count_avg": 287.6
-      },
-      "structure_types": {
-        "has_headers": 0.0,
-        "has_lists": 0.0,
-        "has_examples": 0.4,
-        "has_formulas": 0.6,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 1,
-        "practical": 0,
-        "examples": 2,
-        "procedures": 2,
-        "references": 0
-      },
-      "formatting_patterns": {
-        "html_tags": 0,
-        "markdown_headers": 26,
-        "bullet_points": 25,
-        "numbered_lists": 17,
-        "bold_text": 58,
-        "italic_text": 58
-      }
-    },
-    "topic_progression": [
-      "aerodynamika",
-      "aerodynamika",
-      "aerodynamika",
-      "aerodynamika",
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 4,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T16:29:29.049088"
-  },
-  {
-    "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czego",
-          1
-        ],
-        [
-          "zaczelismy",
-          1
-        ],
-        [
-          "rozmowe",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T16:29:29.057963"
-  },
-  {
-    "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "samochód",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {
-        "explanations": 1
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "silniki"
-    ],
-    "question_types": {
-      "definition": 1,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-16T16:29:29.066511"
-  },
-  {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
     "user_id": null,
     "total_messages": 1,
@@ -8070,5 +7875,331 @@
       "application": 0
     },
     "timestamp": "2025-07-17T22:02:40.366345"
+  },
+  {
+    "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "wpływa",
+          1
+        ],
+        [
+          "oblodzenie",
+          1
+        ],
+        [
+          "samolotu",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 6.0,
+        "min_length": 6,
+        "max_length": 6,
+        "preferred_range": "medium"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-17T22:03:20.641772"
+  },
+  {
+    "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
+    "user_id": null,
+    "total_messages": 3,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "profilu",
+          2
+        ],
+        [
+          "wpływa",
+          1
+        ],
+        [
+          "oblodzenie",
+          1
+        ],
+        [
+          "samolotu",
+          1
+        ],
+        [
+          "pokaż",
+          1
+        ],
+        [
+          "wygląda",
+          1
+        ],
+        [
+          "lotniczym",
+          1
+        ],
+        [
+          "wygeneruj",
+          1
+        ],
+        [
+          "obraz",
+          1
+        ],
+        [
+          "pokazujący",
+          1
+        ],
+        [
+          "przekrój",
+          1
+        ],
+        [
+          "lotniczego",
+          1
+        ],
+        [
+          "widocznym",
+          1
+        ],
+        [
+          "oblodzeniem",
+          1
+        ],
+        [
+          "niego",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 12.5,
+        "min_length": 6,
+        "max_length": 19,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "examples": 1
+      },
+      "follow_up_patterns": {
+        "examples": 1
+      },
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2549.0,
+        "min_length": 2549,
+        "max_length": 2549,
+        "word_count_avg": 295.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 1.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 1,
+        "examples": 1,
+        "procedures": 1,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 34,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 4,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "aerodynamika"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 1,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-17T22:05:59.434191"
+  },
+  {
+    "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
+    "user_id": null,
+    "total_messages": 5,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "profilu",
+          2
+        ],
+        [
+          "wpływa",
+          1
+        ],
+        [
+          "oblodzenie",
+          1
+        ],
+        [
+          "samolotu",
+          1
+        ],
+        [
+          "pokaż",
+          1
+        ],
+        [
+          "wygląda",
+          1
+        ],
+        [
+          "lotniczym",
+          1
+        ],
+        [
+          "wygeneruj",
+          1
+        ],
+        [
+          "obraz",
+          1
+        ],
+        [
+          "pokazujący",
+          1
+        ],
+        [
+          "przekrój",
+          1
+        ],
+        [
+          "lotniczego",
+          1
+        ],
+        [
+          "widocznym",
+          1
+        ],
+        [
+          "oblodzeniem",
+          1
+        ],
+        [
+          "niego",
+          1
+        ],
+        [
+          "jakie",
+          1
+        ],
+        [
+          "mamy",
+          1
+        ],
+        [
+          "rodzaje",
+          1
+        ],
+        [
+          "oblodzenia",
+          1
+        ],
+        [
+          "wymień",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 14.666666666666666,
+        "min_length": 6,
+        "max_length": 19,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "examples": 1
+      },
+      "follow_up_patterns": {
+        "examples": 1
+      },
+      "preferred_detail_level": "medium"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 3112.5,
+        "min_length": 2549,
+        "max_length": 3676,
+        "word_count_avg": 361.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 1.0,
+        "has_formulas": 0.5,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 2,
+        "examples": 2,
+        "procedures": 2,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 66,
+        "markdown_headers": 9,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 8,
+        "italic_text": 12
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "aerodynamika",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 1,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-17T22:12:10.209989"
   }
 ]
