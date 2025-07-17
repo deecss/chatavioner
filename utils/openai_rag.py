@@ -384,7 +384,29 @@ class OpenAIRAG:
             print(f"🔍 Rozpoczynam generowanie odpowiedzi dla: {query[:50]}...")
             
             # Sprawdź czy pytanie dotyczy lotnictwa (sprawdzenie na poziomie aplikacji)
-            if not self.is_aviation_related(query):
+            # Uwzględnij kontekst rozmowy przy sprawdzaniu tematyki lotniczej
+            is_aviation_query = self.is_aviation_related(query)
+            
+            # Jeśli pytanie samo w sobie nie wygląda na lotnicze, sprawdź kontekst
+            if not is_aviation_query and context:
+                print(f"🔍 Pytanie '{query}' nie wygląda na lotnicze, sprawdzam kontekst rozmowy...")
+                
+                # Sprawdź ostatnie wiadomości asystenta czy dotyczyły lotnictwa
+                recent_assistant_messages = []
+                for msg in context[-5:]:  # Sprawdź ostatnie 5 wiadomości
+                    if msg.get('role') == 'assistant' and msg.get('content'):
+                        recent_assistant_messages.append(msg['content'])
+                
+                # Sprawdź czy ostatnie odpowiedzi asystenta dotyczyły lotnictwa
+                if recent_assistant_messages:
+                    combined_context = " ".join(recent_assistant_messages)
+                    if self.is_aviation_related(combined_context):
+                        print(f"✅ Kontekst rozmowy dotyczy lotnictwa - akceptuję pytanie follow-up")
+                        is_aviation_query = True
+                    else:
+                        print(f"❌ Kontekst rozmowy nie dotyczy lotnictwa")
+            
+            if not is_aviation_query:
                 print(f"⚠️  Pytanie nie dotyczy lotnictwa: {query[:100]}...")
                 rejection_message = ("Przepraszam, ale jestem asystentem specjalizującym się wyłącznie w tematyce lotniczej. "
                                    "Mogę pomóc w następujących obszarach:\n"
