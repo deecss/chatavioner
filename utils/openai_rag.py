@@ -400,7 +400,6 @@ class OpenAIRAG:
                 
                 # Zwróć odpowiedź jako generator dla zachowania zgodności
                 def rejection_generator():
-                    print(f"🚫 Zwracam wiadomość odmowy: {rejection_message[:100]}...")
                     yield rejection_message
                 
                 return rejection_generator()
@@ -462,10 +461,16 @@ class OpenAIRAG:
                     print(f"   {i}. {q}")
             
             for msg in recent_context:
-                messages.append({
-                    "role": msg["role"],
-                    "content": msg["content"]
-                })
+                # Sprawdź czy wiadomość ma niepustą treść
+                if msg.get("content") and msg.get("content").strip():
+                    messages.append({
+                        "role": msg["role"],
+                        "content": msg["content"]
+                    })
+                else:
+                    print(f"⚠️  Pomijam pustą wiadomość: {msg}")
+                
+            print(f"🔍 Dodano {len(messages)} niepustych wiadomości z kontekstu")
                 
             # Dodaj szczegółowe instrukcje dotyczące kontekstu sesji
             context_instruction = ""
@@ -488,7 +493,17 @@ class OpenAIRAG:
                 
                 AKTUALNE PYTANIE: {query}
                 """
-            else:
+            elif len(context) == 1:  # Jeśli jest tylko jedno pytanie (pierwsze w sesji)
+                context_instruction = f"""
+                
+                🚨 PRZYPOMNIENIE: ODPOWIADASZ WYŁĄCZNIE NA PYTANIA LOTNICZE!
+                
+                🛑 SPRAWDŹ CZY PYTANIE DOTYCZY LOTNICTWA:
+                Jeśli pytanie poniżej NIE dotyczy lotnictwa, awioniki, przepisów lotniczych, nawigacji lotniczej, meteorologii lotniczej, bezpieczeństwa lotów lub związanych tematów, odpowiedz DOKŁADNIE standardową formułą odmowy.
+                
+                PYTANIE: {query}
+                """
+            else:  # Jeśli brak kontekstu (nowa sesja)
                 context_instruction = f"""
                 
                 🚨 PRZYPOMNIENIE: ODPOWIADASZ WYŁĄCZNIE NA PYTANIA LOTNICZE!
@@ -504,6 +519,11 @@ class OpenAIRAG:
             if learning_prompt:
                 final_query = f"{learning_prompt}\n\n{context_instruction}"
             
+            # Sprawdź czy final_query nie jest pusty
+            if not final_query or not final_query.strip():
+                print("⚠️  Ostrzeżenie: final_query jest pusty, używam bezpośrednio pytania")
+                final_query = query
+            
             # Dodaj aktualne pytanie z promptem uczenia
             messages.append({
                 "role": "user",
@@ -511,6 +531,15 @@ class OpenAIRAG:
             })
             
             print(f"🔍 Przygotowano {len(messages)} wiadomości w kontekście (z promptem uczenia)")
+            
+            # Sprawdź czy wszystkie wiadomości mają niepustą treść
+            for i, msg in enumerate(messages):
+                if not msg.get("content") or not msg.get("content").strip():
+                    print(f"❌ BŁĄD: Wiadomość {i} ma pustą treść: {msg}")
+                    print(f"🔍 Wszystkie wiadomości: {messages}")
+                    raise ValueError(f"Wiadomość {i} ma pustą treść")
+                else:
+                    print(f"✅ Wiadomość {i} ({msg['role']}): {msg['content'][:100]}...")
             
             # Utwórz wątek
             print(f"🔍 Tworzę wątek z asystentem {self.assistant_id}")
@@ -906,21 +935,22 @@ class OpenAIRAG:
     def is_aviation_related(self, query: str) -> bool:
         """Sprawdza czy pytanie dotyczy lotnictwa"""
         aviation_keywords = [
-            # Polskie terminy lotnicze
+            # Polskie terminy lotnicze - dodaj różne pisownie
             'lotnictwo', 'pilot', 'samolot', 'śmigłowiec', 'helikopter', 'szybowiec',
-            'silnik', 'skrzydło', 'kadłub', 'usterzenie', 'podwozie', 'aerodynamika',
-            'siła nośna', 'opór', 'ciąg', 'lot', 'lądowanie', 'start', 'wzlot',
-            'nawigacja', 'GPS', 'radar', 'radio', 'komunikacja', 'wieża', 'kontrola',
-            'meteorologia', 'pogoda', 'turbulencje', 'wiatr', 'chmury', 'widoczność',
+            'silnik', 'skrzydło', 'skrzydlo', 'kadłub', 'kadlub', 'usterzenie', 'podwozie',
+            'aerodynamika', 'siła nośna', 'sila nosna', 'opór', 'opor', 'ciąg', 'ciag',
+            'lot', 'lądowanie', 'ladowanie', 'start', 'wzlot', 'nośność', 'nosnosc',
+            'nawigacja', 'GPS', 'radar', 'radio', 'komunikacja', 'wieża', 'wieza', 'kontrola',
+            'meteorologia', 'pogoda', 'turbulencje', 'wiatr', 'chmury', 'widoczność', 'widocznosc',
             'ICAO', 'EASA', 'FAA', 'ULC', 'przepisy', 'certyfikacja', 'licencja',
             'VFR', 'IFR', 'ATPL', 'PPL', 'CPL', 'IR', 'MEP', 'SEP',
             'lotnisko', 'pas', 'tower', 'hangar', 'terminal', 'ramp',
-            'awionika', 'autopilot', 'transponder', 'altimetr', 'prędkościomierz',
-            'bezpieczeństwo', 'wypadek', 'incydent', 'śledztwo', 'raport',
+            'awionika', 'autopilot', 'transponder', 'altimetr', 'prędkościomierz', 'predkosciomierz',
+            'bezpieczeństwo', 'bezpieczenstwo', 'wypadek', 'incydent', 'śledztwo', 'sledztwo', 'raport',
             'szkolenie', 'instruktor', 'egzamin', 'kurs', 'symulator',
-            'maintenance', 'przegląd', 'naprawa', 'serwis', 'części',
-            'paliwo', 'tankowanie', 'masa', 'balans', 'środek ciężkości',
-            'przestrzeń', 'powietrzna', 'trasa', 'plan', 'lotu',
+            'maintenance', 'przegląd', 'przeglad', 'naprawa', 'serwis', 'części', 'czesci',
+            'paliwo', 'tankowanie', 'masa', 'balans', 'środek ciężkości', 'srodek ciezkosci',
+            'przestrzeń', 'przestrzen', 'powietrzna', 'trasa', 'plan', 'lotu',
             
             # Angielskie terminy lotnicze
             'aviation', 'aircraft', 'airplane', 'helicopter', 'glider', 'pilot',
@@ -939,25 +969,30 @@ class OpenAIRAG:
             'aerodynamics', 'lift', 'drag', 'thrust', 'stall'
         ]
         
+        # Normalizuj pytanie - usuń polskie znaki i spacje
+        import unicodedata
+        query_normalized = unicodedata.normalize('NFD', query.lower())
+        query_normalized = ''.join(c for c in query_normalized if unicodedata.category(c) != 'Mn')
+        
         # Sprawdź czy pytanie zawiera słowa kluczowe lotnicze
-        query_lower = query.lower()
         for keyword in aviation_keywords:
-            if keyword in query_lower:
+            keyword_normalized = unicodedata.normalize('NFD', keyword.lower())
+            keyword_normalized = ''.join(c for c in keyword_normalized if unicodedata.category(c) != 'Mn')
+            
+            if keyword_normalized in query_normalized:
                 return True
         
-        # Sprawdź czy pytanie zawiera typowe frazesy lotnicze
-        aviation_phrases = [
-            'jak działa', 'co to jest', 'zasada', 'procedura', 'jak wykonać',
-            'jakie są', 'kiedy', 'gdzie', 'dlaczego', 'w lotnictwie',
-            'w samolocie', 'podczas lotu', 'na lotnisku', 'w powietrzu',
+        # Sprawdź czy pytanie zawiera typowe frazesy lotnicze w kontekście
+        aviation_contexts = [
+            'w lotnictwie', 'w samolocie', 'podczas lotu', 'na lotnisku', 'w powietrzu',
             'pilot', 'kontroler', 'mechanik', 'instruktor', 'egzaminator'
         ]
         
-        for phrase in aviation_phrases:
-            if phrase in query_lower:
-                # Jeśli zawiera frazę lotniczą, sprawdź kontekst
-                for keyword in aviation_keywords:
-                    if keyword in query_lower:
-                        return True
+        for context in aviation_contexts:
+            context_normalized = unicodedata.normalize('NFD', context.lower())
+            context_normalized = ''.join(c for c in context_normalized if unicodedata.category(c) != 'Mn')
+            
+            if context_normalized in query_normalized:
+                return True
         
         return False

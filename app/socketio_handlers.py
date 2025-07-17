@@ -135,10 +135,14 @@ def register_socketio_handlers(socketio):
             # Przekaż całą historię rozmowy do asystenta - filtruj tylko dla tego user_id
             for msg in history:
                 if msg.get('user_id') == current_user.id:  # Tylko wiadomości tego użytkownika
-                    context.append({
-                        'role': msg['role'],
-                        'content': msg['content']
-                    })
+                    # Sprawdź czy wiadomość ma niepustą treść
+                    if msg.get('content') and msg.get('content').strip():
+                        context.append({
+                            'role': msg['role'],
+                            'content': msg['content']
+                        })
+                    else:
+                        print(f"⚠️  Pomijam pustą wiadomość z historii: {msg}")
             
             print(f"📚 Kontekst przygotowany dla user {current_user.id}: {len(context)} wiadomości")
             print(f"🔍 Ostatnie 3 wiadomości: {[m['role'] + ': ' + m['content'][:50] + '...' for m in context[-3:]]}")
@@ -146,17 +150,31 @@ def register_socketio_handlers(socketio):
             print(f"📚 Kontekst przygotowany: {len(context)} wiadomości")
             print(f"🔍 Ostatnie 3 wiadomości: {[m['role'] + ': ' + m['content'][:50] + '...' for m in context[-3:]]}")
             
+            # Sprawdź czy kontekst zawiera niepuste wiadomości
+            if context and all(msg.get('content') and msg.get('content').strip() for msg in context):
+                print("✅ Kontekst zawiera tylko niepuste wiadomości")
+            else:
+                print("⚠️  Kontekst może zawierać puste wiadomości")
+                # Dodatkowe filtrowanie
+                context = [msg for msg in context if msg.get('content') and msg.get('content').strip()]
+                print(f"🔧 Przefiltrowano kontekst: {len(context)} wiadomości pozostało")
+            
             # Zapisz kontekst do pliku dla debugowania
             rag.save_conversation_context(session_id, context, message)
+            
+            # Ostateczna walidacja przed generowaniem odpowiedzi
+            if not message or not message.strip():
+                print("❌ BŁĄD: Pusta wiadomość przed generowaniem odpowiedzi")
+                emit('error', {'message': 'Wiadomość nie może być pusta'})
+                return
+            
+            print(f"✅ Wszystkie walidacje przeszły pomyślnie, generuję odpowiedź dla: {message[:50]}...")
             
             # Generuj odpowiedź ze strumieniem - ASYSTENT OTRZYMUJE PEŁNY KONTEKST
             response_text = ""
             documents_used = 0
             
-            print(f"🔄 Rozpoczynam pętlę generowania odpowiedzi...")
-            
             for chunk in rag.generate_response_stream(message, context, session_id):
-                print(f"📨 Otrzymano chunk: {chunk[:50]}...")
                 response_text += chunk
                 # Wyślij surowy chunk (markdown)
                 emit('response_chunk', {'chunk': chunk, 'message_id': message_id})
@@ -164,8 +182,6 @@ def register_socketio_handlers(socketio):
                 # Sprawdź czy użyto dokumentów (można to zrobić w rag.py)
                 if hasattr(rag, 'last_documents_used'):
                     documents_used = rag.last_documents_used
-            
-            print(f"✅ Pętla generowania zakończona. Długość odpowiedzi: {len(response_text)}")
             
             # Wyślij informacje o użytych dokumentach
             emit('documents_used', {'count': documents_used})
