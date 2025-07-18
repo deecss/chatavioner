@@ -1,0 +1,350 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Szczegóły Raportu - {{ report.date }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">📊 Raport Uczenia Się</h1>
+                    <p class="text-muted mb-0">{{ report.date }} • ID: {{ report.report_id[:8] }}...</p>
+                </div>
+                <div class="btn-group">
+                    <a href="{{ url_for('admin.learning_reports') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Powrót
+                    </a>
+                    <a href="{{ url_for('admin.download_learning_report', report_id=report.report_id) }}" 
+                       class="btn btn-success">
+                        <i class="fas fa-download"></i> Pobierz JSON
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Podsumowanie -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">{{ report.summary.total_users }}</h4>
+                    <p class="card-text">Aktywnych Użytkowników</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title text-success">{{ report.summary.total_questions }}</h4>
+                    <p class="card-text">Zadanych Pytań</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title text-info">{{ report.summary.total_feedback }}</h4>
+                    <p class="card-text">Otrzymanych Opinii</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title text-warning">{{ "%.1f"|format(report.summary.avg_questions_per_user) }}</h4>
+                    <p class="card-text">Śr. Pytań/Użytkownik</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aktywność użytkowników -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users"></i> Aktywność Użytkowników
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if report.user_activity %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Użytkownik</th>
+                                        <th>Pytania</th>
+                                        <th>Odpowiedzi</th>
+                                        <th>Feedback</th>
+                                        <th>Tematy</th>
+                                        <th>Poziom</th>
+                                        <th>Preferencje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in report.user_activity %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold">{{ user.user_id[:8] }}...</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ user.questions_count }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ user.responses_received }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ user.feedback_given }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ user.topics_discussed|join(', ') if user.topics_discussed else 'Brak' }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if user.learning_level == 'advanced' else 'warning' if user.learning_level == 'intermediate' else 'secondary' }}">
+                                                {{ user.learning_level }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ user.preferred_detail_level }}</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Brak aktywności użytkowników w tym dniu</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analiza pytań -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-question-circle"></i> Analiza Pytań
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h6 class="text-primary">{{ report.questions_analysis.total_questions }}</h6>
+                                <small class="text-muted">Łącznie pytań</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h6 class="text-success">{{ "%.1f"|format(report.questions_analysis.avg_question_length) }}</h6>
+                                <small class="text-muted">Śr. długość pytania</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mb-2">Typy pytań:</h6>
+                    {% for type, count in report.questions_analysis.questions_by_type.items() %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>{{ type }}</span>
+                            <span class="badge bg-primary">{{ count }}</span>
+                        </div>
+                    {% endfor %}
+                    
+                    <h6 class="mb-2 mt-3">Złożoność:</h6>
+                    {% for complexity, count in report.questions_analysis.questions_by_complexity.items() %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>{{ complexity }}</span>
+                            <span class="badge bg-{{ 'success' if complexity == 'proste' else 'warning' if complexity == 'średnie' else 'danger' }}">{{ count }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-comments"></i> Analiza Feedbacku
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h6 class="text-success">{{ report.feedback_analysis.positive_feedback }}</h6>
+                                <small class="text-muted">Pozytywny</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h6 class="text-danger">{{ report.feedback_analysis.negative_feedback }}</h6>
+                                <small class="text-muted">Negatywny</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress mb-3">
+                        {% set positive_pct = (report.feedback_analysis.positive_feedback / report.feedback_analysis.total_feedback * 100) if report.feedback_analysis.total_feedback > 0 else 0 %}
+                        <div class="progress-bar bg-success" style="width: {{ positive_pct }}%">
+                            {{ "%.1f"|format(positive_pct) }}%
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h6 class="text-info">{{ "%.1f"|format(report.feedback_analysis.avg_rating) }}</h6>
+                        <small class="text-muted">Średnia ocena</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rozkład tematów -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tags"></i> Rozkład Tematów
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Najpopularniejsze tematy:</h6>
+                            {% for topic, count in report.topic_distribution.most_popular_topics %}
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">{{ topic }}</span>
+                                    <span class="fw-bold">{{ count }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h6 class="text-info">{{ report.topic_distribution.unique_topics }}</h6>
+                                <small class="text-muted">Unikalne tematy</small>
+                            </div>
+                            <div class="text-center mt-3">
+                                <h6 class="text-success">{{ "%.1f"|format(report.topic_distribution.avg_topics_per_user) }}</h6>
+                                <small class="text-muted">Śr. tematy/użytkownik</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Przykładowe pytania -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb"></i> Przykładowe Pytania
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if report.questions_analysis.sample_questions %}
+                        <div class="row">
+                            {% for question in report.questions_analysis.sample_questions %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-left-primary">
+                                        <div class="card-body">
+                                            <p class="card-text">{{ question.content }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">{{ question.type }}</small>
+                                                <small class="text-muted">{{ question.complexity }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-question-circle fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Brak przykładowych pytań</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informacje techniczne -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle"></i> Informacje Techniczne
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>ID Raportu:</strong><br>
+                            <code>{{ report.report_id }}</code>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Data:</strong><br>
+                            {{ report.date }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Wygenerowany:</strong><br>
+                            {{ report.generated_at[:16] if report.generated_at else 'N/A' }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Okres:</strong><br>
+                            {{ report.period.start[:10] }} - {{ report.period.end[:10] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.border-left-primary {
+    border-left: 4px solid #007bff;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.progress {
+    height: 8px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

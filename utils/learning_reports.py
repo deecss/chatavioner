@@ -1,0 +1,527 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+System raportów uczenia się modelu
+Generuje raporty o aktywności użytkowników, pytaniach, feedbackach i wzorcach uczenia się
+"""
+import os
+import json
+import uuid
+from datetime import datetime, timedelta
+from collections import defaultdict, Counter
+from typing import Dict, List, Any, Optional
+import glob
+
+class LearningReportsSystem:
+    """System generowania raportów uczenia się"""
+    
+    def __init__(self):
+        self.reports_dir = "reports/learning"
+        self.data_dir = "data"
+        self.history_dir = "history"
+        self.feedback_dir = "feedback"
+        self.learning_data_file = "data/learning_data.json"
+        
+        # Utwórz katalogi jeśli nie istnieją
+        os.makedirs(self.reports_dir, exist_ok=True)
+        os.makedirs(self.data_dir, exist_ok=True)
+        os.makedirs(self.history_dir, exist_ok=True)
+        os.makedirs(self.feedback_dir, exist_ok=True)
+    
+    def generate_daily_report(self, date: datetime = None) -> Dict[str, Any]:
+        """Generuje dzienny raport aktywności"""
+        if date is None:
+            date = datetime.now()
+        
+        report_date = date.strftime('%Y-%m-%d')
+        start_time = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_time = start_time + timedelta(days=1)
+        
+        print(f"📊 Generuję raport dzienny za {report_date}")
+        
+        # Zbierz dane z różnych źródeł
+        user_activity = self._analyze_user_activity(start_time, end_time)
+        questions_analysis = self._analyze_questions(start_time, end_time)
+        feedback_analysis = self._analyze_feedback(start_time, end_time)
+        learning_insights = self._analyze_learning_patterns(start_time, end_time)
+        topic_distribution = self._analyze_topic_distribution(start_time, end_time)
+        
+        report = {
+            "report_id": str(uuid.uuid4()),
+            "report_type": "daily",
+            "date": report_date,
+            "generated_at": datetime.now().isoformat(),
+            "period": {
+                "start": start_time.isoformat(),
+                "end": end_time.isoformat()
+            },
+            "summary": {
+                "total_users": len(user_activity),
+                "total_questions": questions_analysis["total_questions"],
+                "total_feedback": feedback_analysis["total_feedback"],
+                "avg_questions_per_user": questions_analysis["avg_per_user"],
+                "feedback_ratio": feedback_analysis["feedback_ratio"]
+            },
+            "user_activity": user_activity,
+            "questions_analysis": questions_analysis,
+            "feedback_analysis": feedback_analysis,
+            "learning_insights": learning_insights,
+            "topic_distribution": topic_distribution
+        }
+        
+        # Zapisz raport
+        report_filename = f"daily_report_{report_date}.json"
+        report_path = os.path.join(self.reports_dir, report_filename)
+        
+        with open(report_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        
+        print(f"✅ Raport dzienny zapisany: {report_path}")
+        return report
+    
+    def _analyze_user_activity(self, start_time: datetime, end_time: datetime) -> List[Dict[str, Any]]:
+        """Analizuje aktywność użytkowników"""
+        user_stats = defaultdict(lambda: {
+            "user_id": "",
+            "username": "",
+            "sessions_count": 0,
+            "questions_count": 0,
+            "responses_received": 0,
+            "feedback_given": 0,
+            "topics_discussed": set(),
+            "session_duration_total": 0,
+            "first_activity": None,
+            "last_activity": None,
+            "learning_level": "beginner",
+            "preferred_detail_level": "medium"
+        })
+        
+        # Analizuj pliki historii
+        if os.path.exists(self.history_dir):
+            for filename in os.listdir(self.history_dir):
+                if filename.endswith('.json'):
+                    session_id = filename.replace('.json', '')
+                    filepath = os.path.join(self.history_dir, filename)
+                    
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            history = json.load(f)
+                        
+                        # Filtruj wiadomości z danego okresu
+                        for message in history:
+                            if not isinstance(message, dict):
+                                continue
+                            
+                            msg_time = self._parse_timestamp(message.get('timestamp'))
+                            if not msg_time or not (start_time <= msg_time < end_time):
+                                continue
+                            
+                            user_id = message.get('user_id', 'unknown')
+                            if user_id == 'unknown':
+                                continue
+                            
+                            stats = user_stats[user_id]
+                            stats["user_id"] = user_id
+                            
+                            # Aktualizuj statystyki
+                            if message.get('role') == 'user':
+                                stats["questions_count"] += 1
+                                
+                                # Wykryj temat
+                                content = message.get('content', '').lower()
+                                topic = self._detect_topic(content)
+                                if topic:
+                                    stats["topics_discussed"].add(topic)
+                            
+                            elif message.get('role') == 'assistant':
+                                stats["responses_received"] += 1
+                            
+                            # Aktualizuj czasy aktywności
+                            if not stats["first_activity"] or msg_time < datetime.fromisoformat(stats["first_activity"]):
+                                stats["first_activity"] = msg_time.isoformat()
+                            
+                            if not stats["last_activity"] or msg_time > datetime.fromisoformat(stats["last_activity"]):
+                                stats["last_activity"] = msg_time.isoformat()
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd analizy historii {filename}: {e}")
+        
+        # Analizuj feedback
+        if os.path.exists(self.feedback_dir):
+            for user_dir in os.listdir(self.feedback_dir):
+                user_path = os.path.join(self.feedback_dir, user_dir)
+                if os.path.isdir(user_path):
+                    feedback_files = glob.glob(os.path.join(user_path, "*.json"))
+                    for feedback_file in feedback_files:
+                        try:
+                            with open(feedback_file, 'r', encoding='utf-8') as f:
+                                feedback_data = json.load(f)
+                            
+                            feedback_time = self._parse_timestamp(feedback_data.get('timestamp'))
+                            if feedback_time and start_time <= feedback_time < end_time:
+                                user_id = feedback_data.get('user_id', user_dir)
+                                user_stats[user_id]["feedback_given"] += 1
+                        
+                        except Exception as e:
+                            print(f"⚠️  Błąd analizy feedback {feedback_file}: {e}")
+        
+        # Wzbogać dane o informacje z systemu uczenia się
+        self._enrich_with_learning_data(user_stats)
+        
+        # Konwertuj sets na listy dla JSON
+        result = []
+        for user_id, stats in user_stats.items():
+            stats["topics_discussed"] = list(stats["topics_discussed"])
+            result.append(stats)
+        
+        return result
+    
+    def _analyze_questions(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
+        """Analizuje pytania zadane w danym okresie"""
+        questions = []
+        question_types = Counter()
+        question_complexity = Counter()
+        
+        if os.path.exists(self.history_dir):
+            for filename in os.listdir(self.history_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(self.history_dir, filename)
+                    
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            history = json.load(f)
+                        
+                        for message in history:
+                            if not isinstance(message, dict) or message.get('role') != 'user':
+                                continue
+                            
+                            msg_time = self._parse_timestamp(message.get('timestamp'))
+                            if not msg_time or not (start_time <= msg_time < end_time):
+                                continue
+                            
+                            content = message.get('content', '')
+                            if not content:
+                                continue
+                            
+                            # Analiza pytania
+                            question_analysis = self._analyze_question(content)
+                            questions.append({
+                                "content": content[:200] + "..." if len(content) > 200 else content,
+                                "length": len(content),
+                                "type": question_analysis["type"],
+                                "complexity": question_analysis["complexity"],
+                                "topic": question_analysis["topic"],
+                                "timestamp": msg_time.isoformat(),
+                                "user_id": message.get('user_id')
+                            })
+                            
+                            question_types[question_analysis["type"]] += 1
+                            question_complexity[question_analysis["complexity"]] += 1
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd analizy pytań {filename}: {e}")
+        
+        total_questions = len(questions)
+        unique_users = len(set(q["user_id"] for q in questions if q["user_id"]))
+        
+        return {
+            "total_questions": total_questions,
+            "unique_users": unique_users,
+            "avg_per_user": total_questions / unique_users if unique_users > 0 else 0,
+            "questions_by_type": dict(question_types),
+            "questions_by_complexity": dict(question_complexity),
+            "avg_question_length": sum(q["length"] for q in questions) / total_questions if total_questions > 0 else 0,
+            "sample_questions": questions[:10]  # Pierwsze 10 pytań jako przykład
+        }
+    
+    def _analyze_feedback(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
+        """Analizuje feedback użytkowników"""
+        feedback_data = []
+        positive_feedback = 0
+        negative_feedback = 0
+        
+        if os.path.exists(self.feedback_dir):
+            for user_dir in os.listdir(self.feedback_dir):
+                user_path = os.path.join(self.feedback_dir, user_dir)
+                if os.path.isdir(user_path):
+                    feedback_files = glob.glob(os.path.join(user_path, "*.json"))
+                    for feedback_file in feedback_files:
+                        try:
+                            with open(feedback_file, 'r', encoding='utf-8') as f:
+                                feedback = json.load(f)
+                            
+                            feedback_time = self._parse_timestamp(feedback.get('timestamp'))
+                            if not feedback_time or not (start_time <= feedback_time < end_time):
+                                continue
+                            
+                            feedback_data.append({
+                                "user_id": feedback.get('user_id', user_dir),
+                                "type": feedback.get('type', 'unknown'),
+                                "rating": feedback.get('rating', 0),
+                                "comment": feedback.get('comment', ''),
+                                "timestamp": feedback_time.isoformat()
+                            })
+                            
+                            if feedback.get('type') == 'positive':
+                                positive_feedback += 1
+                            elif feedback.get('type') == 'negative':
+                                negative_feedback += 1
+                        
+                        except Exception as e:
+                            print(f"⚠️  Błąd analizy feedback {feedback_file}: {e}")
+        
+        total_feedback = len(feedback_data)
+        
+        return {
+            "total_feedback": total_feedback,
+            "positive_feedback": positive_feedback,
+            "negative_feedback": negative_feedback,
+            "feedback_ratio": positive_feedback / total_feedback if total_feedback > 0 else 0,
+            "avg_rating": sum(f["rating"] for f in feedback_data) / total_feedback if total_feedback > 0 else 0,
+            "recent_feedback": feedback_data[-10:] if feedback_data else []
+        }
+    
+    def _analyze_learning_patterns(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
+        """Analizuje wzorce uczenia się"""
+        learning_patterns = {
+            "user_preferences": {},
+            "topic_progression": {},
+            "question_evolution": {},
+            "common_misconceptions": []
+        }
+        
+        try:
+            if os.path.exists(self.learning_data_file):
+                with open(self.learning_data_file, 'r', encoding='utf-8') as f:
+                    learning_data = json.load(f)
+                
+                # Analizuj preferencje użytkowników
+                for user_id, data in learning_data.items():
+                    if isinstance(data, dict):
+                        preferences = data.get('preferences', {})
+                        learning_patterns["user_preferences"][user_id] = {
+                            "detail_level": preferences.get('detail_level', 'medium'),
+                            "preferred_topics": preferences.get('preferred_topics', []),
+                            "learning_speed": preferences.get('learning_speed', 'normal'),
+                            "question_style": preferences.get('question_style', 'direct')
+                        }
+        
+        except Exception as e:
+            print(f"⚠️  Błąd analizy wzorców uczenia: {e}")
+        
+        return learning_patterns
+    
+    def _analyze_topic_distribution(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
+        """Analizuje rozkład tematów"""
+        topic_counter = Counter()
+        topic_by_user = defaultdict(set)
+        
+        if os.path.exists(self.history_dir):
+            for filename in os.listdir(self.history_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(self.history_dir, filename)
+                    
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            history = json.load(f)
+                        
+                        for message in history:
+                            if not isinstance(message, dict) or message.get('role') != 'user':
+                                continue
+                            
+                            msg_time = self._parse_timestamp(message.get('timestamp'))
+                            if not msg_time or not (start_time <= msg_time < end_time):
+                                continue
+                            
+                            content = message.get('content', '').lower()
+                            topic = self._detect_topic(content)
+                            
+                            if topic:
+                                topic_counter[topic] += 1
+                                user_id = message.get('user_id')
+                                if user_id:
+                                    topic_by_user[user_id].add(topic)
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd analizy tematów {filename}: {e}")
+        
+        # Konwertuj sets na listy
+        topic_by_user_list = {user_id: list(topics) for user_id, topics in topic_by_user.items()}
+        
+        return {
+            "topic_distribution": dict(topic_counter),
+            "most_popular_topics": topic_counter.most_common(10),
+            "topics_by_user": topic_by_user_list,
+            "unique_topics": len(topic_counter),
+            "avg_topics_per_user": sum(len(topics) for topics in topic_by_user.values()) / len(topic_by_user) if topic_by_user else 0
+        }
+    
+    def _enrich_with_learning_data(self, user_stats: Dict[str, Dict[str, Any]]) -> None:
+        """Wzbogaca statystyki użytkowników o dane z systemu uczenia"""
+        try:
+            if os.path.exists(self.learning_data_file):
+                with open(self.learning_data_file, 'r', encoding='utf-8') as f:
+                    learning_data = json.load(f)
+                
+                for user_id, stats in user_stats.items():
+                    if user_id in learning_data:
+                        user_learning = learning_data[user_id]
+                        
+                        # Dodaj informacje o uczeniu się
+                        stats["learning_level"] = user_learning.get('level', 'beginner')
+                        stats["preferred_detail_level"] = user_learning.get('preferences', {}).get('detail_level', 'medium')
+                        stats["learning_progress"] = user_learning.get('progress', {})
+                        
+                        # Dodaj informacje o preferencjach
+                        preferences = user_learning.get('preferences', {})
+                        stats["preferences"] = {
+                            "topics": preferences.get('preferred_topics', []),
+                            "question_style": preferences.get('question_style', 'direct'),
+                            "response_length": preferences.get('response_length', 'medium')
+                        }
+        
+        except Exception as e:
+            print(f"⚠️  Błąd wzbogacania danych uczenia: {e}")
+    
+    def _detect_topic(self, content: str) -> str:
+        """Wykrywa temat pytania"""
+        content_lower = content.lower()
+        
+        # Słownik tematów lotniczych
+        topics = {
+            'aerodynamika': ['aerodynamika', 'siła nośna', 'siła ciągu', 'opór', 'profil skrzydła', 'kąt natarcia', 'przeciągnięcie'],
+            'nawigacja': ['nawigacja', 'gps', 'kompas', 'kurs', 'namierzanie', 'pozycja', 'współrzędne'],
+            'meteorologia': ['pogoda', 'wiatr', 'chmury', 'burza', 'oblodzenie', 'turbulencje', 'widoczność'],
+            'przepisy': ['przepisy', 'regulacje', 'icao', 'certyfikacja', 'licencja', 'prawo lotnicze'],
+            'bezpieczeństwo': ['bezpieczeństwo', 'awaria', 'procedury awaryjne', 'lądowanie awaryjne', 'ryzyko'],
+            'awionika': ['awionika', 'radar', 'autopilot', 'instrumenty', 'systemy pokładowe'],
+            'silniki': ['silnik', 'turbina', 'spalanie', 'paliwo', 'moc', 'ciąg'],
+            'struktury': ['konstrukcja', 'materiały', 'wytrzymałość', 'kadłub', 'skrzydła'],
+            'pilotaż': ['pilotaż', 'sterowanie', 'manewr', 'start', 'lądowanie', 'lot']
+        }
+        
+        for topic, keywords in topics.items():
+            if any(keyword in content_lower for keyword in keywords):
+                return topic
+        
+        return 'ogólne'
+    
+    def _analyze_question(self, content: str) -> Dict[str, str]:
+        """Analizuje typ i złożoność pytania"""
+        content_lower = content.lower()
+        
+        # Określ typ pytania
+        if any(word in content_lower for word in ['jak', 'w jaki sposób', 'dlaczego', 'czemu']):
+            q_type = 'proceduralne'
+        elif any(word in content_lower for word in ['co to', 'czym jest', 'definicja', 'znaczenie']):
+            q_type = 'definicyjne'
+        elif any(word in content_lower for word in ['kiedy', 'gdzie', 'ile', 'która']):
+            q_type = 'faktyczne'
+        elif '?' in content:
+            q_type = 'pytające'
+        else:
+            q_type = 'inne'
+        
+        # Określ złożoność
+        if len(content) < 50:
+            complexity = 'proste'
+        elif len(content) < 150:
+            complexity = 'średnie'
+        else:
+            complexity = 'złożone'
+        
+        return {
+            'type': q_type,
+            'complexity': complexity,
+            'topic': self._detect_topic(content)
+        }
+    
+    def _parse_timestamp(self, timestamp_str: str) -> Optional[datetime]:
+        """Parsuje timestamp z różnych formatów"""
+        if not timestamp_str:
+            return None
+        
+        try:
+            # Spróbuj różne formaty
+            formats = [
+                '%Y-%m-%d %H:%M:%S',
+                '%Y-%m-%dT%H:%M:%S',
+                '%Y-%m-%dT%H:%M:%S.%f',
+                '%Y-%m-%d %H:%M:%S.%f'
+            ]
+            
+            for fmt in formats:
+                try:
+                    return datetime.strptime(timestamp_str, fmt)
+                except ValueError:
+                    continue
+            
+            # Jeśli żaden format nie zadziałał, spróbuj ISO format
+            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+        
+        except Exception:
+            return None
+    
+    def get_available_reports(self) -> List[Dict[str, Any]]:
+        """Pobiera listę dostępnych raportów"""
+        reports = []
+        
+        if os.path.exists(self.reports_dir):
+            for filename in os.listdir(self.reports_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(self.reports_dir, filename)
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            report_data = json.load(f)
+                        
+                        reports.append({
+                            "filename": filename,
+                            "report_id": report_data.get('report_id'),
+                            "date": report_data.get('date'),
+                            "type": report_data.get('report_type'),
+                            "generated_at": report_data.get('generated_at'),
+                            "summary": report_data.get('summary', {}),
+                            "filepath": filepath
+                        })
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd odczytu raportu {filename}: {e}")
+        
+        # Sortuj według daty
+        reports.sort(key=lambda x: x['date'], reverse=True)
+        return reports
+    
+    def get_report(self, report_id: str) -> Optional[Dict[str, Any]]:
+        """Pobiera konkretny raport"""
+        reports = self.get_available_reports()
+        
+        for report in reports:
+            if report['report_id'] == report_id:
+                try:
+                    with open(report['filepath'], 'r', encoding='utf-8') as f:
+                        return json.load(f)
+                except Exception as e:
+                    print(f"⚠️  Błąd odczytu raportu {report_id}: {e}")
+        
+        return None
+    
+    def cleanup_old_reports(self, days_to_keep: int = 30) -> None:
+        """Usuwa stare raporty"""
+        cutoff_date = datetime.now() - timedelta(days=days_to_keep)
+        
+        if os.path.exists(self.reports_dir):
+            for filename in os.listdir(self.reports_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(self.reports_dir, filename)
+                    try:
+                        # Sprawdź datę z nazwy pliku
+                        if 'daily_report_' in filename:
+                            date_str = filename.replace('daily_report_', '').replace('.json', '')
+                            file_date = datetime.strptime(date_str, '%Y-%m-%d')
+                            
+                            if file_date < cutoff_date:
+                                os.remove(filepath)
+                                print(f"🗑️  Usunięto stary raport: {filename}")
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd podczas usuwania raportu {filename}: {e}")

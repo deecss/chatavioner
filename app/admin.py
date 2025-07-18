@@ -12,6 +12,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, login_user, logout_user, current_user
 from app.models import User, ChatSession, UploadIndex, UserSession
 from app.session_analytics import SessionAnalytics
+from utils.learning_reports import LearningReportsSystem
+from utils.reports_scheduler import get_report_scheduler
 
 class UserData:
     """Klasa wrapper dla danych użytkownika"""
@@ -21,6 +23,9 @@ class UserData:
 
 # Inicjalizuj instancję analytics
 analytics = SessionAnalytics()
+
+# Inicjalizuj system raportów uczenia się
+learning_reports = LearningReportsSystem()
 
 # Dodaj logger
 logger = logging.getLogger(__name__)
@@ -606,3 +611,193 @@ def api_quick_stats():
             'today_sessions': 0,
             'system_status': 'Error'
         })
+
+# =============================================
+# LEARNING REPORTS ROUTES
+# =============================================
+
+@admin_bp.route('/learning-reports')
+@login_required
+def learning_reports():
+    """Panel raportów uczenia się"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    try:
+        # Pobierz listę dostępnych raportów
+        available_reports = learning_reports.get_available_reports()
+        
+        # Pobierz scheduler info
+        scheduler = get_report_scheduler()
+        scheduler_status = {
+            'is_running': scheduler.running if scheduler else False,
+            'next_report_time': '02:00 (jutro)' if scheduler and scheduler.running else 'Nie zaplanowano'
+        }
+        
+        return render_template('admin/learning_reports.html', 
+                             reports=available_reports,
+                             scheduler_status=scheduler_status)
+    
+    except Exception as e:
+        logger.error(f"Błąd w learning_reports: {e}")
+        flash(f'Błąd ładowania raportów: {str(e)}', 'error')
+        return redirect(url_for('admin.dashboard'))
+
+@admin_bp.route('/learning-reports/generate', methods=['POST'])
+@login_required
+def generate_learning_report():
+    """Generuje raport uczenia się na żądanie"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        # Pobierz datę z formularza
+        date_str = request.form.get('date')
+        
+        if date_str:
+            date = datetime.strptime(date_str, '%Y-%m-%d')
+        else:
+            date = datetime.now()
+        
+        # Generuj raport
+        report = learning_reports.generate_daily_report(date)
+        
+        return jsonify({
+            'success': True,
+            'report_id': report['report_id'],
+            'message': f'Raport za {date.strftime("%Y-%m-%d")} został wygenerowany'
+        })
+    
+    except Exception as e:
+        logger.error(f"Błąd generowania raportu: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/learning-reports/<report_id>')
+@login_required
+def view_learning_report(report_id):
+    """Wyświetla szczegóły raportu uczenia się"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień administratora', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    try:
+        report = learning_reports.get_report(report_id)
+        
+        if not report:
+            flash('Nie znaleziono raportu', 'error')
+            return redirect(url_for('admin.learning_reports'))
+        
+        return render_template('admin/learning_report_detail.html', report=report)
+    
+    except Exception as e:
+        logger.error(f"Błąd wyświetlania raportu {report_id}: {e}")
+        flash(f'Błąd ładowania raportu: {str(e)}', 'error')
+        return redirect(url_for('admin.learning_reports'))
+
+@admin_bp.route('/learning-reports/<report_id>/download')
+@login_required
+def download_learning_report(report_id):
+    """Pobiera raport uczenia się jako plik JSON"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        report = learning_reports.get_report(report_id)
+        
+        if not report:
+            return jsonify({'error': 'Nie znaleziono raportu'}), 404
+        
+        # Utwórz response z plikiem JSON
+        response = make_response(json.dumps(report, indent=2, ensure_ascii=False))
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        response.headers['Content-Disposition'] = f'attachment; filename=learning_report_{report_id}.json'
+        
+        return response
+    
+    except Exception as e:
+        logger.error(f"Błąd pobierania raportu {report_id}: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/learning-reports/api/summary')
+@login_required
+def api_learning_summary():
+    """API dla podsumowania raportów uczenia się"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        # Pobierz ostatnie raporty
+        recent_reports = learning_reports.get_available_reports()[:7]  # Ostatnie 7 dni
+        
+        if not recent_reports:
+            return jsonify({
+                'summary': {
+                    'total_reports': 0,
+                    'avg_users_per_day': 0,
+                    'avg_questions_per_day': 0,
+                    'avg_feedback_per_day': 0,
+                    'trend': 'brak danych'
+                }
+            })
+        
+        # Oblicz statystyki
+        total_users = sum(r['summary'].get('total_users', 0) for r in recent_reports)
+        total_questions = sum(r['summary'].get('total_questions', 0) for r in recent_reports)
+        total_feedback = sum(r['summary'].get('total_feedback', 0) for r in recent_reports)
+        
+        days_count = len(recent_reports)
+        
+        summary = {
+            'total_reports': days_count,
+            'avg_users_per_day': total_users / days_count,
+            'avg_questions_per_day': total_questions / days_count,
+            'avg_feedback_per_day': total_feedback / days_count,
+            'trend': 'rosnąco' if days_count > 1 and recent_reports[0]['summary'].get('total_users', 0) > recent_reports[-1]['summary'].get('total_users', 0) else 'stabilnie'
+        }
+        
+        return jsonify({'summary': summary})
+    
+    except Exception as e:
+        logger.error(f"Błąd w api_learning_summary: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/learning-reports/scheduler/start', methods=['POST'])
+@login_required
+def start_scheduler():
+    """Uruchamia scheduler raportów"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import start_report_scheduler
+        start_report_scheduler()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Scheduler raportów został uruchomiony'
+        })
+    
+    except Exception as e:
+        logger.error(f"Błąd uruchamiania schedulera: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/learning-reports/scheduler/stop', methods=['POST'])
+@login_required
+def stop_scheduler():
+    """Zatrzymuje scheduler raportów"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import stop_report_scheduler
+        stop_report_scheduler()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Scheduler raportów został zatrzymany'
+        })
+    
+    except Exception as e:
+        logger.error(f"Błąd zatrzymywania schedulera: {e}")
+        return jsonify({'error': str(e)}), 500
