@@ -1,8 +1,8 @@
 {
-  "report_id": "050ec96c-33c7-4bcd-b423-5a65802991ee",
+  "report_id": "e2af383b-a19d-453f-801d-d637bc1f23d8",
   "report_type": "daily",
   "date": "2025-07-17",
-  "generated_at": "2025-07-18T13:18:53.630949",
+  "generated_at": "2025-07-18T20:00:28.418268",
   "period": {
     "start": "2025-07-17T00:00:00",
     "end": "2025-07-18T00:00:00"
@@ -424,32 +424,18 @@
       "meteorologia": 2
     },
     "most_popular_topics": [
-      {
-        "topic": "ogólne",
-        "count": 6
-      },
-      {
-        "topic": "meteorologia",
-        "count": 2
-      },
-      {
-        "topic": "aerodynamika",
-        "count": 1
-      }
-    ],
-    "most_popular": [
-      {
-        "topic": "ogólne",
-        "count": 6
-      },
-      {
-        "topic": "meteorologia",
-        "count": 2
-      },
-      {
-        "topic": "aerodynamika",
-        "count": 1
-      }
+      [
+        "ogólne",
+        6
+      ],
+      [
+        "meteorologia",
+        2
+      ],
+      [
+        "aerodynamika",
+        1
+      ]
     ],
     "topics_by_user": {
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
