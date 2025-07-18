@@ -1,24 +1,78 @@
 {
-  "report_id": "007a1ec5-becd-4b15-8ae2-7fdaa7665ad3",
+  "report_id": "329c37da-46f6-4a98-9087-5d651340d20d",
   "report_type": "daily",
   "date": "2025-07-18",
-  "generated_at": "2025-07-18T11:12:17.245229",
+  "generated_at": "2025-07-18T12:05:38.610736",
   "period": {
     "start": "2025-07-18T00:00:00",
     "end": "2025-07-19T00:00:00"
   },
   "summary": {
-    "total_users": 1,
-    "total_questions": 1,
+    "total_users": 2,
+    "total_questions": 3,
     "total_feedback": 0,
-    "avg_questions_per_user": 1.0,
+    "avg_questions_per_user": 1.5,
     "feedback_ratio": 0
   },
   "user_activity": [
     {
+      "user_id": "admin",
+      "username": "admin",
+      "role": "admin",
+      "sessions_count": 1,
+      "questions_count": 2,
+      "responses_received": 2,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "pilotaż"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-18T11:58:45.862795",
+      "last_activity": "2025-07-18T12:01:18.847204",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-18T11:58:45.862795",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "jak dojechac na warszawskie lotnisko",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        },
+        {
+          "timestamp": "2025-07-18T12:00:19.566081",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "ile jest lotnis w polsce",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        }
+      ]
+    },
+    {
       "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
-      "username": "",
-      "sessions_count": 0,
+      "username": "damian",
+      "role": "user",
+      "sessions_count": 1,
       "questions_count": 1,
       "responses_received": 1,
       "feedback_given": 0,
@@ -28,22 +82,71 @@
       "session_duration_total": 0,
       "first_activity": "2025-07-18T11:00:05.045987",
       "last_activity": "2025-07-18T11:01:05.834774",
-      "learning_level": "beginner",
-      "preferred_detail_level": "medium"
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-18T11:00:05.045987",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "prawo coriolisa",
+          "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2"
+        }
+      ]
     }
   ],
   "questions_analysis": {
-    "total_questions": 1,
-    "unique_users": 1,
-    "avg_per_user": 1.0,
+    "total_questions": 3,
+    "unique_users": 2,
+    "avg_per_user": 1.5,
     "questions_by_type": {
+      "proceduralne": 1,
+      "faktyczne": 1,
       "inne": 1
     },
     "questions_by_complexity": {
-      "proste": 1
+      "proste": 3
     },
-    "avg_question_length": 15.0,
+    "avg_question_length": 25.0,
     "sample_questions": [
+      {
+        "content": "jak dojechac na warszawskie lotnisko",
+        "length": 36,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-18T11:58:45.862795",
+        "user_id": "admin"
+      },
+      {
+        "content": "ile jest lotnis w polsce",
+        "length": 24,
+        "type": "faktyczne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-18T12:00:19.566081",
+        "user_id": "admin"
+      },
       {
         "content": "prawo coriolisa",
         "length": 15,
@@ -71,20 +174,28 @@
   },
   "topic_distribution": {
     "topic_distribution": {
+      "pilotaż": 2,
       "ogólne": 1
     },
     "most_popular_topics": [
+      [
+        "pilotaż",
+        2
+      ],
       [
         "ogólne",
         1
       ]
     ],
     "topics_by_user": {
+      "admin": [
+        "pilotaż"
+      ],
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
         "ogólne"
       ]
     },
-    "unique_topics": 1,
+    "unique_topics": 2,
     "avg_topics_per_user": 1.0
   }
 }

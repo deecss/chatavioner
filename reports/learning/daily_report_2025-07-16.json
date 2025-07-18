@@ -1,0 +1,338 @@
+{
+  "report_id": "c4d7a563-1f40-4139-9ced-65995b103875",
+  "report_type": "daily",
+  "date": "2025-07-16",
+  "generated_at": "2025-07-18T12:06:02.163008",
+  "period": {
+    "start": "2025-07-16T00:00:00",
+    "end": "2025-07-17T00:00:00"
+  },
+  "summary": {
+    "total_users": 2,
+    "total_questions": 15,
+    "total_feedback": 0,
+    "avg_questions_per_user": 7.5,
+    "feedback_ratio": 0
+  },
+  "user_activity": [
+    {
+      "user_id": "admin",
+      "username": "admin",
+      "role": "admin",
+      "sessions_count": 1,
+      "questions_count": 1,
+      "responses_received": 1,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "ogólne"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-16T15:52:45.531520",
+      "last_activity": "2025-07-16T15:53:15.909321",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-16T15:52:45.531520",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "co to jest python flask",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        }
+      ]
+    },
+    {
+      "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+      "username": "damian",
+      "role": "user",
+      "sessions_count": 3,
+      "questions_count": 14,
+      "responses_received": 14,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "pilotaż",
+        "silniki",
+        "nawigacja",
+        "ogólne"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-16T14:45:50.824335",
+      "last_activity": "2025-07-16T16:30:19.490505",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-16T14:53:11.120543",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "na jak długi czas lotu musie c samolot paliwa do lotniska zapasowego w locie ifr",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T14:55:40.373653",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "jaka jest maksymalna wysokoc lotu samolotem bez potrzeby uzywania masek tlenowych",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T14:58:07.564935",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "jakie sa warunki meteorologiczne lotu vfr special",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T15:01:47.831340",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "co to jest hypoksja odpowiedz krotko",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T15:03:39.802244",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "o czym rozmawialismy do tej pory",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T15:10:25.283710",
+          "type": "question",
+          "topic": "silniki",
+          "content_preview": "opisz działanie silnika odrzutowego",
+          "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6"
+        },
+        {
+          "timestamp": "2025-07-16T15:11:28.533215",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "czestotliwosci zakazane w lotnictwie",
+          "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8"
+        },
+        {
+          "timestamp": "2025-07-16T16:27:45.462110",
+          "type": "question",
+          "topic": "silniki",
+          "content_preview": "co to jest samochód",
+          "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e"
+        },
+        {
+          "timestamp": "2025-07-16T16:29:56.839140",
+          "type": "question",
+          "topic": "silniki",
+          "content_preview": "co to jest samochód?",
+          "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e"
+        },
+        {
+          "timestamp": "2025-07-16T16:30:18.820087",
+          "type": "question",
+          "topic": "silniki",
+          "content_preview": "co to jest samochod",
+          "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e"
+        }
+      ]
+    }
+  ],
+  "questions_analysis": {
+    "total_questions": 15,
+    "unique_users": 2,
+    "avg_per_user": 7.5,
+    "questions_by_type": {
+      "definicyjne": 5,
+      "inne": 5,
+      "proceduralne": 4,
+      "faktyczne": 1
+    },
+    "questions_by_complexity": {
+      "proste": 12,
+      "średnie": 3
+    },
+    "avg_question_length": 41.13333333333333,
+    "sample_questions": [
+      {
+        "content": "Co to jest Python Flask",
+        "length": 23,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-16T15:52:45.531520",
+        "user_id": "admin"
+      },
+      {
+        "content": "co to jest samochód",
+        "length": 19,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "silniki",
+        "timestamp": "2025-07-16T16:27:45.462110",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "co to jest samochód?",
+        "length": 20,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "silniki",
+        "timestamp": "2025-07-16T16:29:56.839140",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "co to jest samochod",
+        "length": 19,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "silniki",
+        "timestamp": "2025-07-16T16:30:18.820087",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "czestotliwosci zakazane w lotnictwie",
+        "length": 36,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-16T15:11:28.533215",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "siła nosna w szybowcach",
+        "length": 23,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-16T14:45:50.824335",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "napisz mi rodzialay do łacznosci do kursu atpla",
+        "length": 47,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-16T14:46:52.355012",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "jaka jest standardowa ścieżka podejścia ILS",
+        "length": 43,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-16T14:49:27.416053",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "napisz krótko ile stopni pochylenia  ma ścieżka podejścia precyzyjnego ILS",
+        "length": 74,
+        "type": "faktyczne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-16T14:51:45.639848",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "na jak długi czas lotu musie c samolot paliwa do lotniska zapasowego w locie IFR",
+        "length": 80,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-16T14:53:11.120543",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      }
+    ]
+  },
+  "feedback_analysis": {
+    "total_feedback": 0,
+    "positive_feedback": 0,
+    "negative_feedback": 0,
+    "feedback_ratio": 0,
+    "avg_rating": 0,
+    "recent_feedback": []
+  },
+  "learning_insights": {
+    "user_preferences": {},
+    "topic_progression": {},
+    "question_evolution": {},
+    "common_misconceptions": []
+  },
+  "topic_distribution": {
+    "topic_distribution": {
+      "ogólne": 6,
+      "silniki": 4,
+      "pilotaż": 4,
+      "nawigacja": 1
+    },
+    "most_popular_topics": [
+      [
+        "ogólne",
+        6
+      ],
+      [
+        "silniki",
+        4
+      ],
+      [
+        "pilotaż",
+        4
+      ],
+      [
+        "nawigacja",
+        1
+      ]
+    ],
+    "topics_by_user": {
+      "admin": [
+        "ogólne"
+      ],
+      "f404ca1e-385c-4d48-aee5-198e8e988f57": [
+        "pilotaż",
+        "silniki",
+        "nawigacja",
+        "ogólne"
+      ]
+    },
+    "unique_topics": 4,
+    "avg_topics_per_user": 2.5
+  }
+}

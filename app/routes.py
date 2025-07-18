@@ -378,3 +378,112 @@ def get_learning_report():
         
     except Exception as e:
         return jsonify({'error': f'Błąd generowania raportu: {str(e)}'}), 500
+
+@main_bp.route('/api/user_activity_report/<user_id>')
+@login_required
+def get_user_activity_report(user_id):
+    """Endpoint do pobierania szczegółowego raportu aktywności użytkownika"""
+    # Tylko admin może przeglądać raporty innych użytkowników
+    if not current_user.is_admin() and current_user.id != user_id:
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.learning_reports import LearningReportsSystem
+        
+        # Pobierz szczegółowe dane użytkownika
+        learning_system = LearningReportsSystem()
+        user_info = learning_system._get_user_info(user_id)
+        user_profile = learning_system._get_user_learning_profile(user_id)
+        
+        # Pobierz wszystkie sesje użytkownika
+        user_sessions = UserSession.get_user_sessions(user_id)
+        
+        # Pobierz szczegółową historię pytań
+        questions_history = []
+        sessions_details = []
+        
+        for session_info in user_sessions:
+            session_id = session_info['session_id']
+            
+            # Załaduj historię sesji
+            chat_session = ChatSession(session_id, user_id)
+            history = chat_session.load_history()
+            
+            session_questions = []
+            session_responses = []
+            
+            for msg in history:
+                if msg.get('user_id') == user_id:
+                    if msg.get('role') == 'user':
+                        session_questions.append({
+                            'timestamp': msg.get('timestamp'),
+                            'content': msg.get('content', ''),
+                            'session_id': session_id,
+                            'session_title': session_info.get('title', 'Bez tytułu')
+                        })
+                    elif msg.get('role') == 'assistant':
+                        session_responses.append({
+                            'timestamp': msg.get('timestamp'),
+                            'content': msg.get('content', '')[:200] + '...' if len(msg.get('content', '')) > 200 else msg.get('content', ''),
+                            'session_id': session_id
+                        })
+            
+            sessions_details.append({
+                'session_id': session_id,
+                'title': session_info.get('title', 'Bez tytułu'),
+                'created_at': session_info.get('created_at'),
+                'updated_at': session_info.get('updated_at'),
+                'questions_count': len(session_questions),
+                'responses_count': len(session_responses),
+                'questions': session_questions,
+                'responses': session_responses
+            })
+            
+            questions_history.extend(session_questions)
+        
+        # Pobierz feedback użytkownika
+        feedback_history = []
+        feedback_dir = f"feedback/{user_id}"
+        if os.path.exists(feedback_dir):
+            for filename in os.listdir(feedback_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(feedback_dir, filename)
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            feedback = json.load(f)
+                            feedback_history.append(feedback)
+                    except Exception as e:
+                        print(f"Błąd wczytywania feedback: {e}")
+        
+        # Sortuj pytania chronologicznie
+        questions_history.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+        
+        # Analizuj tematy pytań
+        topics_analysis = {}
+        for question in questions_history:
+            content = question.get('content', '').lower()
+            topic = learning_system._detect_topic(content)
+            if topic not in topics_analysis:
+                topics_analysis[topic] = []
+            topics_analysis[topic].append(question)
+        
+        report = {
+            'user_info': user_info,
+            'user_profile': user_profile,
+            'sessions_summary': {
+                'total_sessions': len(sessions_details),
+                'total_questions': len(questions_history),
+                'total_responses': sum(s['responses_count'] for s in sessions_details),
+                'total_feedback': len(feedback_history)
+            },
+            'sessions_details': sessions_details,
+            'questions_history': questions_history,
+            'feedback_history': feedback_history,
+            'topics_analysis': topics_analysis,
+            'generated_at': datetime.now().isoformat()
+        }
+        
+        return jsonify(report)
+        
+    except Exception as e:
+        return jsonify({'error': f'Błąd generowania raportu użytkownika: {str(e)}'}), 500
