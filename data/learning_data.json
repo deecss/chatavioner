@@ -1,153 +1,5 @@
 [
   {
-    "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
-    "user_id": null,
-    "total_messages": 15,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "napisz",
-          2
-        ],
-        [
-          "notatkę",
-          2
-        ],
-        [
-          "stworz",
-          2
-        ],
-        [
-          "opracowanie",
-          2
-        ],
-        [
-          "sile",
-          2
-        ],
-        [
-          "nosnej",
-          2
-        ],
-        [
-          "szkolenia",
-          2
-        ],
-        [
-          "atpla",
-          2
-        ],
-        [
-          "jakich",
-          1
-        ],
-        [
-          "falach",
-          1
-        ],
-        [
-          "radiowych",
-          1
-        ],
-        [
-          "dziala",
-          1
-        ],
-        [
-          "lotnictwo",
-          1
-        ],
-        [
-          "możesz",
-          1
-        ],
-        [
-          "napisac",
-          1
-        ],
-        [
-          "quiz",
-          1
-        ],
-        [
-          "tego",
-          1
-        ],
-        [
-          "opracowania",
-          1
-        ],
-        [
-          "stylu",
-          1
-        ],
-        [
-          "wiesz",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 6.75,
-        "min_length": 5,
-        "max_length": 8,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2713.714285714286,
-        "min_length": 259,
-        "max_length": 7097,
-        "word_count_avg": 305.42857142857144
-      },
-      "structure_types": {
-        "has_headers": 0.8571428571428571,
-        "has_lists": 0.7142857142857143,
-        "has_examples": 0.42857142857142855,
-        "has_formulas": 0.0,
-        "has_summaries": 0.5714285714285714
-      },
-      "content_types": {
-        "theoretical": 1,
-        "practical": 3,
-        "examples": 3,
-        "procedures": 0,
-        "references": 1
-      },
-      "formatting_patterns": {
-        "html_tags": 475,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 51,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 2,
-      "application": 0
-    },
-    "timestamp": "2025-07-17T21:56:52.829730"
-  },
-  {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
     "user_id": null,
     "total_messages": 20,
@@ -8421,5 +8273,96 @@
       "application": 0
     },
     "timestamp": "2025-07-17T22:31:37.092008"
+  },
+  {
+    "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2",
+    "user_id": null,
+    "total_messages": 9,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "prawo",
+          3
+        ],
+        [
+          "coriolisa",
+          3
+        ],
+        [
+          "sila",
+          1
+        ],
+        [
+          "nosna",
+          1
+        ],
+        [
+          "siła",
+          1
+        ],
+        [
+          "nośna",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 2.6,
+        "min_length": 2,
+        "max_length": 5,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 173.0,
+        "min_length": 173,
+        "max_length": 173,
+        "word_count_avg": 20.0
+      },
+      "structure_types": {
+        "has_headers": 0.0,
+        "has_lists": 0.0,
+        "has_examples": 0.0,
+        "has_formulas": 0.0,
+        "has_summaries": 0.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 0,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 0,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 0,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "regulacje",
+      "regulacje",
+      "ogólne",
+      "aerodynamika",
+      "regulacje"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:00:05.810553"
   }
 ]
