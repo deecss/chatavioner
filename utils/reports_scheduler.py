@@ -287,11 +287,20 @@ class ReportScheduler:
             topic_distribution = report.get('topic_distribution', {})
             popular_topics = topic_distribution.get('most_popular_topics', [])[:5]
             
-            for topic, count in popular_topics:
-                html_body += f"""
-                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; display: flex; justify-content: space-between;">
-                                <span style="color: #2c3e50;">{topic.title()}</span>
-                                <span style="background-color: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">{count}</span>
+            print(f"🔍 Debug - popular_topics: {popular_topics}")
+            
+            if popular_topics:
+                for topic, count in popular_topics:
+                    html_body += f"""
+                                <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; display: flex; justify-content: space-between;">
+                                    <span style="color: #2c3e50;">{topic.title()}</span>
+                                    <span style="background-color: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">{count}</span>
+                                </li>
+                    """
+            else:
+                html_body += """
+                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; color: #7f8c8d; font-style: italic;">
+                                Brak danych o tematach w tym okresie
                             </li>
                 """
             
@@ -300,27 +309,152 @@ class ReportScheduler:
                     </div>
                     
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h4 style="color: #2c3e50; margin-top: 0;">👥 Szczegółowa aktywność użytkowników</h4>
-                        <div style="background-color: white; padding: 10px; border-radius: 3px;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">❓ Przykładowe pytania według tematów</h4>
             """
             
-            # Dodaj szczegółową aktywność użytkowników
-            user_activity = report.get('user_activity', [])
-            for user_data in user_activity[:10]:  # Pokaż top 10 użytkowników
-                username = user_data.get('username', user_data.get('user_id', 'Unknown'))
-                questions_count = user_data.get('total_questions', 0)
-                feedback_count = user_data.get('total_feedback', 0)
-                last_activity = user_data.get('last_activity', 'N/A')
-                
+            # Dodaj przykładowe pytania według tematów
+            questions_by_topic = report.get('questions_analysis', {}).get('questions_by_topic', {})
+            for topic, questions in list(questions_by_topic.items())[:3]:  # Top 3 tematy
                 html_body += f"""
-                            <div style="border-bottom: 1px solid #eee; padding: 10px 0; margin-bottom: 10px;">
-                                <strong style="color: #2c3e50;">{username}</strong><br>
-                                <span style="font-size: 12px; color: #7f8c8d;">
-                                    📝 Pytania: {questions_count} | 
-                                    💬 Feedback: {feedback_count} | 
-                                    🕒 Ostatnia aktywność: {last_activity}
+                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #3498db;">
+                            <h5 style="color: #2c3e50; margin: 0 0 10px 0;">🎯 {topic.title()}</h5>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                """
+                
+                for question in questions[:3]:  # Maksymalnie 3 pytania na temat
+                    html_body += f"""
+                                <li style="color: #555; margin: 5px 0; padding: 5px; background-color: #f9f9f9; border-radius: 3px;">
+                                    • {question.get('content', '')[:150]}{'...' if len(question.get('content', '')) > 150 else ''}
+                                </li>
+                    """
+                
+                html_body += """
+                            </ul>
+                        </div>
+                """
+            
+            html_body += """
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">🧑‍🎓 Szczegóły aktywności użytkowników</h4>
+            """
+            
+            # Dodaj szczegóły użytkowników
+            user_activity = report.get('user_activity', [])
+            for user in user_activity[:5]:  # Top 5 użytkowników
+                html_body += f"""
+                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #27ae60;">
+                            <h5 style="color: #2c3e50; margin: 0 0 10px 0;">👤 {user.get('username', 'Nieznany użytkownik')}</h5>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                <span style="background-color: #3498db; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                    Pytania: {user.get('questions_count', 0)}
+                                </span>
+                                <span style="background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                    Sesje: {user.get('sessions_count', 0)}
+                                </span>
+                                <span style="background-color: #f39c12; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                    Feedback: {user.get('feedback_given', 0)}
                                 </span>
                             </div>
+                """
+                
+                # Dodaj przykładowe pytania użytkownika
+                if user.get('detailed_activity'):
+                    questions = [act for act in user.get('detailed_activity', []) if act.get('type') == 'question']
+                    if questions:
+                        html_body += f"""
+                            <div style="margin-top: 10px;">
+                                <h6 style="color: #666; margin: 5px 0;">Przykładowe pytania:</h6>
+                                <ul style="list-style: none; padding: 0; margin: 0;">
+                        """
+                        for q in questions[:2]:  # Maksymalnie 2 pytania
+                            html_body += f"""
+                                    <li style="color: #777; margin: 3px 0; padding: 3px; background-color: #f9f9f9; border-radius: 3px; font-size: 11px;">
+                                        {q.get('content_preview', '')[:100]}{'...' if len(q.get('content_preview', '')) > 100 else ''}
+                                    </li>
+                            """
+                        html_body += """
+                                </ul>
+                            </div>
+                        """
+                
+                html_body += """
+                        </div>
+                """
+            
+            html_body += """
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">🔄 Najnowsze pytania</h4>
+                        <ul style="list-style: none; padding: 0;">
+            """
+            
+            # Dodaj najnowsze pytania
+            recent_questions = report.get('questions_analysis', {}).get('recent_questions', [])
+            for question in recent_questions[-5:]:  # Ostatnie 5 pytań
+                html_body += f"""
+                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; border-left: 3px solid #9b59b6;">
+                                <div style="color: #2c3e50; margin-bottom: 5px;">
+                                    {question.get('content', '')[:200]}{'...' if len(question.get('content', '')) > 200 else ''}
+                                </div>
+                                <div style="font-size: 11px; color: #7f8c8d;">
+                                    Użytkownik: {question.get('user_id', 'N/A')} | 
+                                    Złożoność: {question.get('complexity', 'N/A')} | 
+                                    Temat: {question.get('topic', 'N/A')}
+                                </div>
+                            </li>
+                """
+            
+            html_body += """
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">🎯 Ostatnie opinie</h4>
+                        <ul style="list-style: none; padding: 0;">
+            """
+            
+            # Dodaj ostatnie opinie
+            recent_feedback = report.get('feedback_analysis', {}).get('recent_feedback', [])
+            for feedback in recent_feedback[-3:]:  # Ostatnie 3 opinie
+                feedback_color = '#27ae60' if feedback.get('type') == 'positive' else '#e74c3c'
+                html_body += f"""
+                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; border-left: 3px solid {feedback_color};">
+                                <div style="color: #2c3e50; margin-bottom: 5px;">
+                                    {feedback.get('type', 'N/A').upper()}: {feedback.get('comment', 'Brak komentarza')}
+                                </div>
+                                <div style="font-size: 11px; color: #7f8c8d;">
+                                    Użytkownik: {feedback.get('user_id', 'N/A')} | 
+                                    Ocena: {feedback.get('rating', 'N/A')}
+                                </div>
+                            </li>
+                """
+            
+            html_body += """
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">🎯 Ostatnie opinie</h4>
+                        <ul style="list-style: none; padding: 0;">
+            """
+            
+            # Dodaj ostatnie opinie
+            recent_feedback = report.get('feedback_analysis', {}).get('recent_feedback', [])
+            for feedback in recent_feedback[-3:]:  # Ostatnie 3 opinie
+                feedback_color = '#27ae60' if feedback.get('type') == 'positive' else '#e74c3c'
+                html_body += f"""
+                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; border-left: 3px solid {feedback_color};">
+                                <div style="color: #2c3e50; margin-bottom: 5px;">
+                                    {feedback.get('type', 'N/A').upper()}: {feedback.get('comment', 'Brak komentarza')}
+                                </div>
+                                <div style="font-size: 11px; color: #7f8c8d;">
+                                    Użytkownik: {feedback.get('user_id', 'N/A')} | 
+                                    Ocena: {feedback.get('rating', 'N/A')}
+                                </div>
+                            </li>
                 """
             
             html_body += """
@@ -502,134 +636,61 @@ class ReportScheduler:
     def get_scheduler_status(self):
         """Pobiera status schedulera"""
         try:
-            is_running = self.scheduler_running
-            
-            status = {
-                'is_running': is_running,
-                'next_report_time': self.get_next_report_time(),
-                'next_email_time': self.get_next_email_time(),
-                'next_cleanup_time': self.get_next_cleanup_time()
+            return {
+                'running': self.running,
+                'email_enabled': self.email_config.get('email_enabled', False),
+                'scheduled_jobs': len(schedule.jobs),
+                'last_report_time': None,
+                'next_report_time': self._get_next_job_time('generate_daily_report'),
+                'next_email_time': self._get_next_job_time('send_daily_email_report')
             }
-            
-            return status
         except Exception as e:
             print(f"❌ Błąd pobierania statusu schedulera: {e}")
             return {
-                'is_running': False,
-                'next_report_time': 'N/A',
-                'next_email_time': 'N/A',
-                'next_cleanup_time': 'N/A'
-            }
-    
-    def get_next_report_time(self):
-        """Pobiera czas następnego raportu"""
-        try:
-            if not self.scheduler_running:
-                return 'N/A'
-            
-            # Następny raport o 20:00
-            now = datetime.now()
-            next_report = now.replace(hour=20, minute=0, second=0, microsecond=0)
-            
-            # Jeśli już minęła 20:00, ustaw na jutro
-            if now >= next_report:
-                next_report += timedelta(days=1)
-            
-            return next_report.strftime('%Y-%m-%d %H:%M:%S')
-        except Exception as e:
-            return 'N/A'
-    
-    def get_next_email_time(self):
-        """Pobiera czas następnego emaila"""
-        try:
-            if not self.scheduler_running or not self.email_config.get('email_enabled', False):
-                return 'N/A'
-            
-            # Następny email o 20:05
-            now = datetime.now()
-            next_email = now.replace(hour=20, minute=5, second=0, microsecond=0)
-            
-            # Jeśli już minęła 20:05, ustaw na jutro
-            if now >= next_email:
-                next_email += timedelta(days=1)
-            
-            return next_email.strftime('%Y-%m-%d %H:%M:%S')
-        except Exception as e:
-            return 'N/A'
-    
-    def get_next_cleanup_time(self):
-        """Pobiera czas następnego czyszczenia"""
-        try:
-            if not self.scheduler_running:
-                return 'N/A'
-            
-            # Następne czyszczenie o 02:00
-            now = datetime.now()
-            next_cleanup = now.replace(hour=2, minute=0, second=0, microsecond=0)
-            
-            # Jeśli już minęła 02:00, ustaw na jutro
-            if now >= next_cleanup:
-                next_cleanup += timedelta(days=1)
-            
-            return next_cleanup.strftime('%Y-%m-%d %H:%M:%S')
-        except Exception as e:
-            return 'N/A'
-    
-    def start_scheduler(self):
-        """Uruchamia scheduler"""
-        try:
-            if not self.scheduler_running:
-                self.start()
-                return {
-                    'success': True,
-                    'message': 'Scheduler uruchomiony pomyślnie'
-                }
-            else:
-                return {
-                    'success': False,
-                    'message': 'Scheduler jest już uruchomiony'
-                }
-        except Exception as e:
-            return {
-                'success': False,
-                'message': str(e)
-            }
-    
-    def stop_scheduler(self):
-        """Zatrzymuje scheduler"""
-        try:
-            if self.scheduler_running:
-                self.stop()
-                return {
-                    'success': True,
-                    'message': 'Scheduler zatrzymany pomyślnie'
-                }
-            else:
-                return {
-                    'success': False,
-                    'message': 'Scheduler nie jest uruchomiony'
-                }
-        except Exception as e:
-            return {
-                'success': False,
-                'message': str(e)
+                'running': False,
+                'email_enabled': False,
+                'scheduled_jobs': 0,
+                'last_report_time': None,
+                'next_report_time': None,
+                'next_email_time': None
             }
 
-    def generate_report_on_demand_old(self, date_str: str = None):
-        """Generuje raport na żądanie - stara wersja"""
-        try:
-            if date_str:
-                date = datetime.strptime(date_str, '%Y-%m-%d')
-            else:
-                date = datetime.now()
-            
-            print(f"📊 Generowanie raportu na żądanie za {date.strftime('%Y-%m-%d')}...")
-            
-            report = self.reports_system.generate_daily_report(date)
-            
-            print(f"✅ Raport wygenerowany: {report['report_id']}")
-            return report
-            
-        except Exception as e:
-            print(f"❌ Błąd generowania raportu na żądanie: {e}")
-            return None
+
+# Globalne zmienne dla instancji schedulera
+_scheduler = None
+
+def get_report_scheduler():
+    """Zwraca globalną instancję schedulera"""
+    global _scheduler
+    if _scheduler is None:
+        _scheduler = ReportScheduler()
+    return _scheduler
+
+def start_report_scheduler():
+    """Uruchamia scheduler raportów"""
+    global _scheduler
+    if _scheduler is None:
+        _scheduler = ReportScheduler()
+    _scheduler.start()
+    return _scheduler
+
+def stop_report_scheduler():
+    """Zatrzymuje scheduler raportów"""
+    global _scheduler
+    if _scheduler is not None:
+        _scheduler.stop()
+        _scheduler = None
+
+def get_scheduler():
+    """Alias dla get_report_scheduler"""
+    return get_report_scheduler()
+
+def restart_scheduler():
+    """Restartuje scheduler"""
+    stop_report_scheduler()
+    return start_report_scheduler()
+
+def is_scheduler_running():
+    """Sprawdza czy scheduler jest uruchomiony"""
+    global _scheduler
+    return _scheduler is not None and _scheduler.running

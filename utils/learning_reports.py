@@ -296,6 +296,9 @@ class LearningReportsSystem:
         total_questions = len(questions)
         unique_users = len(set(q["user_id"] for q in questions if q["user_id"]))
         
+        # Sortuj pytania chronologicznie
+        questions_sorted = sorted(questions, key=lambda x: x["timestamp"])
+        
         return {
             "total_questions": total_questions,
             "unique_users": unique_users,
@@ -303,8 +306,30 @@ class LearningReportsSystem:
             "questions_by_type": dict(question_types),
             "questions_by_complexity": dict(question_complexity),
             "avg_question_length": sum(q["length"] for q in questions) / total_questions if total_questions > 0 else 0,
-            "sample_questions": questions[:10]  # Pierwsze 10 pytań jako przykład
+            "sample_questions": questions_sorted[:15],  # Pierwsze 15 pytań chronologicznie
+            "recent_questions": questions_sorted[-10:] if questions_sorted else [],  # Ostatnie 10 pytań
+            "questions_by_topic": self._group_questions_by_topic(questions_sorted)
         }
+    
+    def _group_questions_by_topic(self, questions: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+        """Grupuje pytania według tematów"""
+        topics_questions = defaultdict(list)
+        
+        for question in questions:
+            topic = question.get("topic", "inne")
+            if topic:
+                topics_questions[topic].append({
+                    "content": question["content"],
+                    "user_id": question["user_id"],
+                    "timestamp": question["timestamp"],
+                    "complexity": question["complexity"]
+                })
+        
+        # Ograniczenie do 5 pytań na temat
+        for topic in topics_questions:
+            topics_questions[topic] = topics_questions[topic][:5]
+        
+        return dict(topics_questions)
     
     def _normalize_datetime(self, dt):
         """Zwraca offset-naive datetime (usuwa strefę czasową jeśli jest)"""
