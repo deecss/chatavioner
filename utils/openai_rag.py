@@ -383,30 +383,8 @@ class OpenAIRAG:
         try:
             print(f"🔍 Rozpoczynam generowanie odpowiedzi dla: {query[:50]}...")
             
-            # Sprawdź czy pytanie dotyczy lotnictwa (sprawdzenie na poziomie aplikacji)
-            # Uwzględnij kontekst rozmowy przy sprawdzaniu tematyki lotniczej
-            is_aviation_query = self.is_aviation_related(query)
-            
-            # Jeśli pytanie samo w sobie nie wygląda na lotnicze, sprawdź kontekst
-            if not is_aviation_query and context:
-                print(f"🔍 Pytanie '{query}' nie wygląda na lotnicze, sprawdzam kontekst rozmowy...")
-                
-                # Sprawdź ostatnie wiadomości asystenta czy dotyczyły lotnictwa
-                recent_assistant_messages = []
-                for msg in context[-5:]:  # Sprawdź ostatnie 5 wiadomości
-                    if msg.get('role') == 'assistant' and msg.get('content'):
-                        recent_assistant_messages.append(msg['content'])
-                
-                # Sprawdź czy ostatnie odpowiedzi asystenta dotyczyły lotnictwa
-                if recent_assistant_messages:
-                    combined_context = " ".join(recent_assistant_messages)
-                    if self.is_aviation_related(combined_context):
-                        print(f"✅ Kontekst rozmowy dotyczy lotnictwa - akceptuję pytanie follow-up")
-                        is_aviation_query = True
-                    else:
-                        print(f"❌ Kontekst rozmowy nie dotyczy lotnictwa")
-            
-            if not is_aviation_query:
+            # Sprawdź czy pytanie dotyczy lotnictwa - uwzględnij kontekst rozmowy
+            if not self.is_aviation_related_with_context(query, context):
                 print(f"⚠️  Pytanie nie dotyczy lotnictwa: {query[:100]}...")
                 rejection_message = ("Przepraszam, ale jestem asystentem specjalizującym się wyłącznie w tematyce lotniczej. "
                                    "Mogę pomóc w następujących obszarach:\n"
@@ -1017,4 +995,85 @@ class OpenAIRAG:
             if context_normalized in query_normalized:
                 return True
         
+        return False
+    
+    def is_aviation_related_with_context(self, query: str, context: list = None) -> bool:
+        """
+        Sprawdź czy pytanie dotyczy lotnictwa, uwzględniając kontekst rozmowy.
+        
+        Args:
+            query: Pytanie do sprawdzenia
+            context: Historia rozmowy (lista wiadomości)
+            
+        Returns:
+            True jeśli pytanie dotyczy lotnictwa lub jest kontynuacją rozmowy lotniczej
+        """
+        # Najpierw sprawdź czy pytanie samo w sobie dotyczy lotnictwa
+        is_aviation_query = self.is_aviation_related(query)
+        
+        if is_aviation_query:
+            print(f"✅ Pytanie bezpośrednio dotyczy lotnictwa: {query[:50]}...")
+            return True
+        
+        # Jeśli pytanie nie wygląda na lotnicze, sprawdź kontekst rozmowy
+        if context and len(context) > 0:
+            print(f"🔍 Pytanie '{query}' nie wygląda na lotnicze, sprawdzam kontekst rozmowy...")
+            
+            # Sprawdź ostatnie wiadomości asystenta czy dotyczyły lotnictwa
+            recent_assistant_messages = []
+            for msg in context[-5:]:  # Sprawdź ostatnie 5 wiadomości
+                if msg.get('role') == 'assistant' and msg.get('content'):
+                    recent_assistant_messages.append(msg['content'])
+            
+            # Sprawdź czy ostatnie odpowiedzi asystenta dotyczyły lotnictwa
+            if recent_assistant_messages:
+                combined_context = " ".join(recent_assistant_messages)
+                if self.is_aviation_related(combined_context):
+                    print(f"✅ Kontekst rozmowy dotyczy lotnictwa - akceptuję pytanie follow-up")
+                    return True
+                else:
+                    print(f"❌ Kontekst rozmowy nie dotyczy lotnictwa")
+            
+            # Sprawdź czy poprzednie pytania użytkownika dotyczyły lotnictwa
+            recent_user_messages = []
+            for msg in context[-10:]:  # Sprawdź ostatnie 10 wiadomości
+                if msg.get('role') == 'user' and msg.get('content'):
+                    recent_user_messages.append(msg['content'])
+            
+            if recent_user_messages:
+                # Sprawdź czy poprzednie pytania dotyczyły lotnictwa
+                aviation_context_count = 0
+                for user_msg in recent_user_messages:
+                    if self.is_aviation_related(user_msg):
+                        aviation_context_count += 1
+                
+                # Jeśli więcej niż połowa ostatnich pytań dotyczyła lotnictwa
+                if aviation_context_count > len(recent_user_messages) / 2:
+                    print(f"✅ Kontekst użytkownika ({aviation_context_count}/{len(recent_user_messages)}) dotyczy lotnictwa - akceptuję pytanie follow-up")
+                    return True
+                else:
+                    print(f"❌ Kontekst użytkownika ({aviation_context_count}/{len(recent_user_messages)}) nie dotyczy lotnictwa")
+        
+        # Sprawdź czy pytanie to typowe follow-up do rozmowy lotniczej
+        follow_up_patterns = [
+            'który', 'która', 'które', 'co z', 'a co', 'dlaczego', 'jak to',
+            'gdzie to', 'kiedy to', 'ile to', 'co się stanie', 'jak się',
+            'najlepszy', 'najgorszy', 'najniebezpieczniejszy', 'najbezpieczniejszy',
+            'różnica', 'porównanie', 'porównaj', 'różni się', 'podobne',
+            'więcej', 'szczegóły', 'wyjaśnij', 'opisz', 'pokaż', 'przykład'
+        ]
+        
+        query_lower = query.lower()
+        has_follow_up_pattern = any(pattern in query_lower for pattern in follow_up_patterns)
+        
+        if has_follow_up_pattern and context and len(context) > 0:
+            print(f"🔍 Pytanie '{query}' wygląda na follow-up, ponownie sprawdzam kontekst...")
+            
+            # Sprawdź szerszy kontekst dla pytań follow-up
+            all_messages = " ".join([msg.get('content', '') for msg in context[-15:] if msg.get('content')])
+            if self.is_aviation_related(all_messages):
+                print(f"✅ Szerszy kontekst zawiera tematykę lotniczą - akceptuję pytanie follow-up")
+                return True
+        
+        print(f"❌ Pytanie '{query}' nie dotyczy lotnictwa ani nie jest kontynuacją rozmowy lotniczej")
         return False

@@ -97,12 +97,15 @@ def setup_admin_user():
         print(f"❌ Błąd podczas tworzenia administratora: {e}")
 
 def setup_learning_system():
-    """Inicjalizuje system uczenia się"""
+    """Inicjalizuje system uczenia się i raporty"""
     try:
         print("🧠 Inicjalizacja systemu uczenia się...")
         from utils.learning_system import LearningSystem
+        from utils.learning_reports import LearningReportsSystem
+        from utils.reports_scheduler import start_report_scheduler
         
         learning_system = LearningSystem()
+        learning_reports = LearningReportsSystem()
         
         # Sprawdź czy istnieją dane do analizy
         history_dir = 'history'
@@ -127,10 +130,32 @@ def setup_learning_system():
                 # Generuj globalne wzorce
                 global_patterns = learning_system.analyze_all_sessions()
                 print(f"🌐 Wygenerowano globalne wzorce dla {global_patterns.get('total_sessions', 0)} sesji")
+                
+                # Wygeneruj przykładowy raport jeśli nie ma żadnych
+                available_reports = learning_reports.get_available_reports()
+                if len(available_reports) == 0:
+                    print("� Generuję przykładowy raport uczenia się...")
+                    try:
+                        from datetime import datetime
+                        report = learning_reports.generate_daily_report(datetime.now())
+                        print(f"✅ Wygenerowano przykładowy raport: {report['report_id']}")
+                    except Exception as e:
+                        print(f"⚠️  Błąd generowania przykładowego raportu: {e}")
+                else:
+                    print(f"📋 Znaleziono {len(available_reports)} istniejących raportów")
+                
             else:
-                print("📝 Brak sesji do analizy - system uczenia się gotowy na nowe dane")
+                print("�📝 Brak sesji do analizy - system uczenia się gotowy na nowe dane")
         else:
             print("📁 Tworzę katalog historii dla systemu uczenia się")
+        
+        # Uruchom scheduler raportów
+        print("⏰ Uruchamianie schedulera raportów...")
+        try:
+            start_report_scheduler()
+            print("✅ Scheduler raportów uruchomiony pomyślnie")
+        except Exception as e:
+            print(f"⚠️  Błąd uruchamiania schedulera: {e}")
         
         print("🎯 System uczenia się uruchomiony pomyślnie!")
         
