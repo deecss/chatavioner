@@ -937,3 +937,96 @@ def api_live_stats():
     except Exception as e:
         logger.error(f"Błąd API live-stats: {e}")
         return jsonify({'error': str(e)}), 500
+
+# API dla funkcjonalności email
+
+@admin_bp.route('/api/learning-reports/email-test', methods=['POST'])
+@login_required
+def test_email_sending():
+    """Test wysyłania emaila"""
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        success = scheduler.test_email_sending()
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Email testowy wysłany pomyślnie'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Błąd wysyłania emaila testowego'
+            })
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Błąd: {str(e)}'
+        })
+
+@admin_bp.route('/api/learning-reports/email-send', methods=['POST'])
+@login_required
+def send_email_report():
+    """Wysyła raport emailem na żądanie"""
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        data = request.json
+        report_date = data.get('date')
+        
+        scheduler = get_scheduler()
+        result = scheduler.send_email_on_demand(report_date)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Błąd: {str(e)}'
+        })
+
+@admin_bp.route('/api/learning-reports/email-config', methods=['GET'])
+@login_required
+def get_email_config():
+    """Pobiera konfigurację email"""
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        config = scheduler.get_email_config()
+        
+        return jsonify({
+            'success': True,
+            'config': config
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Błąd: {str(e)}'
+        })
+
+@admin_bp.route('/api/learning-reports/email-config', methods=['POST'])
+@login_required
+def set_email_config():
+    """Ustawia konfigurację email"""
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        data = request.json
+        scheduler = get_scheduler()
+        scheduler.set_email_config(data)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Konfiguracja email zaktualizowana'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Błąd: {str(e)}'
+        })
