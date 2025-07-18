@@ -244,6 +244,14 @@ class LearningReportsSystem:
             stats["detailed_activity"].sort(key=lambda x: x["timestamp"])
             # Ogranicz do ostatnich 10 aktywności
             stats["detailed_activity"] = stats["detailed_activity"][-10:]
+            
+            # Przenieś dane z learning_profile na główny poziom dla kompatybilności z szablonem
+            if "learning_profile" in stats:
+                profile = stats["learning_profile"]
+                stats["learning_level"] = profile.get("learning_level", "beginner")
+                stats["preferred_detail_level"] = profile.get("preferred_detail_level", "medium")
+                stats["preferences"] = profile.get("preferences", {})
+            
             result.append(stats)
         
         return result
@@ -343,6 +351,10 @@ class LearningReportsSystem:
         """Zwraca pojedynczy feedback jako dict lub None"""
         if isinstance(entry, dict):
             return entry
+        elif isinstance(entry, list):
+            # Jeśli entry to lista, spróbuj wziąć pierwszy element
+            if len(entry) > 0 and isinstance(entry[0], dict):
+                return entry[0]
         return None
     
     def _analyze_feedback(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
@@ -370,11 +382,27 @@ class LearningReportsSystem:
                                 feedback_entries = [feedback]
                             else:
                                 feedback_entries = []
+                            
                             for fb in feedback_entries:
+                                if not fb:  # Pomiń None entries
+                                    continue
+                                    
                                 feedback_time = self._parse_timestamp(fb.get('timestamp'))
                                 feedback_time = self._normalize_datetime(feedback_time)
-                                if not feedback_time or not (start_time <= feedback_time < end_time):
+                                
+                                # Sprawdź czy feedback_time jest prawidłowy
+                                if not feedback_time:
                                     continue
+                                
+                                # Porównaj tylko offset-naive datetimes
+                                try:
+                                    if not (start_time <= feedback_time < end_time):
+                                        continue
+                                except TypeError:
+                                    # Jeśli nadal problem z porównaniem, pomiń
+                                    print(f"⚠️  Błąd porównania czasu dla feedback: {fb.get('timestamp')}")
+                                    continue
+                                
                                 feedback_data.append({
                                     "user_id": fb.get('user_id', user_dir),
                                     "type": fb.get('type', 'unknown'),
@@ -473,9 +501,18 @@ class LearningReportsSystem:
         # Konwertuj sets na listy
         topic_by_user_list = {user_id: list(topics) for user_id, topics in topic_by_user.items()}
         
+        # Konwertuj most_popular_topics na format z obiektem
+        most_popular = []
+        for topic, count in topic_counter.most_common(10):
+            most_popular.append({
+                "topic": topic,
+                "count": count
+            })
+        
         return {
             "topic_distribution": dict(topic_counter),
-            "most_popular_topics": topic_counter.most_common(10),
+            "most_popular_topics": most_popular,
+            "most_popular": most_popular,  # Dodaj też w tym formacie dla kompatybilności
             "topics_by_user": topic_by_user_list,
             "unique_topics": len(topic_counter),
             "avg_topics_per_user": sum(len(topics) for topics in topic_by_user.values()) / len(topic_by_user) if topic_by_user else 0
@@ -572,20 +609,38 @@ class LearningReportsSystem:
                 '%Y-%m-%d %H:%M:%S',
                 '%Y-%m-%dT%H:%M:%S',
                 '%Y-%m-%dT%H:%M:%S.%f',
-                '%Y-%m-%d %H:%M:%S.%f'
+                '%Y-%m-%d %H:%M:%S.%f',
+                '%Y-%m-%dT%H:%M:%S%z',
+                '%Y-%m-%dT%H:%M:%S.%f%z'
             ]
             
             for fmt in formats:
                 try:
-                    return datetime.strptime(timestamp_str, fmt)
+                    dt = datetime.strptime(timestamp_str, fmt)
+                    # Zawsze zwróć offset-naive datetime
+                    return self._normalize_datetime(dt)
                 except ValueError:
                     continue
             
             # Jeśli żaden format nie zadziałał, spróbuj ISO format
-            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            try:
+                dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                return self._normalize_datetime(dt)
+            except ValueError:
+                pass
+            
+            # Ostatnia próba - usuń wszystkie znaki stref czasowych i spróbuj ponownie
+            cleaned = timestamp_str.split('+')[0].split('Z')[0]
+            for fmt in formats[:4]:  # Tylko formaty bez strefy czasowej
+                try:
+                    return datetime.strptime(cleaned, fmt)
+                except ValueError:
+                    continue
         
-        except Exception:
-            return None
+        except Exception as e:
+            print(f"⚠️  Błąd parsowania timestamp '{timestamp_str}': {e}")
+        
+        return None
     
     def get_available_reports(self) -> List[Dict[str, Any]]:
         """Pobiera listę dostępnych raportów"""

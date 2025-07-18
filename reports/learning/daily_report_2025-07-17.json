@@ -1,8 +1,8 @@
 {
-  "report_id": "44ae950a-363f-4643-8941-85bc7c42ae11",
+  "report_id": "050ec96c-33c7-4bcd-b423-5a65802991ee",
   "report_type": "daily",
   "date": "2025-07-17",
-  "generated_at": "2025-07-18T12:58:26.798136",
+  "generated_at": "2025-07-18T13:18:53.630949",
   "period": {
     "start": "2025-07-17T00:00:00",
     "end": "2025-07-18T00:00:00"
@@ -24,8 +24,8 @@
       "responses_received": 4,
       "feedback_given": 0,
       "topics_discussed": [
-        "aerodynamika",
-        "ogólne"
+        "ogólne",
+        "aerodynamika"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-17T00:10:09.072332",
@@ -255,7 +255,146 @@
         "timestamp": "2025-07-17T22:31:36.578980",
         "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
       }
-    ]
+    ],
+    "recent_questions": [
+      {
+        "content": "prawo coriolisa",
+        "length": 15,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T00:10:09.072332",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "prawo coriolisa",
+        "length": 15,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T21:54:25.823168",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "co to jest sila nosna",
+        "length": 21,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T21:55:08.665348",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "siła nośna",
+        "length": 10,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "aerodynamika",
+        "timestamp": "2025-07-17T21:58:05.486368",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "jak wpływa oblodzenie na lot samolotu?",
+        "length": 38,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "meteorologia",
+        "timestamp": "2025-07-17T22:03:19.606820",
+        "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
+      },
+      {
+        "content": "pokaż jak to wygląda na profilu lotniczym, wygeneruj obraz pokazujący przekrój profilu lotniczego z widocznym oblodzeniem oraz bez niego",
+        "length": 136,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "meteorologia",
+        "timestamp": "2025-07-17T22:05:58.821595",
+        "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
+      },
+      {
+        "content": "jakie mamy rodzaje oblodzenia,  wymień każde oraz opisz je w 3 zdaniach, zawrzyj informację o miejscach występowania oraz wyglądzie",
+        "length": 131,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T22:12:09.672027",
+        "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
+      },
+      {
+        "content": "który z nich jest najniebezpieczniejszy i dlaczego - 5 zdań max",
+        "length": 63,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T22:25:02.985445",
+        "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
+      },
+      {
+        "content": "który z nich jest najniebezpieczniejszy i dlaczego - 5 zdań max",
+        "length": 63,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-17T22:31:36.578980",
+        "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4"
+      }
+    ],
+    "questions_by_topic": {
+      "ogólne": [
+        {
+          "content": "prawo coriolisa",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-17T00:10:09.072332",
+          "complexity": "proste"
+        },
+        {
+          "content": "prawo coriolisa",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-17T21:54:25.823168",
+          "complexity": "proste"
+        },
+        {
+          "content": "co to jest sila nosna",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-17T21:55:08.665348",
+          "complexity": "proste"
+        },
+        {
+          "content": "jakie mamy rodzaje oblodzenia,  wymień każde oraz opisz je w 3 zdaniach, zawrzyj informację o miejscach występowania oraz wyglądzie",
+          "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4",
+          "timestamp": "2025-07-17T22:12:09.672027",
+          "complexity": "średnie"
+        },
+        {
+          "content": "który z nich jest najniebezpieczniejszy i dlaczego - 5 zdań max",
+          "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4",
+          "timestamp": "2025-07-17T22:25:02.985445",
+          "complexity": "średnie"
+        }
+      ],
+      "aerodynamika": [
+        {
+          "content": "siła nośna",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-17T21:58:05.486368",
+          "complexity": "proste"
+        }
+      ],
+      "meteorologia": [
+        {
+          "content": "jak wpływa oblodzenie na lot samolotu?",
+          "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4",
+          "timestamp": "2025-07-17T22:03:19.606820",
+          "complexity": "proste"
+        },
+        {
+          "content": "pokaż jak to wygląda na profilu lotniczym, wygeneruj obraz pokazujący przekrój profilu lotniczego z widocznym oblodzeniem oraz bez niego",
+          "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4",
+          "timestamp": "2025-07-17T22:05:58.821595",
+          "complexity": "średnie"
+        }
+      ]
+    }
   },
   "feedback_analysis": {
     "total_feedback": 0,
@@ -285,23 +424,37 @@
       "meteorologia": 2
     },
     "most_popular_topics": [
-      [
-        "ogólne",
-        6
-      ],
-      [
-        "meteorologia",
-        2
-      ],
-      [
-        "aerodynamika",
-        1
-      ]
+      {
+        "topic": "ogólne",
+        "count": 6
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "aerodynamika",
+        "count": 1
+      }
+    ],
+    "most_popular": [
+      {
+        "topic": "ogólne",
+        "count": 6
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "aerodynamika",
+        "count": 1
+      }
     ],
     "topics_by_user": {
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
-        "aerodynamika",
-        "ogólne"
+        "ogólne",
+        "aerodynamika"
       ],
       "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4": [
         "ogólne",

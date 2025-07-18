@@ -50,7 +50,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.866614"
+    "timestamp": "2025-07-18T13:17:13.088920"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -103,7 +103,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.875785"
+    "timestamp": "2025-07-18T13:17:13.103720"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -168,7 +168,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.883991"
+    "timestamp": "2025-07-18T13:17:13.112588"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -221,7 +221,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.892427"
+    "timestamp": "2025-07-18T13:17:13.121593"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -294,7 +294,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.901883"
+    "timestamp": "2025-07-18T13:17:13.136503"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -443,7 +443,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.916890"
+    "timestamp": "2025-07-18T13:17:13.146510"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -591,7 +591,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.927860"
+    "timestamp": "2025-07-18T13:17:13.157824"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -743,7 +743,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.939686"
+    "timestamp": "2025-07-18T13:17:13.169506"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -834,7 +834,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.948155"
+    "timestamp": "2025-07-18T13:17:13.178767"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -887,7 +887,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:11.956893"
+    "timestamp": "2025-07-18T13:17:13.187696"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -940,7 +940,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.669675"
+    "timestamp": "2025-07-18T13:17:38.011617"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -993,7 +993,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.679300"
+    "timestamp": "2025-07-18T13:17:38.026034"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -1058,7 +1058,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.688373"
+    "timestamp": "2025-07-18T13:17:38.034501"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -1111,7 +1111,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.697111"
+    "timestamp": "2025-07-18T13:17:38.042702"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -1184,7 +1184,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.712501"
+    "timestamp": "2025-07-18T13:17:38.052434"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -1333,7 +1333,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.722948"
+    "timestamp": "2025-07-18T13:17:38.062188"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -1481,7 +1481,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.734549"
+    "timestamp": "2025-07-18T13:17:38.073191"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -1633,7 +1633,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.746703"
+    "timestamp": "2025-07-18T13:17:38.084898"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -1724,7 +1724,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.755778"
+    "timestamp": "2025-07-18T13:17:38.093684"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -1777,7 +1777,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:29:21.764469"
+    "timestamp": "2025-07-18T13:17:38.102058"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -1830,7 +1830,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:03.966464"
+    "timestamp": "2025-07-18T13:17:52.864200"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -1883,7 +1883,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:03.975917"
+    "timestamp": "2025-07-18T13:17:52.878896"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -1948,7 +1948,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:03.984523"
+    "timestamp": "2025-07-18T13:17:52.887650"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -2001,7 +2001,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:03.993099"
+    "timestamp": "2025-07-18T13:17:52.896108"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -2074,7 +2074,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.003233"
+    "timestamp": "2025-07-18T13:17:52.905758"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -2223,7 +2223,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.013340"
+    "timestamp": "2025-07-18T13:17:52.915646"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -2371,7 +2371,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.024509"
+    "timestamp": "2025-07-18T13:17:52.926711"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -2523,7 +2523,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.037134"
+    "timestamp": "2025-07-18T13:17:52.939820"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -2614,7 +2614,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.046225"
+    "timestamp": "2025-07-18T13:17:52.949056"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -2667,7 +2667,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.054954"
+    "timestamp": "2025-07-18T13:17:52.957370"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -2720,7 +2720,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.593131"
+    "timestamp": "2025-07-18T13:18:24.847182"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -2773,7 +2773,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.619765"
+    "timestamp": "2025-07-18T13:18:24.861691"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -2838,7 +2838,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.628640"
+    "timestamp": "2025-07-18T13:18:24.870387"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -2891,7 +2891,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.637281"
+    "timestamp": "2025-07-18T13:18:24.878932"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -2964,7 +2964,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.647267"
+    "timestamp": "2025-07-18T13:18:24.888731"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -3113,7 +3113,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.657072"
+    "timestamp": "2025-07-18T13:18:24.898500"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -3261,7 +3261,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.668196"
+    "timestamp": "2025-07-18T13:18:24.909117"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -3413,7 +3413,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.680780"
+    "timestamp": "2025-07-18T13:18:24.921059"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -3504,7 +3504,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.689863"
+    "timestamp": "2025-07-18T13:18:24.929530"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -3557,7 +3557,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:42:04.698373"
+    "timestamp": "2025-07-18T13:18:24.938028"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -3610,7 +3610,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:17.967283"
+    "timestamp": "2025-07-18T13:21:34.976702"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -3663,7 +3663,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:17.981962"
+    "timestamp": "2025-07-18T13:21:34.993744"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -3728,7 +3728,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:17.990649"
+    "timestamp": "2025-07-18T13:21:35.002592"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -3781,7 +3781,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:17.999376"
+    "timestamp": "2025-07-18T13:21:35.011281"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -3854,7 +3854,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.009292"
+    "timestamp": "2025-07-18T13:21:35.026317"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -4003,7 +4003,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.019803"
+    "timestamp": "2025-07-18T13:21:35.036215"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -4151,7 +4151,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.031355"
+    "timestamp": "2025-07-18T13:21:35.047144"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -4303,7 +4303,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.043240"
+    "timestamp": "2025-07-18T13:21:35.059326"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -4394,7 +4394,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.052136"
+    "timestamp": "2025-07-18T13:21:35.068474"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -4447,7 +4447,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T12:48:18.060707"
+    "timestamp": "2025-07-18T13:21:35.076921"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -4500,7 +4500,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.042652"
+    "timestamp": "2025-07-18T13:21:45.830581"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -4553,7 +4553,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.052004"
+    "timestamp": "2025-07-18T13:21:45.844325"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -4618,7 +4618,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.060253"
+    "timestamp": "2025-07-18T13:21:45.852605"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -4671,7 +4671,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.068778"
+    "timestamp": "2025-07-18T13:21:45.861450"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -4744,7 +4744,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.083846"
+    "timestamp": "2025-07-18T13:21:45.876965"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -4893,7 +4893,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.093512"
+    "timestamp": "2025-07-18T13:21:45.887382"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -5041,7 +5041,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.105304"
+    "timestamp": "2025-07-18T13:21:45.898743"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -5193,7 +5193,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.117328"
+    "timestamp": "2025-07-18T13:21:45.911280"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -5284,7 +5284,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.126037"
+    "timestamp": "2025-07-18T13:21:45.920749"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -5337,7 +5337,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:03:22.134779"
+    "timestamp": "2025-07-18T13:21:45.930453"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -5390,7 +5390,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.094397"
+    "timestamp": "2025-07-18T13:22:03.764415"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -5443,7 +5443,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.104063"
+    "timestamp": "2025-07-18T13:22:03.773513"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -5508,7 +5508,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.118542"
+    "timestamp": "2025-07-18T13:22:03.781986"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -5561,7 +5561,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.126992"
+    "timestamp": "2025-07-18T13:22:03.790286"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -5634,7 +5634,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.142184"
+    "timestamp": "2025-07-18T13:22:03.800055"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -5783,7 +5783,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.151985"
+    "timestamp": "2025-07-18T13:22:03.815109"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -5931,7 +5931,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.163000"
+    "timestamp": "2025-07-18T13:22:03.825883"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -6083,7 +6083,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.175504"
+    "timestamp": "2025-07-18T13:22:03.837555"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -6174,7 +6174,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.183996"
+    "timestamp": "2025-07-18T13:22:03.846484"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -6227,7 +6227,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:04:02.192988"
+    "timestamp": "2025-07-18T13:22:03.855170"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -6280,7 +6280,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.200648"
+    "timestamp": "2025-07-18T13:23:47.341647"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -6333,7 +6333,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.216264"
+    "timestamp": "2025-07-18T13:23:47.355237"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -6398,7 +6398,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.225522"
+    "timestamp": "2025-07-18T13:23:47.364154"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -6451,7 +6451,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.234265"
+    "timestamp": "2025-07-18T13:23:47.372761"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -6524,7 +6524,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.249526"
+    "timestamp": "2025-07-18T13:23:47.388508"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -6673,7 +6673,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.259519"
+    "timestamp": "2025-07-18T13:23:47.401302"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -6821,7 +6821,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.272014"
+    "timestamp": "2025-07-18T13:23:47.412528"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -6973,7 +6973,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.283498"
+    "timestamp": "2025-07-18T13:23:47.424910"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -7064,7 +7064,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.292580"
+    "timestamp": "2025-07-18T13:23:47.434177"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -7117,7 +7117,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.300877"
+    "timestamp": "2025-07-18T13:23:47.442779"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -7170,7 +7170,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.821937"
+    "timestamp": "2025-07-18T13:24:58.617127"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -7223,7 +7223,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.830960"
+    "timestamp": "2025-07-18T13:24:58.632023"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -7288,7 +7288,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.845586"
+    "timestamp": "2025-07-18T13:24:58.641015"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -7341,7 +7341,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.854767"
+    "timestamp": "2025-07-18T13:24:58.649561"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -7414,7 +7414,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.864203"
+    "timestamp": "2025-07-18T13:24:58.664617"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -7563,7 +7563,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.873910"
+    "timestamp": "2025-07-18T13:24:58.674727"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -7711,7 +7711,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.884622"
+    "timestamp": "2025-07-18T13:24:58.685423"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -7863,7 +7863,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.896835"
+    "timestamp": "2025-07-18T13:24:58.696984"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -7954,7 +7954,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.905201"
+    "timestamp": "2025-07-18T13:24:58.706523"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -8007,7 +8007,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:15:28.913782"
+    "timestamp": "2025-07-18T13:24:58.715023"
   },
   {
     "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
@@ -8060,7 +8060,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.229358"
+    "timestamp": "2025-07-18T13:25:09.471679"
   },
   {
     "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
@@ -8113,7 +8113,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.244221"
+    "timestamp": "2025-07-18T13:25:09.486088"
   },
   {
     "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
@@ -8178,7 +8178,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.253063"
+    "timestamp": "2025-07-18T13:25:09.494542"
   },
   {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
@@ -8231,7 +8231,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.262508"
+    "timestamp": "2025-07-18T13:25:09.503106"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
@@ -8304,7 +8304,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.278074"
+    "timestamp": "2025-07-18T13:25:09.517754"
   },
   {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
@@ -8453,7 +8453,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.288523"
+    "timestamp": "2025-07-18T13:25:09.527332"
   },
   {
     "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
@@ -8601,7 +8601,7 @@
       "calculation": 2,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.299784"
+    "timestamp": "2025-07-18T13:25:09.538113"
   },
   {
     "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
@@ -8753,7 +8753,7 @@
       "calculation": 1,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.311905"
+    "timestamp": "2025-07-18T13:25:09.549376"
   },
   {
     "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
@@ -8844,7 +8844,7 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.321219"
+    "timestamp": "2025-07-18T13:25:09.558381"
   },
   {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
@@ -8897,6 +8897,6 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T13:16:59.330088"
+    "timestamp": "2025-07-18T13:25:09.566711"
   }
 ]

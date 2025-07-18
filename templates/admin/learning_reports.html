@@ -582,7 +582,19 @@
         `;
         
         const popularTopics = topicDistribution.most_popular_topics || [];
-        popularTopics.slice(0, 5).forEach(([topic, count]) => {
+        popularTopics.slice(0, 5).forEach(topicItem => {
+            // Sprawdź czy to obiekt czy tablica
+            let topic, count;
+            if (Array.isArray(topicItem)) {
+                [topic, count] = topicItem;
+            } else if (typeof topicItem === 'object' && topicItem !== null) {
+                topic = topicItem.topic || 'Nieznany';
+                count = topicItem.count || 0;
+            } else {
+                topic = 'Nieznany';
+                count = 0;
+            }
+            
             html += `
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600">${topic}</span>
@@ -616,8 +628,8 @@
             html += `
                 <tr class="hover:bg-gray-50">
                     <td class="px-3 py-2 font-medium text-gray-900">${user.username || user.user_id}</td>
-                    <td class="px-3 py-2">${user.total_questions || 0}</td>
-                    <td class="px-3 py-2">${user.total_feedback || 0}</td>
+                    <td class="px-3 py-2">${user.questions_count || 0}</td>
+                    <td class="px-3 py-2">${user.feedback_given || 0}</td>
                     <td class="px-3 py-2 text-gray-600">${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
                 </tr>
             `;
@@ -629,6 +641,75 @@
                 </div>
             </div>
         `;
+        
+        // Dodaj sekcję z przykładowymi pytaniami
+        const questionsAnalysis = report.questions_analysis || {};
+        const sampleQuestions = questionsAnalysis.sample_questions || [];
+        
+        if (sampleQuestions.length > 0) {
+            html += `
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-3">Przykładowe pytania</h4>
+                    <div class="space-y-3">
+            `;
+            
+            sampleQuestions.slice(0, 10).forEach(question => {
+                html += `
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-sm text-gray-900 mb-1">${question.content}</div>
+                        <div class="text-xs text-gray-500 flex justify-between">
+                            <span>Użytkownik: ${question.user_id || 'N/A'}</span>
+                            <span>Temat: ${question.topic || 'N/A'}</span>
+                            <span>Złożoność: ${question.complexity || 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Dodaj sekcję z pytaniami według tematów
+        const questionsByTopic = questionsAnalysis.questions_by_topic || {};
+        const topicKeys = Object.keys(questionsByTopic);
+        
+        if (topicKeys.length > 0) {
+            html += `
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-3">Pytania według tematów</h4>
+                    <div class="space-y-4">
+            `;
+            
+            topicKeys.slice(0, 5).forEach(topic => {
+                const questions = questionsByTopic[topic] || [];
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h5 class="font-medium text-gray-900 mb-2">${topic.charAt(0).toUpperCase() + topic.slice(1)}</h5>
+                        <div class="space-y-2">
+                `;
+                
+                questions.slice(0, 3).forEach(question => {
+                    html += `
+                        <div class="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                            ${question.content}
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        }
         
         document.getElementById('reportDetailContent').innerHTML = html;
     }

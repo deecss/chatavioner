@@ -224,10 +224,10 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="mb-3">Najpopularniejsze tematy:</h6>
-                            {% for topic, count in report.topic_distribution.most_popular_topics %}
+                            {% for topic_data in report.topic_distribution.most_popular_topics %}
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge bg-primary">{{ topic }}</span>
-                                    <span class="fw-bold">{{ count }}</span>
+                                    <span class="badge bg-primary">{{ topic_data.topic }}</span>
+                                    <span class="fw-bold">{{ topic_data.count }}</span>
                                 </div>
                             {% endfor %}
                         </div>

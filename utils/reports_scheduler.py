@@ -287,10 +287,10 @@ class ReportScheduler:
             topic_distribution = report.get('topic_distribution', {})
             popular_topics = topic_distribution.get('most_popular_topics', [])[:5]
             
-            print(f"🔍 Debug - popular_topics: {popular_topics}")
-            
             if popular_topics:
-                for topic, count in popular_topics:
+                for topic_data in popular_topics:
+                    topic = topic_data.get('topic', 'Nieznany')
+                    count = topic_data.get('count', 0)
                     html_body += f"""
                                 <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; display: flex; justify-content: space-between;">
                                     <span style="color: #2c3e50;">{topic.title()}</span>
@@ -314,22 +314,30 @@ class ReportScheduler:
             
             # Dodaj przykładowe pytania według tematów
             questions_by_topic = report.get('questions_analysis', {}).get('questions_by_topic', {})
-            for topic, questions in list(questions_by_topic.items())[:3]:  # Top 3 tematy
-                html_body += f"""
-                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #3498db;">
-                            <h5 style="color: #2c3e50; margin: 0 0 10px 0;">🎯 {topic.title()}</h5>
-                            <ul style="list-style: none; padding: 0; margin: 0;">
-                """
-                
-                for question in questions[:3]:  # Maksymalnie 3 pytania na temat
+            
+            if questions_by_topic:
+                for topic, questions in list(questions_by_topic.items())[:3]:  # Top 3 tematy
                     html_body += f"""
-                                <li style="color: #555; margin: 5px 0; padding: 5px; background-color: #f9f9f9; border-radius: 3px;">
-                                    • {question.get('content', '')[:150]}{'...' if len(question.get('content', '')) > 150 else ''}
-                                </li>
+                            <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #3498db;">
+                                <h5 style="color: #2c3e50; margin: 0 0 10px 0;">🎯 {topic.title()}</h5>
+                                <ul style="list-style: none; padding: 0; margin: 0;">
                     """
-                
+                    
+                    for question in questions[:3]:  # Maksymalnie 3 pytania na temat
+                        html_body += f"""
+                                    <li style="color: #555; margin: 5px 0; padding: 5px; background-color: #f9f9f9; border-radius: 3px;">
+                                        • {question.get('content', '')[:150]}{'...' if len(question.get('content', '')) > 150 else ''}
+                                    </li>
+                        """
+                    
+                    html_body += """
+                                </ul>
+                            </div>
+                    """
+            else:
                 html_body += """
-                            </ul>
+                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; color: #7f8c8d; font-style: italic;">
+                            Brak pytań do wyświetlenia w tym okresie
                         </div>
                 """
             
@@ -342,44 +350,54 @@ class ReportScheduler:
             
             # Dodaj szczegóły użytkowników
             user_activity = report.get('user_activity', [])
-            for user in user_activity[:5]:  # Top 5 użytkowników
-                html_body += f"""
-                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #27ae60;">
-                            <h5 style="color: #2c3e50; margin: 0 0 10px 0;">👤 {user.get('username', 'Nieznany użytkownik')}</h5>
-                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                                <span style="background-color: #3498db; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
-                                    Pytania: {user.get('questions_count', 0)}
-                                </span>
-                                <span style="background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
-                                    Sesje: {user.get('sessions_count', 0)}
-                                </span>
-                                <span style="background-color: #f39c12; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
-                                    Feedback: {user.get('feedback_given', 0)}
-                                </span>
-                            </div>
-                """
-                
-                # Dodaj przykładowe pytania użytkownika
-                if user.get('detailed_activity'):
-                    questions = [act for act in user.get('detailed_activity', []) if act.get('type') == 'question']
-                    if questions:
-                        html_body += f"""
-                            <div style="margin-top: 10px;">
-                                <h6 style="color: #666; margin: 5px 0;">Przykładowe pytania:</h6>
-                                <ul style="list-style: none; padding: 0; margin: 0;">
-                        """
-                        for q in questions[:2]:  # Maksymalnie 2 pytania
+            
+            print(f"🔍 Debug - user_activity count: {len(user_activity)}")
+            
+            if user_activity:
+                for user in user_activity[:5]:  # Top 5 użytkowników
+                    html_body += f"""
+                            <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; border-left: 4px solid #27ae60;">
+                                <h5 style="color: #2c3e50; margin: 0 0 10px 0;">👤 {user.get('username', 'Nieznany użytkownik')}</h5>
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <span style="background-color: #3498db; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                        Pytania: {user.get('questions_count', 0)}
+                                    </span>
+                                    <span style="background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                        Sesje: {user.get('sessions_count', 0)}
+                                    </span>
+                                    <span style="background-color: #f39c12; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">
+                                        Feedback: {user.get('feedback_given', 0)}
+                                    </span>
+                                </div>
+                    """
+                    
+                    # Dodaj przykładowe pytania użytkownika
+                    if user.get('detailed_activity'):
+                        questions = [act for act in user.get('detailed_activity', []) if act.get('type') == 'question']
+                        if questions:
                             html_body += f"""
-                                    <li style="color: #777; margin: 3px 0; padding: 3px; background-color: #f9f9f9; border-radius: 3px; font-size: 11px;">
-                                        {q.get('content_preview', '')[:100]}{'...' if len(q.get('content_preview', '')) > 100 else ''}
-                                    </li>
+                                <div style="margin-top: 10px;">
+                                    <h6 style="color: #666; margin: 5px 0;">Przykładowe pytania:</h6>
+                                    <ul style="list-style: none; padding: 0; margin: 0;">
                             """
-                        html_body += """
-                                </ul>
+                            for q in questions[:2]:  # Maksymalnie 2 pytania
+                                html_body += f"""
+                                        <li style="color: #777; margin: 3px 0; padding: 3px; background-color: #f9f9f9; border-radius: 3px; font-size: 11px;">
+                                            {q.get('content_preview', '')[:100]}{'...' if len(q.get('content_preview', '')) > 100 else ''}
+                                        </li>
+                                """
+                            html_body += """
+                                    </ul>
+                                </div>
+                            """
+                    
+                    html_body += """
                             </div>
-                        """
-                
+                    """
+            else:
                 html_body += """
+                        <div style="background-color: white; margin: 10px 0; padding: 10px; border-radius: 3px; color: #7f8c8d; font-style: italic;">
+                            Brak aktywności użytkowników w tym okresie
                         </div>
                 """
             
@@ -393,17 +411,27 @@ class ReportScheduler:
             
             # Dodaj najnowsze pytania
             recent_questions = report.get('questions_analysis', {}).get('recent_questions', [])
-            for question in recent_questions[-5:]:  # Ostatnie 5 pytań
-                html_body += f"""
-                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; border-left: 3px solid #9b59b6;">
-                                <div style="color: #2c3e50; margin-bottom: 5px;">
-                                    {question.get('content', '')[:200]}{'...' if len(question.get('content', '')) > 200 else ''}
-                                </div>
-                                <div style="font-size: 11px; color: #7f8c8d;">
-                                    Użytkownik: {question.get('user_id', 'N/A')} | 
-                                    Złożoność: {question.get('complexity', 'N/A')} | 
-                                    Temat: {question.get('topic', 'N/A')}
-                                </div>
+            
+            print(f"🔍 Debug - recent_questions count: {len(recent_questions)}")
+            
+            if recent_questions:
+                for question in recent_questions[-5:]:  # Ostatnie 5 pytań
+                    html_body += f"""
+                                <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; border-left: 3px solid #9b59b6;">
+                                    <div style="color: #2c3e50; margin-bottom: 5px;">
+                                        {question.get('content', '')[:200]}{'...' if len(question.get('content', '')) > 200 else ''}
+                                    </div>
+                                    <div style="font-size: 11px; color: #7f8c8d;">
+                                        Użytkownik: {question.get('user_id', 'N/A')} | 
+                                        Złożoność: {question.get('complexity', 'N/A')} | 
+                                        Temat: {question.get('topic', 'N/A')}
+                                    </div>
+                                </li>
+                    """
+            else:
+                html_body += """
+                            <li style="background-color: white; margin: 5px 0; padding: 10px; border-radius: 3px; color: #7f8c8d; font-style: italic;">
+                                Brak najnowszych pytań do wyświetlenia
                             </li>
                 """
             
