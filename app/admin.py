@@ -801,3 +801,128 @@ def stop_scheduler():
     except Exception as e:
         logger.error(f"Błąd zatrzymywania schedulera: {e}")
         return jsonify({'error': str(e)}), 500
+
+# API endpoints dla raportów uczenia się
+
+@admin_bp.route('/api/learning-reports')
+@login_required
+def api_learning_reports():
+    """API endpoint dla listy raportów uczenia się"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        reports = learning_reports_system.get_available_reports()
+        return jsonify({
+            'success': True,
+            'reports': reports
+        })
+    except Exception as e:
+        logger.error(f"Błąd API learning-reports: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/learning-report/<report_id>')
+@login_required
+def api_learning_report_detail(report_id):
+    """API endpoint dla szczegółów raportu"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        report = learning_reports_system.get_report(report_id)
+        if not report:
+            return jsonify({'error': 'Raport nie znaleziony'}), 404
+        
+        return jsonify({
+            'success': True,
+            'report': report
+        })
+    except Exception as e:
+        logger.error(f"Błąd API learning-report detail: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/generate-learning-report', methods=['POST'])
+@login_required
+def api_generate_learning_report():
+    """API endpoint do generowania raportu uczenia się"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        data = request.get_json()
+        date_str = data.get('date')
+        report_type = data.get('type', 'daily')
+        
+        if not date_str:
+            return jsonify({'error': 'Data jest wymagana'}), 400
+        
+        # Konwertuj string na datetime
+        try:
+            date = datetime.strptime(date_str, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'error': 'Nieprawidłowy format daty'}), 400
+        
+        # Generuj raport
+        report = learning_reports_system.generate_daily_report(date)
+        
+        return jsonify({
+            'success': True,
+            'report_id': report['report_id'],
+            'message': 'Raport został wygenerowany pomyślnie'
+        })
+    except Exception as e:
+        logger.error(f"Błąd generowania raportu: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/toggle-scheduler', methods=['POST'])
+@login_required
+def api_toggle_scheduler():
+    """API endpoint do przełączania schedulera"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_report_scheduler
+        scheduler = get_report_scheduler()
+        
+        if scheduler.is_running:
+            scheduler.stop()
+            status = False
+            message = 'Scheduler został zatrzymany'
+        else:
+            scheduler.start()
+            status = True
+            message = 'Scheduler został uruchomiony'
+        
+        return jsonify({
+            'success': True,
+            'status': status,
+            'message': message
+        })
+    except Exception as e:
+        logger.error(f"Błąd przełączania schedulera: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/live-stats')
+@login_required
+def api_live_stats():
+    """API endpoint dla statystyk na żywo"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        # Pobierz statystyki z różnych źródeł
+        stats = {
+            'active_sessions': len(analytics.get_active_sessions()),
+            'today_questions': analytics.get_today_questions_count(),
+            'last_report': analytics.get_last_report_date(),
+            'system_status': 'OK'
+        }
+        
+        return jsonify({
+            'success': True,
+            'stats': stats
+        })
+    except Exception as e:
+        logger.error(f"Błąd API live-stats: {e}")
+        return jsonify({'error': str(e)}), 500

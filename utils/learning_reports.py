@@ -21,12 +21,16 @@ class LearningReportsSystem:
         self.history_dir = "history"
         self.feedback_dir = "feedback"
         self.learning_data_file = "data/learning_data.json"
+        self.users_file = "data/users.json"
         
         # Utwórz katalogi jeśli nie istnieją
         os.makedirs(self.reports_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.history_dir, exist_ok=True)
         os.makedirs(self.feedback_dir, exist_ok=True)
+        
+        # Załaduj dane użytkowników
+        self.users_data = self._load_users_data()
     
     def generate_daily_report(self, date: datetime = None) -> Dict[str, Any]:
         """Generuje dzienny raport aktywności"""
@@ -525,3 +529,120 @@ class LearningReportsSystem:
                     
                     except Exception as e:
                         print(f"⚠️  Błąd podczas usuwania raportu {filename}: {e}")
+    
+    def _load_users_data(self) -> Dict[str, Dict[str, Any]]:
+        """Ładuje dane użytkowników z pliku"""
+        users_dict = {}
+        try:
+            if os.path.exists(self.users_file):
+                with open(self.users_file, 'r', encoding='utf-8') as f:
+                    users_list = json.load(f)
+                
+                # Konwertuj listę na słownik z ID jako kluczem
+                for user in users_list:
+                    if isinstance(user, dict) and 'id' in user:
+                        users_dict[user['id']] = user
+        
+        except Exception as e:
+            print(f"⚠️  Błąd ładowania danych użytkowników: {e}")
+        
+        return users_dict
+    
+    def _get_user_info(self, user_id: str) -> Dict[str, Any]:
+        """Pobiera informacje o użytkowniku"""
+        if user_id in self.users_data:
+            user = self.users_data[user_id]
+            return {
+                'id': user_id,
+                'username': user.get('username', 'Unknown'),
+                'role': user.get('role', 'user'),
+                'created_at': user.get('created_at', 'Unknown')
+            }
+        else:
+            return {
+                'id': user_id,
+                'username': f'User_{user_id[:8]}',
+                'role': 'user',
+                'created_at': 'Unknown'
+            }
+    
+    def _get_user_learning_profile(self, user_id: str) -> Dict[str, Any]:
+        """Pobiera szczegółowy profil uczenia się użytkownika"""
+        profile = {
+            'learning_level': 'beginner',
+            'preferred_detail_level': 'medium',
+            'learning_progress': {},
+            'preferences': {
+                'topics': [],
+                'question_style': 'direct',
+                'response_length': 'medium'
+            },
+            'statistics': {
+                'total_sessions': 0,
+                'total_messages': 0,
+                'avg_session_length': 0,
+                'learning_streak': 0,
+                'mastered_topics': []
+            },
+            'recent_activity': {
+                'last_session': None,
+                'recent_topics': [],
+                'improvement_areas': []
+            }
+        }
+        
+        try:
+            if os.path.exists(self.learning_data_file):
+                with open(self.learning_data_file, 'r', encoding='utf-8') as f:
+                    learning_data = json.load(f)
+                
+                # Szukaj danych dla tego użytkownika
+                user_sessions = []
+                for entry in learning_data:
+                    if isinstance(entry, dict) and entry.get('user_id') == user_id:
+                        user_sessions.append(entry)
+                
+                if user_sessions:
+                    # Analizuj dane uczenia się
+                    profile['statistics']['total_sessions'] = len(user_sessions)
+                    profile['statistics']['total_messages'] = sum(
+                        session.get('total_messages', 0) for session in user_sessions
+                    )
+                    
+                    # Znajdź najnowszą sesję
+                    latest_session = max(user_sessions, key=lambda x: x.get('session_id', ''))
+                    
+                    # Wyciągnij preferencje z najnowszej sesji
+                    if 'user_patterns' in latest_session:
+                        patterns = latest_session['user_patterns']
+                        profile['preferred_detail_level'] = patterns.get('preferred_detail_level', 'medium')
+                        
+                        # Analiza długości pytań
+                        question_length = patterns.get('question_length', {})
+                        preferred_range = question_length.get('preferred_range', 'medium')
+                        profile['preferences']['question_style'] = preferred_range
+                    
+                    # Analiza progresji tematów
+                    all_topics = []
+                    for session in user_sessions:
+                        topics = session.get('topic_progression', [])
+                        all_topics.extend(topics)
+                    
+                    # Najczęstsze tematy
+                    from collections import Counter
+                    topic_counts = Counter(all_topics)
+                    profile['preferences']['topics'] = [topic for topic, count in topic_counts.most_common(5)]
+                    profile['recent_activity']['recent_topics'] = list(topic_counts.keys())[-3:]
+                    
+                    # Określ poziom na podstawie liczby sesji i tematów
+                    if profile['statistics']['total_sessions'] > 10:
+                        profile['learning_level'] = 'advanced'
+                    elif profile['statistics']['total_sessions'] > 5:
+                        profile['learning_level'] = 'intermediate'
+                    else:
+                        profile['learning_level'] = 'beginner'
+        
+        except Exception as e:
+            print(f"⚠️  Błąd ładowania profilu uczenia dla {user_id}: {e}")
+        
+        return profile

@@ -50,896 +50,6 @@
       "calculation": 0,
       "application": 0
     },
-    "timestamp": "2025-07-18T11:13:20.282464"
-  },
-  {
-    "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
-    "user_id": null,
-    "total_messages": 5,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "samochód",
-          2
-        ],
-        [
-          "samochod",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {
-        "explanations": 3
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "silniki",
-      "silniki",
-      "silniki"
-    ],
-    "question_types": {
-      "definition": 3,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.292164"
-  },
-  {
-    "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "stworz",
-          1
-        ],
-        [
-          "opracowanie",
-          1
-        ],
-        [
-          "wprowadzenie",
-          1
-        ],
-        [
-          "kursu",
-          1
-        ],
-        [
-          "atpla",
-          1
-        ],
-        [
-          "2025",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 8.0,
-        "min_length": 8,
-        "max_length": 8,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "nawigacja"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.306703"
-  },
-  {
-    "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "wpływa",
-          1
-        ],
-        [
-          "oblodzenie",
-          1
-        ],
-        [
-          "samolotu",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 6.0,
-        "min_length": 6,
-        "max_length": 6,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.315464"
-  },
-  {
-    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
-    "user_id": null,
-    "total_messages": 2,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czestotliwosci",
-          1
-        ],
-        [
-          "zakazane",
-          1
-        ],
-        [
-          "lotnictwie",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 4207.0,
-        "min_length": 4207,
-        "max_length": 4207,
-        "word_count_avg": 455.0
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 1.0,
-        "has_examples": 1.0,
-        "has_formulas": 0.0,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 0,
-        "examples": 1,
-        "procedures": 0,
-        "references": 1
-      },
-      "formatting_patterns": {
-        "html_tags": 79,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 12,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.325538"
-  },
-  {
-    "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
-    "user_id": null,
-    "total_messages": 10,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "profilu",
-          2
-        ],
-        [
-          "nich",
-          2
-        ],
-        [
-          "najniebezpieczniejszy",
-          2
-        ],
-        [
-          "zdań",
-          2
-        ],
-        [
-          "wpływa",
-          1
-        ],
-        [
-          "oblodzenie",
-          1
-        ],
-        [
-          "samolotu",
-          1
-        ],
-        [
-          "pokaż",
-          1
-        ],
-        [
-          "wygląda",
-          1
-        ],
-        [
-          "lotniczym",
-          1
-        ],
-        [
-          "wygeneruj",
-          1
-        ],
-        [
-          "obraz",
-          1
-        ],
-        [
-          "pokazujący",
-          1
-        ],
-        [
-          "przekrój",
-          1
-        ],
-        [
-          "lotniczego",
-          1
-        ],
-        [
-          "widocznym",
-          1
-        ],
-        [
-          "oblodzeniem",
-          1
-        ],
-        [
-          "niego",
-          1
-        ],
-        [
-          "jakie",
-          1
-        ],
-        [
-          "mamy",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 13.2,
-        "min_length": 6,
-        "max_length": 19,
-        "preferred_range": "medium"
-      },
-      "request_types": {
-        "examples": 1
-      },
-      "follow_up_patterns": {
-        "examples": 1
-      },
-      "preferred_detail_level": "medium"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2371.25,
-        "min_length": 994,
-        "max_length": 3676,
-        "word_count_avg": 281.0
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 0.5,
-        "has_examples": 1.0,
-        "has_formulas": 0.25,
-        "has_summaries": 0.5
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 2,
-        "examples": 4,
-        "procedures": 2,
-        "references": 0
-      },
-      "formatting_patterns": {
-        "html_tags": 104,
-        "markdown_headers": 9,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 12,
-        "italic_text": 12
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "aerodynamika",
-      "ogólne",
-      "ogólne",
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 2,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 1,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.335450"
-  },
-  {
-    "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
-    "user_id": null,
-    "total_messages": 15,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "napisz",
-          2
-        ],
-        [
-          "notatkę",
-          2
-        ],
-        [
-          "stworz",
-          2
-        ],
-        [
-          "opracowanie",
-          2
-        ],
-        [
-          "sile",
-          2
-        ],
-        [
-          "nosnej",
-          2
-        ],
-        [
-          "szkolenia",
-          2
-        ],
-        [
-          "atpla",
-          2
-        ],
-        [
-          "jakich",
-          1
-        ],
-        [
-          "falach",
-          1
-        ],
-        [
-          "radiowych",
-          1
-        ],
-        [
-          "dziala",
-          1
-        ],
-        [
-          "lotnictwo",
-          1
-        ],
-        [
-          "możesz",
-          1
-        ],
-        [
-          "napisac",
-          1
-        ],
-        [
-          "quiz",
-          1
-        ],
-        [
-          "tego",
-          1
-        ],
-        [
-          "opracowania",
-          1
-        ],
-        [
-          "stylu",
-          1
-        ],
-        [
-          "wiesz",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 6.75,
-        "min_length": 5,
-        "max_length": 8,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2713.714285714286,
-        "min_length": 259,
-        "max_length": 7097,
-        "word_count_avg": 305.42857142857144
-      },
-      "structure_types": {
-        "has_headers": 0.8571428571428571,
-        "has_lists": 0.7142857142857143,
-        "has_examples": 0.42857142857142855,
-        "has_formulas": 0.0,
-        "has_summaries": 0.5714285714285714
-      },
-      "content_types": {
-        "theoretical": 1,
-        "practical": 3,
-        "examples": 3,
-        "procedures": 0,
-        "references": 1
-      },
-      "formatting_patterns": {
-        "html_tags": 475,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 51,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 2,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.346184"
-  },
-  {
-    "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
-    "user_id": null,
-    "total_messages": 20,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "lotu",
-          3
-        ],
-        [
-          "napisz",
-          2
-        ],
-        [
-          "jaka",
-          2
-        ],
-        [
-          "ścieżka",
-          2
-        ],
-        [
-          "podejścia",
-          2
-        ],
-        [
-          "siła",
-          1
-        ],
-        [
-          "nosna",
-          1
-        ],
-        [
-          "szybowcach",
-          1
-        ],
-        [
-          "rodzialay",
-          1
-        ],
-        [
-          "łacznosci",
-          1
-        ],
-        [
-          "kursu",
-          1
-        ],
-        [
-          "atpla",
-          1
-        ],
-        [
-          "standardowa",
-          1
-        ],
-        [
-          "krótko",
-          1
-        ],
-        [
-          "stopni",
-          1
-        ],
-        [
-          "pochylenia",
-          1
-        ],
-        [
-          "precyzyjnego",
-          1
-        ],
-        [
-          "długi",
-          1
-        ],
-        [
-          "czas",
-          1
-        ],
-        [
-          "musie",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 7.7,
-        "min_length": 4,
-        "max_length": 15,
-        "preferred_range": "medium"
-      },
-      "request_types": {
-        "explanations": 1
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "medium"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 2204.5,
-        "min_length": 142,
-        "max_length": 5969,
-        "word_count_avg": 249.2
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 0.7,
-        "has_examples": 0.2,
-        "has_formulas": 0.1,
-        "has_summaries": 0.8
-      },
-      "content_types": {
-        "theoretical": 2,
-        "practical": 2,
-        "examples": 2,
-        "procedures": 1,
-        "references": 2
-      },
-      "formatting_patterns": {
-        "html_tags": 444,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 61,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne",
-      "nawigacja",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "ogólne",
-      "silniki"
-    ],
-    "question_types": {
-      "definition": 1,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 1,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.357944"
-  },
-  {
-    "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
-    "user_id": null,
-    "total_messages": 6,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "prawo",
-          3
-        ],
-        [
-          "coriolisa",
-          3
-        ],
-        [
-          "sila",
-          1
-        ],
-        [
-          "nosna",
-          1
-        ],
-        [
-          "siła",
-          1
-        ],
-        [
-          "nośna",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 2.6,
-        "min_length": 2,
-        "max_length": 5,
-        "preferred_range": "short"
-      },
-      "request_types": {
-        "explanations": 1
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 173.0,
-        "min_length": 173,
-        "max_length": 173,
-        "word_count_avg": 20.0
-      },
-      "structure_types": {
-        "has_headers": 0.0,
-        "has_lists": 0.0,
-        "has_examples": 0.0,
-        "has_formulas": 0.0,
-        "has_summaries": 0.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 0,
-        "examples": 0,
-        "procedures": 0,
-        "references": 0
-      },
-      "formatting_patterns": {
-        "html_tags": 0,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 0,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "regulacje",
-      "regulacje",
-      "ogólne",
-      "aerodynamika",
-      "regulacje"
-    ],
-    "question_types": {
-      "definition": 1,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.366702"
-  },
-  {
-    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czestotliwosci",
-          1
-        ],
-        [
-          "zakazane",
-          1
-        ],
-        [
-          "lotnictwie",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T11:13:20.375220"
-  },
-  {
-    "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czego",
-          1
-        ],
-        [
-          "zaczelismy",
-          1
-        ],
-        [
-          "rozmowe",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
     "timestamp": "2025-07-18T11:13:40.185972"
   },
   {
@@ -8898,5 +8008,895 @@
       "application": 0
     },
     "timestamp": "2025-07-18T11:25:42.537250"
+  },
+  {
+    "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "czego",
+          1
+        ],
+        [
+          "zaczelismy",
+          1
+        ],
+        [
+          "rozmowe",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.0,
+        "min_length": 4,
+        "max_length": 4,
+        "preferred_range": "short"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.280826"
+  },
+  {
+    "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
+    "user_id": null,
+    "total_messages": 5,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "samochód",
+          2
+        ],
+        [
+          "samochod",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.0,
+        "min_length": 4,
+        "max_length": 4,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 3
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "silniki",
+      "silniki",
+      "silniki"
+    ],
+    "question_types": {
+      "definition": 3,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.303665"
+  },
+  {
+    "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "stworz",
+          1
+        ],
+        [
+          "opracowanie",
+          1
+        ],
+        [
+          "wprowadzenie",
+          1
+        ],
+        [
+          "kursu",
+          1
+        ],
+        [
+          "atpla",
+          1
+        ],
+        [
+          "2025",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 8.0,
+        "min_length": 8,
+        "max_length": 8,
+        "preferred_range": "medium"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "nawigacja"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.312619"
+  },
+  {
+    "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "wpływa",
+          1
+        ],
+        [
+          "oblodzenie",
+          1
+        ],
+        [
+          "samolotu",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 6.0,
+        "min_length": 6,
+        "max_length": 6,
+        "preferred_range": "medium"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.321269"
+  },
+  {
+    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
+    "user_id": null,
+    "total_messages": 2,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "czestotliwosci",
+          1
+        ],
+        [
+          "zakazane",
+          1
+        ],
+        [
+          "lotnictwie",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.0,
+        "min_length": 4,
+        "max_length": 4,
+        "preferred_range": "short"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 4207.0,
+        "min_length": 4207,
+        "max_length": 4207,
+        "word_count_avg": 455.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 1.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 1,
+        "procedures": 0,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 79,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 12,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.331337"
+  },
+  {
+    "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
+    "user_id": null,
+    "total_messages": 10,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "profilu",
+          2
+        ],
+        [
+          "nich",
+          2
+        ],
+        [
+          "najniebezpieczniejszy",
+          2
+        ],
+        [
+          "zdań",
+          2
+        ],
+        [
+          "wpływa",
+          1
+        ],
+        [
+          "oblodzenie",
+          1
+        ],
+        [
+          "samolotu",
+          1
+        ],
+        [
+          "pokaż",
+          1
+        ],
+        [
+          "wygląda",
+          1
+        ],
+        [
+          "lotniczym",
+          1
+        ],
+        [
+          "wygeneruj",
+          1
+        ],
+        [
+          "obraz",
+          1
+        ],
+        [
+          "pokazujący",
+          1
+        ],
+        [
+          "przekrój",
+          1
+        ],
+        [
+          "lotniczego",
+          1
+        ],
+        [
+          "widocznym",
+          1
+        ],
+        [
+          "oblodzeniem",
+          1
+        ],
+        [
+          "niego",
+          1
+        ],
+        [
+          "jakie",
+          1
+        ],
+        [
+          "mamy",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 13.2,
+        "min_length": 6,
+        "max_length": 19,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "examples": 1
+      },
+      "follow_up_patterns": {
+        "examples": 1
+      },
+      "preferred_detail_level": "medium"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2371.25,
+        "min_length": 994,
+        "max_length": 3676,
+        "word_count_avg": 281.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 0.5,
+        "has_examples": 1.0,
+        "has_formulas": 0.25,
+        "has_summaries": 0.5
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 2,
+        "examples": 4,
+        "procedures": 2,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 104,
+        "markdown_headers": 9,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 12,
+        "italic_text": 12
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "aerodynamika",
+      "ogólne",
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 2,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 1,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.340897"
+  },
+  {
+    "session_id": "9d5c22b3-31c3-4c22-bd45-e30e7d1b5730_full_context",
+    "user_id": null,
+    "total_messages": 15,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "napisz",
+          2
+        ],
+        [
+          "notatkę",
+          2
+        ],
+        [
+          "stworz",
+          2
+        ],
+        [
+          "opracowanie",
+          2
+        ],
+        [
+          "sile",
+          2
+        ],
+        [
+          "nosnej",
+          2
+        ],
+        [
+          "szkolenia",
+          2
+        ],
+        [
+          "atpla",
+          2
+        ],
+        [
+          "jakich",
+          1
+        ],
+        [
+          "falach",
+          1
+        ],
+        [
+          "radiowych",
+          1
+        ],
+        [
+          "dziala",
+          1
+        ],
+        [
+          "lotnictwo",
+          1
+        ],
+        [
+          "możesz",
+          1
+        ],
+        [
+          "napisac",
+          1
+        ],
+        [
+          "quiz",
+          1
+        ],
+        [
+          "tego",
+          1
+        ],
+        [
+          "opracowania",
+          1
+        ],
+        [
+          "stylu",
+          1
+        ],
+        [
+          "wiesz",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 6.75,
+        "min_length": 5,
+        "max_length": 8,
+        "preferred_range": "medium"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2713.714285714286,
+        "min_length": 259,
+        "max_length": 7097,
+        "word_count_avg": 305.42857142857144
+      },
+      "structure_types": {
+        "has_headers": 0.8571428571428571,
+        "has_lists": 0.7142857142857143,
+        "has_examples": 0.42857142857142855,
+        "has_formulas": 0.0,
+        "has_summaries": 0.5714285714285714
+      },
+      "content_types": {
+        "theoretical": 1,
+        "practical": 3,
+        "examples": 3,
+        "procedures": 0,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 475,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 51,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 2,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.351727"
+  },
+  {
+    "session_id": "d9b5ccff-4d8d-4dfe-a564-d2fbc6858ce6",
+    "user_id": null,
+    "total_messages": 20,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "lotu",
+          3
+        ],
+        [
+          "napisz",
+          2
+        ],
+        [
+          "jaka",
+          2
+        ],
+        [
+          "ścieżka",
+          2
+        ],
+        [
+          "podejścia",
+          2
+        ],
+        [
+          "siła",
+          1
+        ],
+        [
+          "nosna",
+          1
+        ],
+        [
+          "szybowcach",
+          1
+        ],
+        [
+          "rodzialay",
+          1
+        ],
+        [
+          "łacznosci",
+          1
+        ],
+        [
+          "kursu",
+          1
+        ],
+        [
+          "atpla",
+          1
+        ],
+        [
+          "standardowa",
+          1
+        ],
+        [
+          "krótko",
+          1
+        ],
+        [
+          "stopni",
+          1
+        ],
+        [
+          "pochylenia",
+          1
+        ],
+        [
+          "precyzyjnego",
+          1
+        ],
+        [
+          "długi",
+          1
+        ],
+        [
+          "czas",
+          1
+        ],
+        [
+          "musie",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 7.7,
+        "min_length": 4,
+        "max_length": 15,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "medium"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2204.5,
+        "min_length": 142,
+        "max_length": 5969,
+        "word_count_avg": 249.2
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 0.7,
+        "has_examples": 0.2,
+        "has_formulas": 0.1,
+        "has_summaries": 0.8
+      },
+      "content_types": {
+        "theoretical": 2,
+        "practical": 2,
+        "examples": 2,
+        "procedures": 1,
+        "references": 2
+      },
+      "formatting_patterns": {
+        "html_tags": 444,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 61,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "nawigacja",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "silniki"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 1,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.363427"
+  },
+  {
+    "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2_full_context",
+    "user_id": null,
+    "total_messages": 6,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "prawo",
+          3
+        ],
+        [
+          "coriolisa",
+          3
+        ],
+        [
+          "sila",
+          1
+        ],
+        [
+          "nosna",
+          1
+        ],
+        [
+          "siła",
+          1
+        ],
+        [
+          "nośna",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 2.6,
+        "min_length": 2,
+        "max_length": 5,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 173.0,
+        "min_length": 173,
+        "max_length": 173,
+        "word_count_avg": 20.0
+      },
+      "structure_types": {
+        "has_headers": 0.0,
+        "has_lists": 0.0,
+        "has_examples": 0.0,
+        "has_formulas": 0.0,
+        "has_summaries": 0.0
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 0,
+        "examples": 0,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 0,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 0,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "regulacje",
+      "regulacje",
+      "ogólne",
+      "aerodynamika",
+      "regulacje"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.371965"
+  },
+  {
+    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8_full_context",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "czestotliwosci",
+          1
+        ],
+        [
+          "zakazane",
+          1
+        ],
+        [
+          "lotnictwie",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.0,
+        "min_length": 4,
+        "max_length": 4,
+        "preferred_range": "short"
+      },
+      "request_types": {},
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 0,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-18T11:37:44.380187"
   }
 ]
