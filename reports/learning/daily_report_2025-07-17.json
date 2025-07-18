@@ -1,8 +1,8 @@
 {
-  "report_id": "ca1b1429-a870-4351-9247-0cf1152fd567",
+  "report_id": "10cb23c2-d33a-4e5e-822e-e37f198c53e1",
   "report_type": "daily",
   "date": "2025-07-17",
-  "generated_at": "2025-07-18T12:19:42.242097",
+  "generated_at": "2025-07-18T12:55:28.995737",
   "period": {
     "start": "2025-07-17T00:00:00",
     "end": "2025-07-18T00:00:00"
@@ -24,8 +24,8 @@
       "responses_received": 4,
       "feedback_given": 0,
       "topics_discussed": [
-        "ogólne",
-        "aerodynamika"
+        "aerodynamika",
+        "ogólne"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-17T00:10:09.072332",
@@ -300,8 +300,8 @@
     ],
     "topics_by_user": {
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
-        "ogólne",
-        "aerodynamika"
+        "aerodynamika",
+        "ogólne"
       ],
       "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4": [
         "ogólne",

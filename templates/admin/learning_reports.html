@@ -1,0 +1,899 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Raporty Uczenia Się{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-brain text-blue-600"></i> Raporty Uczenia Się
+        </h1>
+        <div class="flex space-x-2">
+            <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="generateReport()">
+                <i class="fas fa-plus"></i>
+                <span>Generuj Raport</span>
+            </button>
+            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="toggleScheduler()">
+                <i class="fas fa-clock"></i>
+                <span id="schedulerBtn">Scheduler</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Alerty -->
+    <div id="alertContainer" class="mb-4"></div>
+
+    <!-- Status cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm font-medium">Status Schedulera</p>
+                    <p class="text-xl font-bold" id="schedulerStatus">
+                        <i class="fas fa-circle text-gray-300"></i> Sprawdzanie...
+                    </p>
+                </div>
+                <div class="text-blue-200">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium">Dostępne raporty</p>
+                    <p class="text-xl font-bold" id="totalReports">0</p>
+                </div>
+                <div class="text-green-200">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm font-medium">Aktywne sesje</p>
+                    <p class="text-xl font-bold" id="activeSessions">-</p>
+                </div>
+                <div class="text-purple-200">
+                    <i class="fas fa-users text-2xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-lg shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm font-medium">Ostatni raport</p>
+                    <p class="text-sm font-bold" id="lastReport">-</p>
+                </div>
+                <div class="text-orange-200">
+                    <i class="fas fa-calendar text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Configuration -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-envelope text-blue-600 mr-3"></i>
+            <h2 class="text-xl font-bold text-gray-800">Konfiguracja Email</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="email_from" class="block text-sm font-medium text-gray-700 mb-1">Email nadawcy:</label>
+                <input type="email" id="email_from" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="email@example.com">
+            </div>
+            <div>
+                <label for="email_to" class="block text-sm font-medium text-gray-700 mb-1">Email odbiorcy:</label>
+                <input type="email" id="email_to" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="email@example.com">
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label class="flex items-center space-x-3 cursor-pointer">
+                <input type="checkbox" id="email_enabled" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                <span class="text-sm font-medium text-gray-700">Włącz wysyłanie emaili</span>
+            </label>
+        </div>
+        
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="saveEmailConfig()">
+                <i class="fas fa-save"></i>
+                <span>Zapisz konfigurację</span>
+            </button>
+            <button type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="loadEmailConfig()">
+                <i class="fas fa-sync"></i>
+                <span>Odśwież</span>
+            </button>
+            <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="testEmailSending()">
+                <i class="fas fa-paper-plane"></i>
+                <span>Test email</span>
+            </button>
+            <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="sendEmailReport()">
+                <i class="fas fa-envelope-open"></i>
+                <span>Wyślij raport</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scheduler Status -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-clock"></i> Status Schedulera
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td id="detailedSchedulerStatus">Sprawdzanie...</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Następny raport:</strong></td>
+                                <td id="nextReportTime">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Następny email:</strong></td>
+                                <td id="nextEmailTime">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Następne czyszczenie:</strong></td>
+                                <td id="nextCleanupTime">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="btn-group-vertical d-block" role="group">
+                        <button type="button" class="btn btn-success mb-2" onclick="startScheduler()">
+                            <i class="fas fa-play"></i> Uruchom Scheduler
+                        </button>
+                        <button type="button" class="btn btn-danger mb-2" onclick="stopScheduler()">
+                            <i class="fas fa-stop"></i> Zatrzymaj Scheduler
+                        </button>
+                        <button type="button" class="btn btn-info mb-2" onclick="loadSchedulerStatus()">
+                            <i class="fas fa-sync"></i> Odśwież Status
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports List -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-chart-line"></i> Lista Raportów
+            </h6>
+            <button type="button" class="btn btn-sm btn-primary" onclick="loadReports()">
+                <i class="fas fa-sync"></i> Odśwież
+            </button>
+        </div>
+        <div class="card-body">
+            <!-- Filtry -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="dateFilter">Data od:</label>
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-4">
+                    <label for="dateToFilter">Data do:</label>
+                    <input type="date" class="form-control" id="dateToFilter">
+                </div>
+                <div class="col-md-4">
+                    <label>&nbsp;</label>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary btn-block" onclick="applyFilters()">
+                            <i class="fas fa-filter"></i> Filtruj
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabela raportów -->
+            <div class="table-responsive">
+                <table class="table table-bordered" id="reportsTable">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Użytkownicy</th>
+                            <th>Pytania</th>
+                            <th>Feedback</th>
+                            <th>Wskaźnik Pozytywny</th>
+                            <th>Wygenerowano</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Ładowanie raportów...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Activity -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-users"></i> Aktywność Użytkowników
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="userSelect">Wybierz użytkownika:</label>
+                    <select class="form-control" id="userSelect" onchange="loadUserActivity()">
+                        <option value="">-- Wybierz użytkownika --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label>&nbsp;</label>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-info btn-block" onclick="loadUsersList()">
+                            <i class="fas fa-sync"></i> Odśwież listę użytkowników
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="userActivityDetails" class="mt-3">
+                <!-- Szczegóły aktywności użytkownika -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Generate Report Modal -->
+<div class="modal fade" id="generateReportModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generuj Nowy Raport</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="generateReportForm">
+                    <div class="form-group">
+                        <label for="reportDate">Data raportu:</label>
+                        <input type="date" class="form-control" id="reportDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportType">Typ raportu:</label>
+                        <select class="form-control" id="reportType">
+                            <option value="daily">Dzienny</option>
+                            <option value="weekly">Tygodniowy</option>
+                            <option value="monthly">Miesięczny</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success" onclick="confirmGenerateReport()">
+                    <i class="fas fa-plus"></i> Generuj Raport
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Detail Modal -->
+<div class="modal fade" id="reportDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Szczegóły Raportu</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="reportDetailContent">
+                    <!-- Treść raportu -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let reports = [];
+    let filteredReports = [];
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        loadReports();
+        loadSchedulerStatus();
+        loadEmailConfig();
+        loadUsersList();
+        
+        // Set default date
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        document.getElementById('reportDate').valueAsDate = yesterday;
+    });
+    
+    // Alert system
+    function showAlert(message, type = 'info') {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertId = 'alert-' + Date.now();
+        
+        const alertClass = {
+            'success': 'alert-success',
+            'danger': 'alert-danger',
+            'warning': 'alert-warning',
+            'info': 'alert-info'
+        }[type] || 'alert-info';
+        
+        const alertHTML = `
+            <div id="${alertId}" class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `;
+        
+        alertContainer.innerHTML = alertHTML;
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }
+        }, 5000);
+    }
+    
+    // Reports management
+    function loadReports() {
+        showAlert('Ładowanie raportów...', 'info');
+        
+        fetch('/admin/api/learning-reports')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    reports = data.reports;
+                    filteredReports = reports;
+                    displayReports();
+                    updateStats();
+                    showAlert('Raporty załadowane pomyślnie', 'success');
+                } else {
+                    showAlert('Błąd ładowania raportów: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania raportów: ' + error.message, 'danger');
+            });
+    }
+    
+    function displayReports() {
+        const tableBody = document.getElementById('reportsTableBody');
+        
+        if (filteredReports.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Brak raportów do wyświetlenia</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        filteredReports.forEach(report => {
+            const summary = report.summary || {};
+            const feedbackRatio = (summary.feedback_ratio || 0) * 100;
+            
+            html += `
+                <tr>
+                    <td><strong>${report.date}</strong></td>
+                    <td>
+                        <span class="badge badge-primary">${summary.total_users || 0}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">${summary.total_questions || 0}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-warning">${summary.total_feedback || 0}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-success">${feedbackRatio.toFixed(1)}%</span>
+                    </td>
+                    <td>
+                        <small class="text-muted">${new Date(report.generated_at).toLocaleString('pl-PL')}</small>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewReport('${report.report_id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="downloadReport('${report.report_id}')">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.report_id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = html;
+    }
+    
+    function updateStats() {
+        document.getElementById('totalReports').textContent = reports.length;
+        
+        if (reports.length > 0) {
+            const latestReport = reports[reports.length - 1];
+            document.getElementById('lastReport').textContent = latestReport.date;
+        }
+    }
+    
+    function applyFilters() {
+        const dateFrom = document.getElementById('dateFilter').value;
+        const dateTo = document.getElementById('dateToFilter').value;
+        
+        filteredReports = reports.filter(report => {
+            if (dateFrom && report.date < dateFrom) return false;
+            if (dateTo && report.date > dateTo) return false;
+            return true;
+        });
+        
+        displayReports();
+        showAlert('Filtry zastosowane', 'success');
+    }
+    
+    // Report actions
+    function generateReport() {
+        $('#generateReportModal').modal('show');
+    }
+    
+    function confirmGenerateReport() {
+        const date = document.getElementById('reportDate').value;
+        const type = document.getElementById('reportType').value;
+        
+        if (!date) {
+            showAlert('Wybierz datę raportu', 'warning');
+            return;
+        }
+        
+        showAlert('Generowanie raportu...', 'info');
+        
+        fetch('/admin/api/learning-reports/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                date: date,
+                type: type
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Raport wygenerowany pomyślnie', 'success');
+                $('#generateReportModal').modal('hide');
+                loadReports();
+            } else {
+                showAlert('Błąd generowania raportu: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd generowania raportu: ' + error.message, 'danger');
+        });
+    }
+    
+    function viewReport(reportId) {
+        fetch(`/admin/api/learning-reports/${reportId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayReportDetails(data.report);
+                    $('#reportDetailModal').modal('show');
+                } else {
+                    showAlert('Błąd ładowania raportu: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania raportu: ' + error.message, 'danger');
+            });
+    }
+    
+    function displayReportDetails(report) {
+        const summary = report.summary || {};
+        const userActivity = report.user_activity || [];
+        const topicDistribution = report.topic_distribution || {};
+        
+        let html = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Informacje podstawowe</h6>
+                    <table class="table table-sm">
+                        <tr><td>Data:</td><td><strong>${report.date}</strong></td></tr>
+                        <tr><td>Wygenerowano:</td><td>${new Date(report.generated_at).toLocaleString('pl-PL')}</td></tr>
+                        <tr><td>Użytkownicy:</td><td>${summary.total_users || 0}</td></tr>
+                        <tr><td>Pytania:</td><td>${summary.total_questions || 0}</td></tr>
+                        <tr><td>Feedback:</td><td>${summary.total_feedback || 0}</td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6>Najaktywniejsze tematy</h6>
+                    <ul class="list-group">
+        `;
+        
+        const popularTopics = topicDistribution.most_popular_topics || [];
+        popularTopics.slice(0, 5).forEach(([topic, count]) => {
+            html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                ${topic}
+                <span class="badge badge-primary badge-pill">${count}</span>
+            </li>`;
+        });
+        
+        html += `
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>Aktywność użytkowników</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Użytkownik</th>
+                                    <th>Pytania</th>
+                                    <th>Feedback</th>
+                                    <th>Ostatnia aktywność</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        `;
+        
+        userActivity.forEach(user => {
+            html += `
+                <tr>
+                    <td>${user.username || user.user_id}</td>
+                    <td>${user.total_questions || 0}</td>
+                    <td>${user.total_feedback || 0}</td>
+                    <td>${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('reportDetailContent').innerHTML = html;
+    }
+    
+    function downloadReport(reportId) {
+        window.open(`/admin/api/learning-reports/${reportId}/download`, '_blank');
+    }
+    
+    function deleteReport(reportId) {
+        if (confirm('Czy na pewno chcesz usunąć ten raport?')) {
+            fetch(`/admin/api/learning-reports/${reportId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Raport usunięty', 'success');
+                    loadReports();
+                } else {
+                    showAlert('Błąd usuwania raportu: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd usuwania raportu: ' + error.message, 'danger');
+            });
+        }
+    }
+    
+    // Scheduler management
+    function loadSchedulerStatus() {
+        fetch('/admin/api/learning-reports/scheduler/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const status = data.status;
+                    const isRunning = status.is_running;
+                    
+                    document.getElementById('schedulerStatus').innerHTML = 
+                        `<i class="fas fa-circle ${isRunning ? 'text-success' : 'text-danger'}"></i> ${isRunning ? 'Aktywny' : 'Nieaktywny'}`;
+                    
+                    document.getElementById('detailedSchedulerStatus').innerHTML = 
+                        `<span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">${isRunning ? 'Aktywny' : 'Nieaktywny'}</span>`;
+                    
+                    document.getElementById('nextReportTime').textContent = status.next_report_time || 'N/A';
+                    document.getElementById('nextEmailTime').textContent = status.next_email_time || 'N/A';
+                    document.getElementById('nextCleanupTime').textContent = status.next_cleanup_time || 'N/A';
+                    
+                    document.getElementById('schedulerBtn').textContent = isRunning ? 'Zatrzymaj' : 'Uruchom';
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania statusu schedulera: ' + error.message, 'danger');
+            });
+    }
+    
+    function toggleScheduler() {
+        const statusElement = document.getElementById('schedulerStatus');
+        const isRunning = statusElement.innerHTML.includes('text-success');
+        
+        const action = isRunning ? 'stop' : 'start';
+        
+        fetch(`/admin/api/learning-reports/scheduler/${action}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`Scheduler ${action === 'start' ? 'uruchomiony' : 'zatrzymany'}`, 'success');
+                loadSchedulerStatus();
+            } else {
+                showAlert(`Błąd ${action === 'start' ? 'uruchamiania' : 'zatrzymywania'} schedulera: ` + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert(`Błąd ${action === 'start' ? 'uruchamiania' : 'zatrzymywania'} schedulera: ` + error.message, 'danger');
+        });
+    }
+    
+    function startScheduler() {
+        fetch('/admin/api/learning-reports/scheduler/start', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Scheduler uruchomiony', 'success');
+                loadSchedulerStatus();
+            } else {
+                showAlert('Błąd uruchamiania schedulera: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd uruchamiania schedulera: ' + error.message, 'danger');
+        });
+    }
+    
+    function stopScheduler() {
+        fetch('/admin/api/learning-reports/scheduler/stop', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Scheduler zatrzymany', 'success');
+                loadSchedulerStatus();
+            } else {
+                showAlert('Błąd zatrzymywania schedulera: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd zatrzymywania schedulera: ' + error.message, 'danger');
+        });
+    }
+    
+    // Email functionality
+    function loadEmailConfig() {
+        fetch('/admin/api/learning-reports/email-config')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const config = data.config;
+                    document.getElementById('email_from').value = config.email_from || '';
+                    document.getElementById('email_to').value = config.email_to || '';
+                    document.getElementById('email_enabled').checked = config.email_enabled || false;
+                } else {
+                    showAlert('Błąd ładowania konfiguracji email: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania konfiguracji email: ' + error.message, 'danger');
+            });
+    }
+    
+    function saveEmailConfig() {
+        const config = {
+            email_from: document.getElementById('email_from').value,
+            email_to: document.getElementById('email_to').value,
+            email_enabled: document.getElementById('email_enabled').checked
+        };
+        
+        fetch('/admin/api/learning-reports/email-config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Konfiguracja email zapisana', 'success');
+            } else {
+                showAlert('Błąd zapisywania konfiguracji email: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd zapisywania konfiguracji email: ' + error.message, 'danger');
+        });
+    }
+    
+    function testEmailSending() {
+        showAlert('Wysyłanie emaila testowego...', 'info');
+        
+        fetch('/admin/api/learning-reports/email-test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Email testowy wysłany pomyślnie', 'success');
+            } else {
+                showAlert('Błąd wysyłania emaila testowego: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd wysyłania emaila testowego: ' + error.message, 'danger');
+        });
+    }
+    
+    function sendEmailReport() {
+        const date = prompt('Podaj datę raportu (YYYY-MM-DD) lub pozostaw puste dla wczorajszego dnia:');
+        
+        showAlert('Wysyłanie raportu emailem...', 'info');
+        
+        const payload = {};
+        if (date && date.trim()) {
+            payload.date = date.trim();
+        }
+        
+        fetch('/admin/api/learning-reports/email-send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Raport wysłany emailem: ' + data.report_id, 'success');
+            } else {
+                showAlert('Błąd wysyłania raportu emailem: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd wysyłania raportu emailem: ' + error.message, 'danger');
+        });
+    }
+    
+    // User management
+    function loadUsersList() {
+        fetch('/admin/api/users')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const userSelect = document.getElementById('userSelect');
+                    userSelect.innerHTML = '<option value="">-- Wybierz użytkownika --</option>';
+                    
+                    data.users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = user.username || user.id;
+                        userSelect.appendChild(option);
+                    });
+                } else {
+                    showAlert('Błąd ładowania listy użytkowników: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania listy użytkowników: ' + error.message, 'danger');
+            });
+    }
+    
+    function loadUserActivity() {
+        const userId = document.getElementById('userSelect').value;
+        if (!userId) {
+            document.getElementById('userActivityDetails').innerHTML = '';
+            return;
+        }
+        
+        fetch(`/admin/api/users/${userId}/activity`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayUserActivity(data.activity);
+                } else {
+                    showAlert('Błąd ładowania aktywności użytkownika: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania aktywności użytkownika: ' + error.message, 'danger');
+            });
+    }
+    
+    function displayUserActivity(activity) {
+        const sessions = activity.sessions || [];
+        const questions = activity.questions || [];
+        
+        let html = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Statystyki</h6>
+                    <table class="table table-sm">
+                        <tr><td>Nazwa użytkownika:</td><td><strong>${activity.username || 'N/A'}</strong></td></tr>
+                        <tr><td>Łącznie sesji:</td><td>${sessions.length}</td></tr>
+                        <tr><td>Łącznie pytań:</td><td>${questions.length}</td></tr>
+                        <tr><td>Ostatnia aktywność:</td><td>${activity.last_activity ? new Date(activity.last_activity).toLocaleString('pl-PL') : 'N/A'}</td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6>Ostatnie pytania</h6>
+                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+        `;
+        
+        questions.slice(0, 5).forEach(question => {
+            html += `
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${question.question.substring(0, 50)}...</h6>
+                        <small>${new Date(question.timestamp).toLocaleString('pl-PL')}</small>
+                    </div>
+                    <p class="mb-1">${question.response ? question.response.substring(0, 100) + '...' : 'Brak odpowiedzi'}</p>
+                </div>
+            `;
+        });
+        
+        html += `
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('userActivityDetails').innerHTML = html;
+    }
+    
+    // Auto-refresh
+    setInterval(() => {
+        loadSchedulerStatus();
+    }, 30000); // Co 30 sekund
+    
+</script>
+{% endblock %}
