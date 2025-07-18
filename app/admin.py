@@ -25,7 +25,7 @@ class UserData:
 analytics = SessionAnalytics()
 
 # Inicjalizuj system raportów uczenia się
-learning_reports = LearningReportsSystem()
+learning_reports_system = LearningReportsSystem()
 
 # Dodaj logger
 logger = logging.getLogger(__name__)
@@ -626,7 +626,7 @@ def learning_reports():
     
     try:
         # Pobierz listę dostępnych raportów
-        available_reports = learning_reports.get_available_reports()
+        available_reports = learning_reports_system.get_available_reports()
         
         # Pobierz scheduler info
         scheduler = get_report_scheduler()
@@ -661,7 +661,7 @@ def generate_learning_report():
             date = datetime.now()
         
         # Generuj raport
-        report = learning_reports.generate_daily_report(date)
+        report = learning_reports_system.generate_daily_report(date)
         
         return jsonify({
             'success': True,
@@ -682,7 +682,7 @@ def view_learning_report(report_id):
         return redirect(url_for('admin.dashboard'))
     
     try:
-        report = learning_reports.get_report(report_id)
+        report = learning_reports_system.get_report(report_id)
         
         if not report:
             flash('Nie znaleziono raportu', 'error')
@@ -703,7 +703,7 @@ def download_learning_report(report_id):
         return jsonify({'error': 'Brak uprawnień'}), 403
     
     try:
-        report = learning_reports.get_report(report_id)
+        report = learning_reports_system.get_report(report_id)
         
         if not report:
             return jsonify({'error': 'Nie znaleziono raportu'}), 404
@@ -728,7 +728,7 @@ def api_learning_summary():
     
     try:
         # Pobierz ostatnie raporty
-        recent_reports = learning_reports.get_available_reports()[:7]  # Ostatnie 7 dni
+        recent_reports = learning_reports_system.get_available_reports()[:7]  # Ostatnie 7 dni
         
         if not recent_reports:
             return jsonify({
