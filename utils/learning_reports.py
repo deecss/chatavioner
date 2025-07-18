@@ -306,11 +306,27 @@ class LearningReportsSystem:
             "sample_questions": questions[:10]  # Pierwsze 10 pytań jako przykład
         }
     
+    def _normalize_datetime(self, dt):
+        """Zwraca offset-naive datetime (usuwa strefę czasową jeśli jest)"""
+        if dt is None:
+            return None
+        if dt.tzinfo is not None:
+            return dt.replace(tzinfo=None)
+        return dt
+    
+    def _safe_feedback_entry(self, entry):
+        """Zwraca pojedynczy feedback jako dict lub None"""
+        if isinstance(entry, dict):
+            return entry
+        return None
+    
     def _analyze_feedback(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
         """Analizuje feedback użytkowników"""
         feedback_data = []
         positive_feedback = 0
         negative_feedback = 0
+        start_time = self._normalize_datetime(start_time)
+        end_time = self._normalize_datetime(end_time)
         
         if os.path.exists(self.feedback_dir):
             for user_dir in os.listdir(self.feedback_dir):
@@ -322,24 +338,29 @@ class LearningReportsSystem:
                             with open(feedback_file, 'r', encoding='utf-8') as f:
                                 feedback = json.load(f)
                             
-                            # Obsługa różnych formatów feedback
+                            # Obsługa listy feedbacków w pliku
                             if isinstance(feedback, list):
-                                # Jeśli feedback to lista, przejdź przez każdy element
-                                for item in feedback:
-                                    if isinstance(item, dict):
-                                        self._process_feedback_item(item, start_time, end_time, user_dir, feedback_data)
-                                        if item.get('type') == 'positive':
-                                            positive_feedback += 1
-                                        elif item.get('type') == 'negative':
-                                            negative_feedback += 1
+                                feedback_entries = [self._safe_feedback_entry(e) for e in feedback if isinstance(e, dict)]
                             elif isinstance(feedback, dict):
-                                # Jeśli feedback to dict, przetwórz go
-                                self._process_feedback_item(feedback, start_time, end_time, user_dir, feedback_data)
-                                if feedback.get('type') == 'positive':
+                                feedback_entries = [feedback]
+                            else:
+                                feedback_entries = []
+                            for fb in feedback_entries:
+                                feedback_time = self._parse_timestamp(fb.get('timestamp'))
+                                feedback_time = self._normalize_datetime(feedback_time)
+                                if not feedback_time or not (start_time <= feedback_time < end_time):
+                                    continue
+                                feedback_data.append({
+                                    "user_id": fb.get('user_id', user_dir),
+                                    "type": fb.get('type', 'unknown'),
+                                    "rating": fb.get('rating', 0),
+                                    "comment": fb.get('comment', ''),
+                                    "timestamp": feedback_time.isoformat()
+                                })
+                                if fb.get('type') == 'positive':
                                     positive_feedback += 1
-                                elif feedback.get('type') == 'negative':
+                                elif fb.get('type') == 'negative':
                                     negative_feedback += 1
-                        
                         except Exception as e:
                             print(f"⚠️  Błąd analizy feedback {feedback_file}: {e}")
         
@@ -353,22 +374,6 @@ class LearningReportsSystem:
             "avg_rating": sum(f["rating"] for f in feedback_data) / total_feedback if total_feedback > 0 else 0,
             "recent_feedback": feedback_data[-10:] if feedback_data else []
         }
-    
-    def _process_feedback_item(self, feedback: Dict[str, Any], start_time: datetime, end_time: datetime, user_dir: str, feedback_data: List[Dict[str, Any]]):
-        """Przetwarza pojedynczy element feedback"""
-        try:
-            feedback_time = self._parse_timestamp(feedback.get('timestamp'))
-            if feedback_time and start_time <= feedback_time < end_time:
-                feedback_data.append({
-                    "user_id": feedback.get('user_id', user_dir),
-                    "type": feedback.get('type', 'unknown'),
-                    "rating": feedback.get('rating', 0),
-                    "comment": feedback.get('comment', ''),
-                    "timestamp": feedback_time.isoformat()
-                })
-        except Exception as e:
-            print(f"⚠️  Błąd przetwarzania feedback: {e}")
-    
     
     def _analyze_learning_patterns(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
         """Analizuje wzorce uczenia się"""
@@ -384,31 +389,22 @@ class LearningReportsSystem:
                 with open(self.learning_data_file, 'r', encoding='utf-8') as f:
                     learning_data = json.load(f)
                 
-                # Obsługa różnych formatów learning_data
-                if isinstance(learning_data, list):
-                    # Jeśli learning_data to lista, przetwórz każdy element
-                    for item in learning_data:
-                        if isinstance(item, dict):
-                            user_id = item.get('user_id')
-                            if user_id:
-                                preferences = item.get('user_patterns', {})
-                                learning_patterns["user_preferences"][user_id] = {
-                                    "detail_level": preferences.get('preferred_detail_level', 'medium'),
-                                    "preferred_topics": item.get('topic_progression', []),
-                                    "learning_speed": 'normal',
-                                    "question_style": preferences.get('question_length', {}).get('preferred_range', 'direct')
-                                }
-                elif isinstance(learning_data, dict):
-                    # Jeśli learning_data to dict, analizuj preferencje użytkowników
-                    for user_id, data in learning_data.items():
-                        if isinstance(data, dict):
-                            preferences = data.get('preferences', {})
-                            learning_patterns["user_preferences"][user_id] = {
-                                "detail_level": preferences.get('detail_level', 'medium'),
-                                "preferred_topics": preferences.get('preferred_topics', []),
-                                "learning_speed": preferences.get('learning_speed', 'normal'),
-                                "question_style": preferences.get('question_style', 'direct')
-                            }
+                # Obsługa listy lub słownika
+                if isinstance(learning_data, dict):
+                    items = learning_data.items()
+                elif isinstance(learning_data, list):
+                    items = [(entry.get('user_id', f'unknown_{i}'), entry) for i, entry in enumerate(learning_data) if isinstance(entry, dict)]
+                else:
+                    items = []
+                for user_id, data in items:
+                    if isinstance(data, dict):
+                        preferences = data.get('preferences', {})
+                        learning_patterns["user_preferences"][user_id] = {
+                            "detail_level": preferences.get('detail_level', 'medium'),
+                            "preferred_topics": preferences.get('preferred_topics', []),
+                            "learning_speed": preferences.get('learning_speed', 'normal'),
+                            "question_style": preferences.get('question_style', 'direct')
+                        }
         
         except Exception as e:
             print(f"⚠️  Błąd analizy wzorców uczenia: {e}")
@@ -561,13 +557,7 @@ class LearningReportsSystem:
                     continue
             
             # Jeśli żaden format nie zadziałał, spróbuj ISO format
-            parsed_dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
-            
-            # Jeśli datetime ma timezone, konwertuj na naive (bez timezone)
-            if parsed_dt.tzinfo is not None:
-                parsed_dt = parsed_dt.replace(tzinfo=None)
-            
-            return parsed_dt
+            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
         
         except Exception:
             return None

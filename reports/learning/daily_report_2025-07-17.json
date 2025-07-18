@@ -1,8 +1,8 @@
 {
-  "report_id": "2dcf2568-a727-476e-824b-11117362bdb1",
+  "report_id": "ca1b1429-a870-4351-9247-0cf1152fd567",
   "report_type": "daily",
   "date": "2025-07-17",
-  "generated_at": "2025-07-18T12:13:58.721609",
+  "generated_at": "2025-07-18T12:19:42.242097",
   "period": {
     "start": "2025-07-17T00:00:00",
     "end": "2025-07-18T00:00:00"
@@ -24,8 +24,8 @@
       "responses_received": 4,
       "feedback_given": 0,
       "topics_discussed": [
-        "aerodynamika",
-        "ogólne"
+        "ogólne",
+        "aerodynamika"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-17T00:10:09.072332",
@@ -266,7 +266,14 @@
     "recent_feedback": []
   },
   "learning_insights": {
-    "user_preferences": {},
+    "user_preferences": {
+      "null": {
+        "detail_level": "medium",
+        "preferred_topics": [],
+        "learning_speed": "normal",
+        "question_style": "direct"
+      }
+    },
     "topic_progression": {},
     "question_evolution": {},
     "common_misconceptions": []
@@ -293,8 +300,8 @@
     ],
     "topics_by_user": {
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
-        "aerodynamika",
-        "ogólne"
+        "ogólne",
+        "aerodynamika"
       ],
       "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4": [
         "ogólne",

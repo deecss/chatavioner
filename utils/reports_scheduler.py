@@ -20,6 +20,11 @@ class ReportScheduler:
         self.running = False
         self.thread = None
     
+    @property
+    def is_running(self):
+        """Zwraca status schedulera"""
+        return self.running
+    
     def start(self):
         """Uruchamia scheduler"""
         if self.running:
