@@ -1,8 +1,8 @@
 {
-  "report_id": "329c37da-46f6-4a98-9087-5d651340d20d",
+  "report_id": "49294f59-0993-4266-b960-de79edc34550",
   "report_type": "daily",
   "date": "2025-07-18",
-  "generated_at": "2025-07-18T12:05:38.610736",
+  "generated_at": "2025-07-18T12:58:30.962044",
   "period": {
     "start": "2025-07-18T00:00:00",
     "end": "2025-07-19T00:00:00"
@@ -167,7 +167,14 @@
     "recent_feedback": []
   },
   "learning_insights": {
-    "user_preferences": {},
+    "user_preferences": {
+      "null": {
+        "detail_level": "medium",
+        "preferred_topics": [],
+        "learning_speed": "normal",
+        "question_style": "direct"
+      }
+    },
     "topic_progression": {},
     "question_evolution": {},
     "common_misconceptions": []

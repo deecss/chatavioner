@@ -755,3 +755,20 @@ class LearningReportsSystem:
             # W przypadku błędu, zwróć domyślny profil
         
         return profile
+    
+    def delete_report(self, report_id: str) -> bool:
+        """Usuwa raport o podanym ID"""
+        try:
+            report_file = os.path.join(self.reports_dir, f"{report_id}.json")
+            
+            if os.path.exists(report_file):
+                os.remove(report_file)
+                print(f"✅ Usunięto raport: {report_id}")
+                return True
+            else:
+                print(f"⚠️  Raport {report_id} nie istnieje")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Błąd usuwania raportu {report_id}: {e}")
+            return False

@@ -123,197 +123,194 @@
     </div>
 
     <!-- Scheduler Status -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-clock"></i> Status Schedulera
-            </h6>
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-clock text-blue-600 mr-3"></i>
+            <h2 class="text-xl font-bold text-gray-800">Status Schedulera</h2>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td><strong>Status:</strong></td>
-                                <td id="detailedSchedulerStatus">Sprawdzanie...</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Następny raport:</strong></td>
-                                <td id="nextReportTime">-</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Następny email:</strong></td>
-                                <td id="nextEmailTime">-</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Następne czyszczenie:</strong></td>
-                                <td id="nextCleanupTime">-</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="btn-group-vertical d-block" role="group">
-                        <button type="button" class="btn btn-success mb-2" onclick="startScheduler()">
-                            <i class="fas fa-play"></i> Uruchom Scheduler
-                        </button>
-                        <button type="button" class="btn btn-danger mb-2" onclick="stopScheduler()">
-                            <i class="fas fa-stop"></i> Zatrzymaj Scheduler
-                        </button>
-                        <button type="button" class="btn btn-info mb-2" onclick="loadSchedulerStatus()">
-                            <i class="fas fa-sync"></i> Odśwież Status
-                        </button>
-                    </div>
-                </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <tr class="border-b">
+                        <td class="py-2 font-medium text-gray-700">Status:</td>
+                        <td class="py-2" id="detailedSchedulerStatus">Sprawdzanie...</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2 font-medium text-gray-700">Następny raport:</td>
+                        <td class="py-2" id="nextReportTime">-</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2 font-medium text-gray-700">Następny email:</td>
+                        <td class="py-2" id="nextEmailTime">-</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-medium text-gray-700">Następne czyszczenie:</td>
+                        <td class="py-2" id="nextCleanupTime">-</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="space-y-3">
+                <button type="button" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors" onclick="startScheduler()">
+                    <i class="fas fa-play"></i>
+                    <span>Uruchom Scheduler</span>
+                </button>
+                <button type="button" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors" onclick="stopScheduler()">
+                    <i class="fas fa-stop"></i>
+                    <span>Zatrzymaj Scheduler</span>
+                </button>
+                <button type="button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors" onclick="loadSchedulerStatus()">
+                    <i class="fas fa-sync"></i>
+                    <span>Odśwież Status</span>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Reports List -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-chart-line"></i> Lista Raportów
-            </h6>
-            <button type="button" class="btn btn-sm btn-primary" onclick="loadReports()">
-                <i class="fas fa-sync"></i> Odśwież
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-chart-line text-blue-600 mr-3"></i>
+                <h2 class="text-xl font-bold text-gray-800">Lista Raportów</h2>
+            </div>
+            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="loadReports()">
+                <i class="fas fa-sync"></i>
+                <span>Odśwież</span>
             </button>
         </div>
-        <div class="card-body">
-            <!-- Filtry -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="dateFilter">Data od:</label>
-                    <input type="date" class="form-control" id="dateFilter">
-                </div>
-                <div class="col-md-4">
-                    <label for="dateToFilter">Data do:</label>
-                    <input type="date" class="form-control" id="dateToFilter">
-                </div>
-                <div class="col-md-4">
-                    <label>&nbsp;</label>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary btn-block" onclick="applyFilters()">
-                            <i class="fas fa-filter"></i> Filtruj
-                        </button>
-                    </div>
-                </div>
+        
+        <!-- Filtry -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label for="dateFilter" class="block text-sm font-medium text-gray-700 mb-1">Data od:</label>
+                <input type="date" id="dateFilter" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
-            
-            <!-- Tabela raportów -->
-            <div class="table-responsive">
-                <table class="table table-bordered" id="reportsTable">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Użytkownicy</th>
-                            <th>Pytania</th>
-                            <th>Feedback</th>
-                            <th>Wskaźnik Pozytywny</th>
-                            <th>Wygenerowano</th>
-                            <th>Akcje</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reportsTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                <i class="fas fa-spinner fa-spin"></i> Ładowanie raportów...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                <label for="dateToFilter" class="block text-sm font-medium text-gray-700 mb-1">Data do:</label>
+                <input type="date" id="dateToFilter" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                <button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtruj</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tabela raportów -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Data</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Użytkownicy</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Pytania</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Feedback</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Wskaźnik Pozytywny</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Wygenerowano</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-700">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsTableBody" class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Ładowanie raportów...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- User Activity -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-users"></i> Aktywność Użytkowników
-            </h6>
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-users text-blue-600 mr-3"></i>
+            <h2 class="text-xl font-bold text-gray-800">Aktywność Użytkowników</h2>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="userSelect">Wybierz użytkownika:</label>
-                    <select class="form-control" id="userSelect" onchange="loadUserActivity()">
-                        <option value="">-- Wybierz użytkownika --</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label>&nbsp;</label>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-info btn-block" onclick="loadUsersList()">
-                            <i class="fas fa-sync"></i> Odśwież listę użytkowników
-                        </button>
-                    </div>
-                </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="userSelect" class="block text-sm font-medium text-gray-700 mb-1">Wybierz użytkownika:</label>
+                <select id="userSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="loadUserActivity()">
+                    <option value="">-- Wybierz użytkownika --</option>
+                </select>
             </div>
-            
-            <div id="userActivityDetails" class="mt-3">
-                <!-- Szczegóły aktywności użytkownika -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                <button type="button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors" onclick="loadUsersList()">
+                    <i class="fas fa-sync"></i>
+                    <span>Odśwież listę użytkowników</span>
+                </button>
             </div>
+        </div>
+        
+        <div id="userActivityDetails" class="mt-4">
+            <!-- Szczegóły aktywności użytkownika -->
         </div>
     </div>
 </div>
 
 <!-- Modals -->
 <!-- Generate Report Modal -->
-<div class="modal fade" id="generateReportModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Generuj Nowy Raport</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+<div id="generateReportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800">Generuj Nowy Raport</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeModal('generateReportModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form id="generateReportForm">
+            <div class="mb-4">
+                <label for="reportDate" class="block text-sm font-medium text-gray-700 mb-1">Data raportu:</label>
+                <input type="date" id="reportDate" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
             </div>
-            <div class="modal-body">
-                <form id="generateReportForm">
-                    <div class="form-group">
-                        <label for="reportDate">Data raportu:</label>
-                        <input type="date" class="form-control" id="reportDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reportType">Typ raportu:</label>
-                        <select class="form-control" id="reportType">
-                            <option value="daily">Dzienny</option>
-                            <option value="weekly">Tygodniowy</option>
-                            <option value="monthly">Miesięczny</option>
-                        </select>
-                    </div>
-                </form>
+            <div class="mb-4">
+                <label for="reportType" class="block text-sm font-medium text-gray-700 mb-1">Typ raportu:</label>
+                <select id="reportType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="daily">Dzienny</option>
+                    <option value="weekly">Tygodniowy</option>
+                    <option value="monthly">Miesięczny</option>
+                </select>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
-                <button type="button" class="btn btn-success" onclick="confirmGenerateReport()">
-                    <i class="fas fa-plus"></i> Generuj Raport
-                </button>
-            </div>
+        </form>
+        
+        <div class="flex justify-end space-x-2">
+            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" onclick="closeModal('generateReportModal')">
+                Anuluj
+            </button>
+            <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onclick="confirmGenerateReport()">
+                <i class="fas fa-plus"></i>
+                <span>Generuj Raport</span>
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Report Detail Modal -->
-<div class="modal fade" id="reportDetailModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Szczegóły Raportu</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="reportDetailContent">
-                    <!-- Treść raportu -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
-            </div>
+<div id="reportDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800">Szczegóły Raportu</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeModal('reportDetailModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="reportDetailContent" class="text-sm">
+            <!-- Treść raportu -->
+        </div>
+        
+        <div class="flex justify-end mt-4">
+            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" onclick="closeModal('reportDetailModal')">
+                Zamknij
+            </button>
         </div>
     </div>
 </div>
@@ -338,23 +335,36 @@
         document.getElementById('reportDate').valueAsDate = yesterday;
     });
     
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.getElementById(modalId).classList.add('flex');
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.getElementById(modalId).classList.remove('flex');
+    }
+    
     // Alert system
     function showAlert(message, type = 'info') {
         const alertContainer = document.getElementById('alertContainer');
         const alertId = 'alert-' + Date.now();
         
-        const alertClass = {
-            'success': 'alert-success',
-            'danger': 'alert-danger',
-            'warning': 'alert-warning',
-            'info': 'alert-info'
-        }[type] || 'alert-info';
+        const alertClasses = {
+            'success': 'bg-green-100 border border-green-400 text-green-700',
+            'danger': 'bg-red-100 border border-red-400 text-red-700',
+            'warning': 'bg-yellow-100 border border-yellow-400 text-yellow-700',
+            'info': 'bg-blue-100 border border-blue-400 text-blue-700'
+        };
+        
+        const alertClass = alertClasses[type] || alertClasses['info'];
         
         const alertHTML = `
-            <div id="${alertId}" class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert">
-                    <span>&times;</span>
+            <div id="${alertId}" class="px-4 py-3 rounded-lg ${alertClass} mb-4 flex items-center justify-between">
+                <span>${message}</span>
+                <button type="button" class="ml-4 text-lg font-bold" onclick="document.getElementById('${alertId}').remove()">
+                    &times;
                 </button>
             </div>
         `;
@@ -365,8 +375,7 @@
         setTimeout(() => {
             const alert = document.getElementById(alertId);
             if (alert) {
-                alert.classList.remove('show');
-                setTimeout(() => alert.remove(), 150);
+                alert.remove();
             }
         }, 5000);
     }
@@ -397,7 +406,7 @@
         const tableBody = document.getElementById('reportsTableBody');
         
         if (filteredReports.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Brak raportów do wyświetlenia</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Brak raportów do wyświetlenia</td></tr>';
             return;
         }
         
@@ -407,32 +416,43 @@
             const feedbackRatio = (summary.feedback_ratio || 0) * 100;
             
             html += `
-                <tr>
-                    <td><strong>${report.date}</strong></td>
-                    <td>
-                        <span class="badge badge-primary">${summary.total_users || 0}</span>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900">${report.date}</td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${summary.total_users || 0}
+                        </span>
                     </td>
-                    <td>
-                        <span class="badge badge-info">${summary.total_questions || 0}</span>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            ${summary.total_questions || 0}
+                        </span>
                     </td>
-                    <td>
-                        <span class="badge badge-warning">${summary.total_feedback || 0}</span>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            ${summary.total_feedback || 0}
+                        </span>
                     </td>
-                    <td>
-                        <span class="badge badge-success">${feedbackRatio.toFixed(1)}%</span>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ${feedbackRatio.toFixed(1)}%
+                        </span>
                     </td>
-                    <td>
-                        <small class="text-muted">${new Date(report.generated_at).toLocaleString('pl-PL')}</small>
+                    <td class="px-4 py-3 text-sm text-gray-500">
+                        ${new Date(report.generated_at).toLocaleString('pl-PL')}
                     </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-sm btn-outline-primary" onclick="viewReport('${report.report_id}')">
+                    <td class="px-4 py-3">
+                        <div class="flex space-x-1">
+                            <button class="text-blue-600 hover:text-blue-800 p-1" onclick="viewReport('${report.report_id}')" title="Wyświetl">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-info" onclick="downloadReport('${report.report_id}')">
+                            <button class="text-green-600 hover:text-green-800 p-1" onclick="sendReportEmail('${report.report_id}')" title="Wyślij emailem">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                            <button class="text-indigo-600 hover:text-indigo-800 p-1" onclick="downloadReport('${report.report_id}')" title="Pobierz">
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.report_id}')">
+                            <button class="text-red-600 hover:text-red-800 p-1" onclick="deleteReport('${report.report_id}')" title="Usuń">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -469,7 +489,7 @@
     
     // Report actions
     function generateReport() {
-        $('#generateReportModal').modal('show');
+        openModal('generateReportModal');
     }
     
     function confirmGenerateReport() {
@@ -497,7 +517,7 @@
         .then(data => {
             if (data.success) {
                 showAlert('Raport wygenerowany pomyślnie', 'success');
-                $('#generateReportModal').modal('hide');
+                closeModal('generateReportModal');
                 loadReports();
             } else {
                 showAlert('Błąd generowania raportu: ' + data.message, 'danger');
@@ -514,7 +534,7 @@
             .then(data => {
                 if (data.success) {
                     displayReportDetails(data.report);
-                    $('#reportDetailModal').modal('show');
+                    openModal('reportDetailModal');
                 } else {
                     showAlert('Błąd ładowania raportu: ' + data.message, 'danger');
                 }
@@ -530,70 +550,111 @@
         const topicDistribution = report.topic_distribution || {};
         
         let html = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Informacje podstawowe</h6>
-                    <table class="table table-sm">
-                        <tr><td>Data:</td><td><strong>${report.date}</strong></td></tr>
-                        <tr><td>Wygenerowano:</td><td>${new Date(report.generated_at).toLocaleString('pl-PL')}</td></tr>
-                        <tr><td>Użytkownicy:</td><td>${summary.total_users || 0}</td></tr>
-                        <tr><td>Pytania:</td><td>${summary.total_questions || 0}</td></tr>
-                        <tr><td>Feedback:</td><td>${summary.total_feedback || 0}</td></tr>
-                    </table>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-semibold mb-3">Informacje podstawowe</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Data:</span>
+                            <span class="font-semibold">${report.date}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Wygenerowano:</span>
+                            <span class="font-semibold">${new Date(report.generated_at).toLocaleString('pl-PL')}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Użytkownicy:</span>
+                            <span class="font-semibold">${summary.total_users || 0}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Pytania:</span>
+                            <span class="font-semibold">${summary.total_questions || 0}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Feedback:</span>
+                            <span class="font-semibold">${summary.total_feedback || 0}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h6>Najaktywniejsze tematy</h6>
-                    <ul class="list-group">
+                <div>
+                    <h4 class="text-lg font-semibold mb-3">Najaktywniejsze tematy</h4>
+                    <div class="space-y-2">
         `;
         
         const popularTopics = topicDistribution.most_popular_topics || [];
         popularTopics.slice(0, 5).forEach(([topic, count]) => {
-            html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                ${topic}
-                <span class="badge badge-primary badge-pill">${count}</span>
-            </li>`;
+            html += `
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">${topic}</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        ${count}
+                    </span>
+                </div>
+            `;
         });
         
         html += `
-                    </ul>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <h6>Aktywność użytkowników</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Użytkownik</th>
-                                    <th>Pytania</th>
-                                    <th>Feedback</th>
-                                    <th>Ostatnia aktywność</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+            <div class="mt-6">
+                <h4 class="text-lg font-semibold mb-3">Aktywność użytkowników</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Użytkownik</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Pytania</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Feedback</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Ostatnia aktywność</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
         `;
         
         userActivity.forEach(user => {
             html += `
-                <tr>
-                    <td>${user.username || user.user_id}</td>
-                    <td>${user.total_questions || 0}</td>
-                    <td>${user.total_feedback || 0}</td>
-                    <td>${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-3 py-2 font-medium text-gray-900">${user.username || user.user_id}</td>
+                    <td class="px-3 py-2">${user.total_questions || 0}</td>
+                    <td class="px-3 py-2">${user.total_feedback || 0}</td>
+                    <td class="px-3 py-2 text-gray-600">${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
                 </tr>
             `;
         });
         
         html += `
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         `;
         
         document.getElementById('reportDetailContent').innerHTML = html;
+    }
+    
+    function sendReportEmail(reportId) {
+        if (confirm('Czy na pewno chcesz wysłać ten raport emailem?')) {
+            showAlert('Wysyłanie raportu emailem...', 'info');
+            
+            fetch(`/admin/api/learning-reports/${reportId}/send-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Raport wysłany emailem pomyślnie', 'success');
+                } else {
+                    showAlert('Błąd wysyłania raportu emailem: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd wysyłania raportu emailem: ' + error.message, 'danger');
+            });
+        }
     }
     
     function downloadReport(reportId) {
@@ -630,10 +691,10 @@
                     const isRunning = status.is_running;
                     
                     document.getElementById('schedulerStatus').innerHTML = 
-                        `<i class="fas fa-circle ${isRunning ? 'text-success' : 'text-danger'}"></i> ${isRunning ? 'Aktywny' : 'Nieaktywny'}`;
+                        `<i class="fas fa-circle ${isRunning ? 'text-green-400' : 'text-red-400'}"></i> ${isRunning ? 'Aktywny' : 'Nieaktywny'}`;
                     
                     document.getElementById('detailedSchedulerStatus').innerHTML = 
-                        `<span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">${isRunning ? 'Aktywny' : 'Nieaktywny'}</span>`;
+                        `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isRunning ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${isRunning ? 'Aktywny' : 'Nieaktywny'}</span>`;
                     
                     document.getElementById('nextReportTime').textContent = status.next_report_time || 'N/A';
                     document.getElementById('nextEmailTime').textContent = status.next_email_time || 'N/A';
@@ -649,7 +710,7 @@
     
     function toggleScheduler() {
         const statusElement = document.getElementById('schedulerStatus');
-        const isRunning = statusElement.innerHTML.includes('text-success');
+        const isRunning = statusElement.innerHTML.includes('text-green-400');
         
         const action = isRunning ? 'stop' : 'start';
         
@@ -854,29 +915,41 @@
         const questions = activity.questions || [];
         
         let html = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Statystyki</h6>
-                    <table class="table table-sm">
-                        <tr><td>Nazwa użytkownika:</td><td><strong>${activity.username || 'N/A'}</strong></td></tr>
-                        <tr><td>Łącznie sesji:</td><td>${sessions.length}</td></tr>
-                        <tr><td>Łącznie pytań:</td><td>${questions.length}</td></tr>
-                        <tr><td>Ostatnia aktywność:</td><td>${activity.last_activity ? new Date(activity.last_activity).toLocaleString('pl-PL') : 'N/A'}</td></tr>
-                    </table>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-semibold mb-3">Statystyki</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Nazwa użytkownika:</span>
+                            <span class="font-semibold">${activity.username || 'N/A'}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Łącznie sesji:</span>
+                            <span class="font-semibold">${sessions.length}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Łącznie pytań:</span>
+                            <span class="font-semibold">${questions.length}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Ostatnia aktywność:</span>
+                            <span class="font-semibold">${activity.last_activity ? new Date(activity.last_activity).toLocaleString('pl-PL') : 'N/A'}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h6>Ostatnie pytania</h6>
-                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                <div>
+                    <h4 class="text-lg font-semibold mb-3">Ostatnie pytania</h4>
+                    <div class="space-y-2 max-h-48 overflow-y-auto">
         `;
         
         questions.slice(0, 5).forEach(question => {
             html += `
-                <div class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">${question.question.substring(0, 50)}...</h6>
-                        <small>${new Date(question.timestamp).toLocaleString('pl-PL')}</small>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <div class="flex justify-between items-start mb-1">
+                        <h5 class="font-medium text-sm">${question.question.substring(0, 50)}...</h5>
+                        <span class="text-xs text-gray-500">${new Date(question.timestamp).toLocaleString('pl-PL')}</span>
                     </div>
-                    <p class="mb-1">${question.response ? question.response.substring(0, 100) + '...' : 'Brak odpowiedzi'}</p>
+                    <p class="text-xs text-gray-600">${question.response ? question.response.substring(0, 100) + '...' : 'Brak odpowiedzi'}</p>
                 </div>
             `;
         });
@@ -894,6 +967,186 @@
     setInterval(() => {
         loadSchedulerStatus();
     }, 30000); // Co 30 sekund
+    
+    // Remaining functions for scheduler and email
+    function startScheduler() {
+        fetch('/admin/api/learning-reports/scheduler/start', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Scheduler uruchomiony', 'success');
+                loadSchedulerStatus();
+            } else {
+                showAlert('Błąd uruchamiania schedulera: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd uruchamiania schedulera: ' + error.message, 'danger');
+        });
+    }
+    
+    function stopScheduler() {
+        fetch('/admin/api/learning-reports/scheduler/stop', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Scheduler zatrzymany', 'success');
+                loadSchedulerStatus();
+            } else {
+                showAlert('Błąd zatrzymywania schedulera: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd zatrzymywania schedulera: ' + error.message, 'danger');
+        });
+    }
+    
+    // Email functionality
+    function loadEmailConfig() {
+        fetch('/admin/api/learning-reports/email-config')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const config = data.config;
+                    document.getElementById('email_from').value = config.email_from || '';
+                    document.getElementById('email_to').value = config.email_to || '';
+                    document.getElementById('email_enabled').checked = config.email_enabled || false;
+                } else {
+                    showAlert('Błąd ładowania konfiguracji email: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania konfiguracji email: ' + error.message, 'danger');
+            });
+    }
+    
+    function saveEmailConfig() {
+        const config = {
+            email_from: document.getElementById('email_from').value,
+            email_to: document.getElementById('email_to').value,
+            email_enabled: document.getElementById('email_enabled').checked
+        };
+        
+        fetch('/admin/api/learning-reports/email-config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Konfiguracja email zapisana', 'success');
+            } else {
+                showAlert('Błąd zapisywania konfiguracji email: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd zapisywania konfiguracji email: ' + error.message, 'danger');
+        });
+    }
+    
+    function testEmailSending() {
+        showAlert('Wysyłanie emaila testowego...', 'info');
+        
+        fetch('/admin/api/learning-reports/email-test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Email testowy wysłany pomyślnie', 'success');
+            } else {
+                showAlert('Błąd wysyłania emaila testowego: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd wysyłania emaila testowego: ' + error.message, 'danger');
+        });
+    }
+    
+    function sendEmailReport() {
+        const date = prompt('Podaj datę raportu (YYYY-MM-DD) lub pozostaw puste dla wczorajszego dnia:');
+        
+        showAlert('Wysyłanie raportu emailem...', 'info');
+        
+        const payload = {};
+        if (date && date.trim()) {
+            payload.date = date.trim();
+        }
+        
+        fetch('/admin/api/learning-reports/email-send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Raport wysłany emailem: ' + data.report_id, 'success');
+            } else {
+                showAlert('Błąd wysyłania raportu emailem: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Błąd wysyłania raportu emailem: ' + error.message, 'danger');
+        });
+    }
+    
+    // User management
+    function loadUsersList() {
+        fetch('/admin/api/users')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const userSelect = document.getElementById('userSelect');
+                    userSelect.innerHTML = '<option value="">-- Wybierz użytkownika --</option>';
+                    
+                    data.users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = user.username || user.id;
+                        userSelect.appendChild(option);
+                    });
+                } else {
+                    showAlert('Błąd ładowania listy użytkowników: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania listy użytkowników: ' + error.message, 'danger');
+            });
+    }
+    
+    function loadUserActivity() {
+        const userId = document.getElementById('userSelect').value;
+        if (!userId) {
+            document.getElementById('userActivityDetails').innerHTML = '';
+            return;
+        }
+        
+        fetch(`/admin/api/users/${userId}/activity`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayUserActivity(data.activity);
+                } else {
+                    showAlert('Błąd ładowania aktywności użytkownika: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Błąd ładowania aktywności użytkownika: ' + error.message, 'danger');
+            });
+    }
     
 </script>
 {% endblock %}

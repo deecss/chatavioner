@@ -300,6 +300,57 @@ class ReportScheduler:
                     </div>
                     
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">👥 Szczegółowa aktywność użytkowników</h4>
+                        <div style="background-color: white; padding: 10px; border-radius: 3px;">
+            """
+            
+            # Dodaj szczegółową aktywność użytkowników
+            user_activity = report.get('user_activity', [])
+            for user_data in user_activity[:10]:  # Pokaż top 10 użytkowników
+                username = user_data.get('username', user_data.get('user_id', 'Unknown'))
+                questions_count = user_data.get('total_questions', 0)
+                feedback_count = user_data.get('total_feedback', 0)
+                last_activity = user_data.get('last_activity', 'N/A')
+                
+                html_body += f"""
+                            <div style="border-bottom: 1px solid #eee; padding: 10px 0; margin-bottom: 10px;">
+                                <strong style="color: #2c3e50;">{username}</strong><br>
+                                <span style="font-size: 12px; color: #7f8c8d;">
+                                    📝 Pytania: {questions_count} | 
+                                    💬 Feedback: {feedback_count} | 
+                                    🕒 Ostatnia aktywność: {last_activity}
+                                </span>
+                            </div>
+                """
+            
+            html_body += """
+                        </div>
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-top: 0;">🔥 Przykładowe pytania użytkowników</h4>
+                        <div style="background-color: white; padding: 10px; border-radius: 3px;">
+            """
+            
+            # Dodaj przykładowe pytania
+            example_questions = report.get('example_questions', [])
+            for i, question in enumerate(example_questions[:5]):  # Pokaż 5 przykładowych pytań
+                question_text = question.get('question', 'Brak pytania')
+                user_name = question.get('user', 'Anonimowy')
+                timestamp = question.get('timestamp', 'N/A')
+                
+                html_body += f"""
+                            <div style="border-left: 3px solid #3498db; padding-left: 15px; margin: 10px 0;">
+                                <p style="margin: 0; color: #2c3e50; font-style: italic;">"{question_text}"</p>
+                                <small style="color: #7f8c8d;">— {user_name} ({timestamp})</small>
+                            </div>
+                """
+            
+            html_body += """
+                        </div>
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <p style="color: #7f8c8d; font-size: 12px; margin: 0;">
                             Ten raport został wygenerowany automatycznie przez system Avioner AI Chat.<br>
                             Aby uzyskać więcej informacji, zaloguj się do panelu administracyjnego.
@@ -369,8 +420,203 @@ class ReportScheduler:
             print(f"❌ Błąd testu emaila: {e}")
             return False
     
-    def generate_report_on_demand(self, date_str: str = None):
+    def get_report_details(self, report_id: str):
+        """Pobiera szczegóły konkretnego raportu"""
+        try:
+            reports = self.reports_system.get_available_reports()
+            
+            for report in reports:
+                if report.get('report_id') == report_id:
+                    return report
+            
+            return None
+        except Exception as e:
+            print(f"❌ Błąd pobierania szczegółów raportu: {e}")
+            return None
+    
+    def delete_report(self, report_id: str):
+        """Usuwa raport"""
+        try:
+            return self.reports_system.delete_report(report_id)
+        except Exception as e:
+            print(f"❌ Błąd usuwania raportu: {e}")
+            return False
+    
+    def send_specific_report_email(self, report_id: str):
+        """Wysyła konkretny raport emailem"""
+        try:
+            report = self.get_report_details(report_id)
+            if not report:
+                return {
+                    'success': False,
+                    'message': 'Raport nie znaleziony'
+                }
+            
+            # Wyślij email
+            self._send_email_report(report)
+            
+            return {
+                'success': True,
+                'message': f'Raport {report_id} wysłany emailem'
+            }
+        except Exception as e:
+            print(f"❌ Błąd wysyłania raportu emailem: {e}")
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def generate_report_on_demand(self, date_str: str = None, report_type: str = 'daily'):
         """Generuje raport na żądanie"""
+        try:
+            if date_str:
+                date = datetime.strptime(date_str, '%Y-%m-%d')
+            else:
+                date = datetime.now()
+            
+            print(f"📊 Generowanie raportu na żądanie za {date.strftime('%Y-%m-%d')}...")
+            
+            if report_type == 'daily':
+                report = self.reports_system.generate_daily_report(date)
+            elif report_type == 'weekly':
+                report = self.reports_system.generate_weekly_report(date)
+            elif report_type == 'monthly':
+                report = self.reports_system.generate_monthly_report(date)
+            else:
+                report = self.reports_system.generate_daily_report(date)
+            
+            print(f"✅ Raport wygenerowany: {report['report_id']}")
+            return {
+                'success': True,
+                'report_id': report['report_id'],
+                'message': 'Raport wygenerowany pomyślnie'
+            }
+            
+        except Exception as e:
+            print(f"❌ Błąd generowania raportu na żądanie: {e}")
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def get_scheduler_status(self):
+        """Pobiera status schedulera"""
+        try:
+            is_running = self.scheduler_running
+            
+            status = {
+                'is_running': is_running,
+                'next_report_time': self.get_next_report_time(),
+                'next_email_time': self.get_next_email_time(),
+                'next_cleanup_time': self.get_next_cleanup_time()
+            }
+            
+            return status
+        except Exception as e:
+            print(f"❌ Błąd pobierania statusu schedulera: {e}")
+            return {
+                'is_running': False,
+                'next_report_time': 'N/A',
+                'next_email_time': 'N/A',
+                'next_cleanup_time': 'N/A'
+            }
+    
+    def get_next_report_time(self):
+        """Pobiera czas następnego raportu"""
+        try:
+            if not self.scheduler_running:
+                return 'N/A'
+            
+            # Następny raport o 20:00
+            now = datetime.now()
+            next_report = now.replace(hour=20, minute=0, second=0, microsecond=0)
+            
+            # Jeśli już minęła 20:00, ustaw na jutro
+            if now >= next_report:
+                next_report += timedelta(days=1)
+            
+            return next_report.strftime('%Y-%m-%d %H:%M:%S')
+        except Exception as e:
+            return 'N/A'
+    
+    def get_next_email_time(self):
+        """Pobiera czas następnego emaila"""
+        try:
+            if not self.scheduler_running or not self.email_config.get('email_enabled', False):
+                return 'N/A'
+            
+            # Następny email o 20:05
+            now = datetime.now()
+            next_email = now.replace(hour=20, minute=5, second=0, microsecond=0)
+            
+            # Jeśli już minęła 20:05, ustaw na jutro
+            if now >= next_email:
+                next_email += timedelta(days=1)
+            
+            return next_email.strftime('%Y-%m-%d %H:%M:%S')
+        except Exception as e:
+            return 'N/A'
+    
+    def get_next_cleanup_time(self):
+        """Pobiera czas następnego czyszczenia"""
+        try:
+            if not self.scheduler_running:
+                return 'N/A'
+            
+            # Następne czyszczenie o 02:00
+            now = datetime.now()
+            next_cleanup = now.replace(hour=2, minute=0, second=0, microsecond=0)
+            
+            # Jeśli już minęła 02:00, ustaw na jutro
+            if now >= next_cleanup:
+                next_cleanup += timedelta(days=1)
+            
+            return next_cleanup.strftime('%Y-%m-%d %H:%M:%S')
+        except Exception as e:
+            return 'N/A'
+    
+    def start_scheduler(self):
+        """Uruchamia scheduler"""
+        try:
+            if not self.scheduler_running:
+                self.start()
+                return {
+                    'success': True,
+                    'message': 'Scheduler uruchomiony pomyślnie'
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': 'Scheduler jest już uruchomiony'
+                }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def stop_scheduler(self):
+        """Zatrzymuje scheduler"""
+        try:
+            if self.scheduler_running:
+                self.stop()
+                return {
+                    'success': True,
+                    'message': 'Scheduler zatrzymany pomyślnie'
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': 'Scheduler nie jest uruchomiony'
+                }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': str(e)
+            }
+
+    def generate_report_on_demand_old(self, date_str: str = None):
+        """Generuje raport na żądanie - stara wersja"""
         try:
             if date_str:
                 date = datetime.strptime(date_str, '%Y-%m-%d')
@@ -387,54 +633,3 @@ class ReportScheduler:
         except Exception as e:
             print(f"❌ Błąd generowania raportu na żądanie: {e}")
             return None
-
-
-# Globalna instancja schedulera
-scheduler = None
-
-def start_scheduler():
-    """Uruchamia scheduler"""
-    global scheduler
-    if scheduler is None:
-        scheduler = ReportScheduler()
-    scheduler.start()
-    return scheduler
-
-def stop_scheduler():
-    """Zatrzymuje scheduler"""
-    global scheduler
-    if scheduler:
-        scheduler.stop()
-
-def get_scheduler():
-    """Pobiera instancję schedulera"""
-    global scheduler
-    if scheduler is None:
-        scheduler = ReportScheduler()
-    return scheduler
-
-def start_report_scheduler():
-    """Uruchamia scheduler raportów (alias dla kompatybilności)"""
-    return start_scheduler()
-
-def stop_report_scheduler():
-    """Zatrzymuje scheduler raportów (alias dla kompatybilności)"""
-    return stop_scheduler()
-
-def get_report_scheduler():
-    """Pobiera instancję schedulera (alias dla kompatybilności)"""
-    return get_scheduler()
-
-if __name__ == "__main__":
-    # Uruchom scheduler jako samodzielny proces
-    print("🚀 Uruchamianie schedulera raportów...")
-    scheduler = start_scheduler()
-    
-    try:
-        # Utrzymaj proces
-        while True:
-            time.sleep(60)
-    except KeyboardInterrupt:
-        print("\n🛑 Zatrzymywanie schedulera...")
-        stop_scheduler()
-        print("✅ Scheduler zatrzymany")

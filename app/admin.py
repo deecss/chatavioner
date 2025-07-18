@@ -841,192 +841,272 @@ def api_learning_report_detail(report_id):
         logger.error(f"Błąd API learning-report detail: {e}")
         return jsonify({'error': str(e)}), 500
 
-@admin_bp.route('/api/generate-learning-report', methods=['POST'])
+# Dodatkowe API endpointy dla raportów uczenia się
+@admin_bp.route('/api/learning-reports/<report_id>')
 @login_required
-def api_generate_learning_report():
-    """API endpoint do generowania raportu uczenia się"""
+def api_learning_report_details(report_id):
+    """API endpoint dla szczegółów konkretnego raportu"""
     if not current_user.is_admin():
         return jsonify({'error': 'Brak uprawnień'}), 403
     
-    try:
-        data = request.get_json()
-        date_str = data.get('date')
-        report_type = data.get('type', 'daily')
-        
-        if not date_str:
-            return jsonify({'error': 'Data jest wymagana'}), 400
-        
-        # Konwertuj string na datetime
-        try:
-            date = datetime.strptime(date_str, '%Y-%m-%d')
-        except ValueError:
-            return jsonify({'error': 'Nieprawidłowy format daty'}), 400
-        
-        # Generuj raport
-        report = learning_reports_system.generate_daily_report(date)
-        
-        return jsonify({
-            'success': True,
-            'report_id': report['report_id'],
-            'message': 'Raport został wygenerowany pomyślnie'
-        })
-    except Exception as e:
-        logger.error(f"Błąd generowania raportu: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@admin_bp.route('/api/toggle-scheduler', methods=['POST'])
-@login_required
-def api_toggle_scheduler():
-    """API endpoint do przełączania schedulera"""
-    if not current_user.is_admin():
-        return jsonify({'error': 'Brak uprawnień'}), 403
-    
-    try:
-        from utils.reports_scheduler import get_report_scheduler, ReportScheduler
-        scheduler = get_report_scheduler()
-        
-        # Jeśli scheduler nie istnieje, utwórz nowy
-        if scheduler is None:
-            scheduler = ReportScheduler()
-            from utils.reports_scheduler import report_scheduler
-            report_scheduler = scheduler
-        
-        if scheduler.is_running:
-            scheduler.stop()
-            status = False
-            message = 'Scheduler został zatrzymany'
-        else:
-            scheduler.start()
-            status = True
-            message = 'Scheduler został uruchomiony'
-        
-        return jsonify({
-            'success': True,
-            'status': status,
-            'message': message
-        })
-    except Exception as e:
-        logger.error(f"Błąd przełączania schedulera: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@admin_bp.route('/api/live-stats')
-@login_required
-def api_live_stats():
-    """API endpoint dla statystyk na żywo"""
-    if not current_user.is_admin():
-        return jsonify({'error': 'Brak uprawnień'}), 403
-    
-    try:
-        # Pobierz statystyki z różnych źródeł
-        from app.models import UserSession
-        
-        # Proste statystyki bez SessionAnalytics
-        active_sessions = len(UserSession.get_all_active_sessions()) if hasattr(UserSession, 'get_all_active_sessions') else 0
-        
-        stats = {
-            'active_sessions': active_sessions,
-            'today_questions': 0,  # Można dodać później
-            'last_report': 'Brak danych',
-            'system_status': 'OK'
-        }
-        
-        return jsonify({
-            'success': True,
-            'stats': stats
-        })
-    except Exception as e:
-        logger.error(f"Błąd API live-stats: {e}")
-        return jsonify({'error': str(e)}), 500
-
-# API dla funkcjonalności email
-
-@admin_bp.route('/api/learning-reports/email-test', methods=['POST'])
-@login_required
-def test_email_sending():
-    """Test wysyłania emaila"""
     try:
         from utils.reports_scheduler import get_scheduler
         
         scheduler = get_scheduler()
-        success = scheduler.test_email_sending()
+        report = scheduler.get_report_details(report_id)
         
-        if success:
-            return jsonify({
-                'success': True,
-                'message': 'Email testowy wysłany pomyślnie'
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'message': 'Błąd wysyłania emaila testowego'
-            })
-            
-    except Exception as e:
+        if not report:
+            return jsonify({'success': False, 'message': 'Raport nie znaleziony'}), 404
+        
         return jsonify({
-            'success': False,
-            'message': f'Błąd: {str(e)}'
+            'success': True,
+            'report': report
         })
+    except Exception as e:
+        logger.error(f"Błąd API learning-report details: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
-@admin_bp.route('/api/learning-reports/email-send', methods=['POST'])
+@admin_bp.route('/api/learning-reports/<report_id>', methods=['DELETE'])
 @login_required
-def send_email_report():
-    """Wysyła raport emailem na żądanie"""
+def api_delete_learning_report(report_id):
+    """API endpoint do usuwania raportu"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        result = scheduler.delete_report(report_id)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Raport usunięty pomyślnie'
+        })
+    except Exception as e:
+        logger.error(f"Błąd usuwania raportu: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/learning-reports/<report_id>/download')
+@login_required
+def api_download_learning_report(report_id):
+    """API endpoint do pobierania raportu"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        report_data = scheduler.get_report_details(report_id)
+        
+        if not report_data:
+            return jsonify({'error': 'Raport nie znaleziony'}), 404
+        
+        # Generuj raport jako JSON do pobrania
+        response = make_response(json.dumps(report_data, indent=2, ensure_ascii=False))
+        response.headers["Content-Disposition"] = f"attachment; filename=learning_report_{report_id}.json"
+        response.headers["Content-Type"] = "application/json"
+        
+        return response
+    except Exception as e:
+        logger.error(f"Błąd pobierania raportu: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/learning-reports/<report_id>/send-email', methods=['POST'])
+@login_required
+def api_send_specific_report_email(report_id):
+    """API endpoint do wysyłania konkretnego raportu emailem"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        result = scheduler.send_specific_report_email(report_id)
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Błąd wysyłania raportu emailem: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/learning-reports/generate', methods=['POST'])
+@login_required
+def api_generate_learning_report():
+    """API endpoint do generowania nowego raportu"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
     try:
         from utils.reports_scheduler import get_scheduler
         
         data = request.json
         report_date = data.get('date')
+        report_type = data.get('type', 'daily')
         
         scheduler = get_scheduler()
-        result = scheduler.send_email_on_demand(report_date)
+        result = scheduler.generate_report_on_demand(report_date, report_type)
         
         return jsonify(result)
-        
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Błąd: {str(e)}'
-        })
+        logger.error(f"Błąd generowania raportu: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
-@admin_bp.route('/api/learning-reports/email-config', methods=['GET'])
+@admin_bp.route('/api/learning-reports/scheduler/status')
 @login_required
-def get_email_config():
-    """Pobiera konfigurację email"""
+def api_scheduler_status():
+    """API endpoint dla statusu schedulera"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
     try:
         from utils.reports_scheduler import get_scheduler
         
         scheduler = get_scheduler()
-        config = scheduler.get_email_config()
+        status = scheduler.get_scheduler_status()
         
         return jsonify({
             'success': True,
-            'config': config
+            'status': status
         })
-        
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Błąd: {str(e)}'
-        })
+        logger.error(f"Błąd statusu schedulera: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
-@admin_bp.route('/api/learning-reports/email-config', methods=['POST'])
+@admin_bp.route('/api/learning-reports/scheduler/start', methods=['POST'])
 @login_required
-def set_email_config():
-    """Ustawia konfigurację email"""
+def api_start_scheduler():
+    """API endpoint do uruchamiania schedulera"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
     try:
         from utils.reports_scheduler import get_scheduler
         
-        data = request.json
         scheduler = get_scheduler()
-        scheduler.set_email_config(data)
+        result = scheduler.start_scheduler()
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Błąd uruchamiania schedulera: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/learning-reports/scheduler/stop', methods=['POST'])
+@login_required
+def api_stop_scheduler():
+    """API endpoint do zatrzymywania schedulera"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        result = scheduler.stop_scheduler()
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Błąd zatrzymywania schedulera: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/users')
+@login_required
+def api_users():
+    """API endpoint dla listy użytkowników"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        import os
+        import json
+        
+        users_data = {}
+        users_file = os.path.join('data', 'users.json')
+        
+        if os.path.exists(users_file):
+            with open(users_file, 'r', encoding='utf-8') as f:
+                users_list = json.load(f)
+                
+                # Konwertuj listę na słownik z ID jako kluczem
+                for user in users_list:
+                    if isinstance(user, dict) and 'id' in user:
+                        users_data[user['id']] = user
+        
+        users_list = []
+        for user_id, user_data in users_data.items():
+            users_list.append({
+                'id': user_id,
+                'username': user_data.get('username', user_id),
+                'created_at': user_data.get('created_at', ''),
+                'last_login': user_data.get('last_login', '')
+            })
         
         return jsonify({
             'success': True,
-            'message': 'Konfiguracja email zaktualizowana'
+            'users': users_list
         })
-        
     except Exception as e:
+        logger.error(f"Błąd ładowania użytkowników: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/users/<user_id>/activity')
+@login_required
+def api_user_activity(user_id):
+    """API endpoint dla aktywności użytkownika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        import os
+        import json
+        
+        # Pobierz podstawowe dane użytkownika
+        users_data = {}
+        users_file = os.path.join('data', 'users.json')
+        
+        if os.path.exists(users_file):
+            with open(users_file, 'r', encoding='utf-8') as f:
+                users_list = json.load(f)
+                
+                # Konwertuj listę na słownik z ID jako kluczem
+                for user in users_list:
+                    if isinstance(user, dict) and 'id' in user:
+                        users_data[user['id']] = user
+        
+        user_data = users_data.get(user_id, {})
+        
+        # Pobierz historię użytkownika
+        history_file = os.path.join('history', f'{user_id}.json')
+        sessions = []
+        questions = []
+        
+        if os.path.exists(history_file):
+            with open(history_file, 'r', encoding='utf-8') as f:
+                history_data = json.load(f)
+                sessions = history_data.get('sessions', [])
+                
+                # Ekstraktuj pytania z sesji
+                for session in sessions:
+                    for interaction in session.get('interactions', []):
+                        if interaction.get('type') == 'question':
+                            questions.append({
+                                'question': interaction.get('content', ''),
+                                'response': interaction.get('response', ''),
+                                'timestamp': interaction.get('timestamp', '')
+                            })
+        
+        activity = {
+            'username': user_data.get('username', user_id),
+            'last_activity': user_data.get('last_login', ''),
+            'sessions': sessions,
+            'questions': questions
+        }
+        
         return jsonify({
-            'success': False,
-            'message': f'Błąd: {str(e)}'
+            'success': True,
+            'activity': activity
         })
+    except Exception as e:
+        logger.error(f"Błąd ładowania aktywności użytkownika: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
