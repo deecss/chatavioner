@@ -88,6 +88,7 @@ class LearningReportsSystem:
         user_stats = defaultdict(lambda: {
             "user_id": "",
             "username": "",
+            "role": "",
             "sessions_count": 0,
             "questions_count": 0,
             "responses_received": 0,
@@ -96,8 +97,8 @@ class LearningReportsSystem:
             "session_duration_total": 0,
             "first_activity": None,
             "last_activity": None,
-            "learning_level": "beginner",
-            "preferred_detail_level": "medium"
+            "learning_profile": {},
+            "detailed_activity": []
         })
         
         # Analizuj pliki historii
@@ -110,6 +111,10 @@ class LearningReportsSystem:
                     try:
                         with open(filepath, 'r', encoding='utf-8') as f:
                             history = json.load(f)
+                        
+                        session_users = set()
+                        session_questions = 0
+                        session_topics = set()
                         
                         # Filtruj wiadomości z danego okresu
                         for message in history:
@@ -124,18 +129,36 @@ class LearningReportsSystem:
                             if user_id == 'unknown':
                                 continue
                             
+                            session_users.add(user_id)
                             stats = user_stats[user_id]
-                            stats["user_id"] = user_id
+                            
+                            # Pobierz informacje o użytkowniku
+                            if not stats["user_id"]:
+                                user_info = self._get_user_info(user_id)
+                                stats["user_id"] = user_id
+                                stats["username"] = user_info["username"]
+                                stats["role"] = user_info["role"]
                             
                             # Aktualizuj statystyki
                             if message.get('role') == 'user':
                                 stats["questions_count"] += 1
+                                session_questions += 1
                                 
                                 # Wykryj temat
                                 content = message.get('content', '').lower()
                                 topic = self._detect_topic(content)
                                 if topic:
                                     stats["topics_discussed"].add(topic)
+                                    session_topics.add(topic)
+                                
+                                # Dodaj szczegółową aktywność
+                                stats["detailed_activity"].append({
+                                    "timestamp": msg_time.isoformat(),
+                                    "type": "question",
+                                    "topic": topic,
+                                    "content_preview": content[:100] + "..." if len(content) > 100 else content,
+                                    "session_id": session_id
+                                })
                             
                             elif message.get('role') == 'assistant':
                                 stats["responses_received"] += 1
@@ -146,6 +169,10 @@ class LearningReportsSystem:
                             
                             if not stats["last_activity"] or msg_time > datetime.fromisoformat(stats["last_activity"]):
                                 stats["last_activity"] = msg_time.isoformat()
+                        
+                        # Zwiększ licznik sesji dla użytkowników aktywnych w tej sesji
+                        for user_id in session_users:
+                            user_stats[user_id]["sessions_count"] += 1
                     
                     except Exception as e:
                         print(f"⚠️  Błąd analizy historii {filename}: {e}")
@@ -164,18 +191,59 @@ class LearningReportsSystem:
                             feedback_time = self._parse_timestamp(feedback_data.get('timestamp'))
                             if feedback_time and start_time <= feedback_time < end_time:
                                 user_id = feedback_data.get('user_id', user_dir)
-                                user_stats[user_id]["feedback_given"] += 1
+                                if user_id in user_stats:
+                                    user_stats[user_id]["feedback_given"] += 1
+                                    
+                                    # Dodaj szczegółową aktywność
+                                    user_stats[user_id]["detailed_activity"].append({
+                                        "timestamp": feedback_time.isoformat(),
+                                        "type": "feedback",
+                                        "feedback_type": feedback_data.get('type', 'unknown'),
+                                        "rating": feedback_data.get('rating', 0),
+                                        "comment": feedback_data.get('comment', '')[:50] + "..." if len(feedback_data.get('comment', '')) > 50 else feedback_data.get('comment', '')
+                                    })
                         
                         except Exception as e:
                             print(f"⚠️  Błąd analizy feedback {feedback_file}: {e}")
         
-        # Wzbogać dane o informacje z systemu uczenia się
-        self._enrich_with_learning_data(user_stats)
+        # Wzbogać o szczegółowe profile uczenia się
+        for user_id, stats in user_stats.items():
+            try:
+                stats["learning_profile"] = self._get_user_learning_profile(user_id)
+            except Exception as e:
+                print(f"⚠️  Błąd tworzenia profilu uczenia dla {user_id}: {e}")
+                # Domyślny profil w przypadku błędu
+                stats["learning_profile"] = {
+                    'learning_level': 'beginner',
+                    'preferred_detail_level': 'medium',
+                    'learning_progress': {},
+                    'preferences': {
+                        'topics': [],
+                        'question_style': 'direct',
+                        'response_length': 'medium'
+                    },
+                    'statistics': {
+                        'total_sessions': stats.get('sessions_count', 0),
+                        'total_messages': stats.get('questions_count', 0),
+                        'avg_session_length': 0,
+                        'learning_streak': 0,
+                        'mastered_topics': []
+                    },
+                    'recent_activity': {
+                        'last_session': None,
+                        'recent_topics': list(stats.get('topics_discussed', [])),
+                        'improvement_areas': []
+                    }
+                }
         
-        # Konwertuj sets na listy dla JSON
+        # Konwertuj sets na listy dla JSON i posortuj aktywność
         result = []
         for user_id, stats in user_stats.items():
             stats["topics_discussed"] = list(stats["topics_discussed"])
+            # Sortuj szczegółową aktywność chronologicznie
+            stats["detailed_activity"].sort(key=lambda x: x["timestamp"])
+            # Ogranicz do ostatnich 10 aktywności
+            stats["detailed_activity"] = stats["detailed_activity"][-10:]
             result.append(stats)
         
         return result
@@ -598,9 +666,16 @@ class LearningReportsSystem:
                 
                 # Szukaj danych dla tego użytkownika
                 user_sessions = []
-                for entry in learning_data:
-                    if isinstance(entry, dict) and entry.get('user_id') == user_id:
-                        user_sessions.append(entry)
+                if isinstance(learning_data, list):
+                    for entry in learning_data:
+                        if isinstance(entry, dict) and entry.get('user_id') == user_id:
+                            user_sessions.append(entry)
+                elif isinstance(learning_data, dict):
+                    # Jeśli learning_data to słownik, sprawdź czy user_id jest kluczem
+                    if user_id in learning_data:
+                        user_data = learning_data[user_id]
+                        if isinstance(user_data, dict):
+                            user_sessions.append(user_data)
                 
                 if user_sessions:
                     # Analizuj dane uczenia się
@@ -610,7 +685,9 @@ class LearningReportsSystem:
                     )
                     
                     # Znajdź najnowszą sesję
-                    latest_session = max(user_sessions, key=lambda x: x.get('session_id', ''))
+                    latest_session = user_sessions[0]
+                    if len(user_sessions) > 1:
+                        latest_session = max(user_sessions, key=lambda x: x.get('session_id', ''))
                     
                     # Wyciągnij preferencje z najnowszej sesji
                     if 'user_patterns' in latest_session:
@@ -626,23 +703,27 @@ class LearningReportsSystem:
                     all_topics = []
                     for session in user_sessions:
                         topics = session.get('topic_progression', [])
-                        all_topics.extend(topics)
+                        if isinstance(topics, list):
+                            all_topics.extend(topics)
                     
                     # Najczęstsze tematy
-                    from collections import Counter
-                    topic_counts = Counter(all_topics)
-                    profile['preferences']['topics'] = [topic for topic, count in topic_counts.most_common(5)]
-                    profile['recent_activity']['recent_topics'] = list(topic_counts.keys())[-3:]
+                    if all_topics:
+                        from collections import Counter
+                        topic_counts = Counter(all_topics)
+                        profile['preferences']['topics'] = [topic for topic, count in topic_counts.most_common(5)]
+                        profile['recent_activity']['recent_topics'] = list(topic_counts.keys())[-3:]
                     
                     # Określ poziom na podstawie liczby sesji i tematów
-                    if profile['statistics']['total_sessions'] > 10:
+                    session_count = profile['statistics']['total_sessions']
+                    if session_count > 10:
                         profile['learning_level'] = 'advanced'
-                    elif profile['statistics']['total_sessions'] > 5:
+                    elif session_count > 5:
                         profile['learning_level'] = 'intermediate'
                     else:
                         profile['learning_level'] = 'beginner'
         
         except Exception as e:
             print(f"⚠️  Błąd ładowania profilu uczenia dla {user_id}: {e}")
+            # W przypadku błędu, zwróć domyślny profil
         
         return profile

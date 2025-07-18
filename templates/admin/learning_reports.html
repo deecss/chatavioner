@@ -418,13 +418,65 @@ function showReportDetails(report) {
             <!-- Aktywność użytkowników -->
             <div class="bg-gray-50 rounded-lg p-4">
                 <h5 class="font-semibold mb-3">Najaktywniejsze użytkownicy</h5>
-                <div class="space-y-2">
+                <div class="space-y-3">
                     ${report.user_activity.sort((a, b) => b.questions_count - a.questions_count).slice(0, 5).map(user => `
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium">${user.user_id}</span>
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm text-gray-600">${user.questions_count} pytań</span>
-                                <span class="text-sm text-gray-600">${user.feedback_given} feedback</span>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="font-medium text-lg">${user.username || user.user_id}</span>
+                                    <span class="text-sm text-gray-500 ml-2">(${user.role || 'user'})</span>
+                                    <div class="text-sm text-gray-600 mt-1">
+                                        <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">
+                                            Poziom: ${user.learning_profile && user.learning_profile.learning_level ? user.learning_profile.learning_level : 'beginner'}
+                                        </span>
+                                        <span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded">
+                                            ${user.learning_profile && user.learning_profile.statistics ? user.learning_profile.statistics.total_sessions : user.sessions_count} sesji
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-blue-600">${user.questions_count} pytań</div>
+                                    <div class="text-sm text-gray-600">${user.feedback_given} feedback</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Szczegóły profilu -->
+                            <div class="mt-3 pt-3 border-t">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span class="font-medium">Preferowane tematy:</span>
+                                        <div class="flex flex-wrap gap-1 mt-1">
+                                            ${user.learning_profile && user.learning_profile.preferences && user.learning_profile.preferences.topics ? 
+                                                user.learning_profile.preferences.topics.slice(0, 3).map(topic => `
+                                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">${topic}</span>
+                                                `).join('') : 
+                                                user.topics_discussed ? user.topics_discussed.slice(0, 3).map(topic => `
+                                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">${topic}</span>
+                                                `).join('') : '<span class="text-gray-400">Brak danych</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium">Ostatnia aktywność:</span>
+                                        <div class="text-gray-600 mt-1">${user.last_activity ? formatDateTime(user.last_activity) : 'Brak danych'}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Szczegółowa aktywność -->
+                                ${user.detailed_activity && user.detailed_activity.length > 0 ? `
+                                    <div class="mt-3">
+                                        <span class="font-medium text-sm">Ostatnie aktywności:</span>
+                                        <div class="mt-2 space-y-1">
+                                            ${user.detailed_activity.slice(-3).map(activity => `
+                                                <div class="flex items-center text-xs text-gray-600">
+                                                    <span class="w-2 h-2 rounded-full mr-2 ${activity.type === 'question' ? 'bg-blue-400' : 'bg-green-400'}"></span>
+                                                    <span class="flex-1">${activity.content_preview || activity.comment || 'Feedback'}</span>
+                                                    <span class="text-xs">${formatDateTime(activity.timestamp)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('')}
