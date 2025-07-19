@@ -1,17 +1,17 @@
 {
-  "report_id": "49294f59-0993-4266-b960-de79edc34550",
+  "report_id": "02747c68-0169-41a0-b216-9bb018fbed34",
   "report_type": "daily",
   "date": "2025-07-18",
-  "generated_at": "2025-07-18T12:58:30.962044",
+  "generated_at": "2025-07-19T02:00:30.197873",
   "period": {
     "start": "2025-07-18T00:00:00",
     "end": "2025-07-19T00:00:00"
   },
   "summary": {
     "total_users": 2,
-    "total_questions": 3,
+    "total_questions": 6,
     "total_feedback": 0,
-    "avg_questions_per_user": 1.5,
+    "avg_questions_per_user": 3.0,
     "feedback_ratio": 0
   },
   "user_activity": [
@@ -20,15 +20,17 @@
       "username": "admin",
       "role": "admin",
       "sessions_count": 1,
-      "questions_count": 2,
-      "responses_received": 2,
+      "questions_count": 5,
+      "responses_received": 5,
       "feedback_given": 0,
       "topics_discussed": [
+        "ogólne",
+        "przepisy",
         "pilotaż"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-18T11:58:45.862795",
-      "last_activity": "2025-07-18T12:01:18.847204",
+      "last_activity": "2025-07-18T13:36:27.950782",
       "learning_profile": {
         "learning_level": "beginner",
         "preferred_detail_level": "medium",
@@ -64,6 +66,27 @@
           "type": "question",
           "topic": "pilotaż",
           "content_preview": "ile jest lotnis w polsce",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        },
+        {
+          "timestamp": "2025-07-18T13:31:41.525356",
+          "type": "question",
+          "topic": "przepisy",
+          "content_preview": "prawo lotnicze wprowadzenie podzielone na rozdzialy",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        },
+        {
+          "timestamp": "2025-07-18T13:34:10.624643",
+          "type": "question",
+          "topic": "przepisy",
+          "content_preview": "prawo lotnicze wprowadzenie podzielone na rozdziały",
+          "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
+        },
+        {
+          "timestamp": "2025-07-18T13:35:59.297986",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "kim jestes?",
           "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4"
         }
       ]
@@ -116,19 +139,30 @@
     }
   ],
   "questions_analysis": {
-    "total_questions": 3,
+    "total_questions": 6,
     "unique_users": 2,
-    "avg_per_user": 1.5,
+    "avg_per_user": 3.0,
     "questions_by_type": {
       "proceduralne": 1,
       "faktyczne": 1,
-      "inne": 1
+      "inne": 3,
+      "pytające": 1
     },
     "questions_by_complexity": {
-      "proste": 3
+      "proste": 4,
+      "średnie": 2
     },
-    "avg_question_length": 25.0,
+    "avg_question_length": 31.333333333333332,
     "sample_questions": [
+      {
+        "content": "prawo coriolisa",
+        "length": 15,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-18T11:00:05.045987",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
       {
         "content": "jak dojechac na warszawskie lotnisko",
         "length": 36,
@@ -148,6 +182,35 @@
         "user_id": "admin"
       },
       {
+        "content": "prawo lotnicze wprowadzenie podzielone na rozdzialy",
+        "length": 51,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "przepisy",
+        "timestamp": "2025-07-18T13:31:41.525356",
+        "user_id": "admin"
+      },
+      {
+        "content": "prawo lotnicze wprowadzenie podzielone na rozdziały",
+        "length": 51,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "przepisy",
+        "timestamp": "2025-07-18T13:34:10.624643",
+        "user_id": "admin"
+      },
+      {
+        "content": "kim jestes?",
+        "length": 11,
+        "type": "pytające",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-18T13:35:59.297986",
+        "user_id": "admin"
+      }
+    ],
+    "recent_questions": [
+      {
         "content": "prawo coriolisa",
         "length": 15,
         "type": "inne",
@@ -155,8 +218,97 @@
         "topic": "ogólne",
         "timestamp": "2025-07-18T11:00:05.045987",
         "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      },
+      {
+        "content": "jak dojechac na warszawskie lotnisko",
+        "length": 36,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-18T11:58:45.862795",
+        "user_id": "admin"
+      },
+      {
+        "content": "ile jest lotnis w polsce",
+        "length": 24,
+        "type": "faktyczne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-18T12:00:19.566081",
+        "user_id": "admin"
+      },
+      {
+        "content": "prawo lotnicze wprowadzenie podzielone na rozdzialy",
+        "length": 51,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "przepisy",
+        "timestamp": "2025-07-18T13:31:41.525356",
+        "user_id": "admin"
+      },
+      {
+        "content": "prawo lotnicze wprowadzenie podzielone na rozdziały",
+        "length": 51,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "przepisy",
+        "timestamp": "2025-07-18T13:34:10.624643",
+        "user_id": "admin"
+      },
+      {
+        "content": "kim jestes?",
+        "length": 11,
+        "type": "pytające",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-18T13:35:59.297986",
+        "user_id": "admin"
       }
-    ]
+    ],
+    "questions_by_topic": {
+      "ogólne": [
+        {
+          "content": "prawo coriolisa",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-18T11:00:05.045987",
+          "complexity": "proste"
+        },
+        {
+          "content": "kim jestes?",
+          "user_id": "admin",
+          "timestamp": "2025-07-18T13:35:59.297986",
+          "complexity": "proste"
+        }
+      ],
+      "pilotaż": [
+        {
+          "content": "jak dojechac na warszawskie lotnisko",
+          "user_id": "admin",
+          "timestamp": "2025-07-18T11:58:45.862795",
+          "complexity": "proste"
+        },
+        {
+          "content": "ile jest lotnis w polsce",
+          "user_id": "admin",
+          "timestamp": "2025-07-18T12:00:19.566081",
+          "complexity": "proste"
+        }
+      ],
+      "przepisy": [
+        {
+          "content": "prawo lotnicze wprowadzenie podzielone na rozdzialy",
+          "user_id": "admin",
+          "timestamp": "2025-07-18T13:31:41.525356",
+          "complexity": "średnie"
+        },
+        {
+          "content": "prawo lotnicze wprowadzenie podzielone na rozdziały",
+          "user_id": "admin",
+          "timestamp": "2025-07-18T13:34:10.624643",
+          "complexity": "średnie"
+        }
+      ]
+    }
   },
   "feedback_analysis": {
     "total_feedback": 0,
@@ -182,7 +334,8 @@
   "topic_distribution": {
     "topic_distribution": {
       "pilotaż": 2,
-      "ogólne": 1
+      "przepisy": 2,
+      "ogólne": 2
     },
     "most_popular_topics": [
       [
@@ -190,19 +343,25 @@
         2
       ],
       [
+        "przepisy",
+        2
+      ],
+      [
         "ogólne",
-        1
+        2
       ]
     ],
     "topics_by_user": {
       "admin": [
+        "ogólne",
+        "przepisy",
         "pilotaż"
       ],
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
         "ogólne"
       ]
     },
-    "unique_topics": 2,
-    "avg_topics_per_user": 1.0
+    "unique_topics": 3,
+    "avg_topics_per_user": 2.0
   }
 }
