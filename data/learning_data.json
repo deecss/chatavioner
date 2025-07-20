@@ -1,78 +1,5 @@
 [
   {
-    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
-    "user_id": null,
-    "total_messages": 2,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czestotliwosci",
-          1
-        ],
-        [
-          "zakazane",
-          1
-        ],
-        [
-          "lotnictwie",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 4207.0,
-        "min_length": 4207,
-        "max_length": 4207,
-        "word_count_avg": 455.0
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 1.0,
-        "has_examples": 1.0,
-        "has_formulas": 0.0,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 0,
-        "examples": 1,
-        "procedures": 0,
-        "references": 1
-      },
-      "formatting_patterns": {
-        "html_tags": 79,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 12,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T13:17:13.136503"
-  },
-  {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
     "user_id": null,
     "total_messages": 10,
@@ -9127,5 +9054,134 @@
       "application": 0
     },
     "timestamp": "2025-07-20T21:53:37.640373"
+  },
+  {
+    "session_id": "a3e2e7a4-293e-4d4e-a630-ae8169a2f5f4",
+    "user_id": null,
+    "total_messages": 13,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "prawo",
+          3
+        ],
+        [
+          "lotnicze",
+          2
+        ],
+        [
+          "wprowadzenie",
+          2
+        ],
+        [
+          "podzielone",
+          2
+        ],
+        [
+          "python",
+          1
+        ],
+        [
+          "flask",
+          1
+        ],
+        [
+          "dojechac",
+          1
+        ],
+        [
+          "warszawskie",
+          1
+        ],
+        [
+          "lotnisko",
+          1
+        ],
+        [
+          "lotnis",
+          1
+        ],
+        [
+          "polsce",
+          1
+        ],
+        [
+          "rozdzialy",
+          1
+        ],
+        [
+          "rozdziały",
+          1
+        ],
+        [
+          "jestes",
+          1
+        ],
+        [
+          "coriolisa",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 4.428571428571429,
+        "min_length": 2,
+        "max_length": 6,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2034.1666666666667,
+        "min_length": 399,
+        "max_length": 5341,
+        "word_count_avg": 209.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 0.6666666666666666,
+        "has_examples": 0.5,
+        "has_formulas": 0.0,
+        "has_summaries": 0.5
+      },
+      "content_types": {
+        "theoretical": 3,
+        "practical": 0,
+        "examples": 3,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 320,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 31,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne",
+      "ogólne",
+      "regulacje",
+      "regulacje",
+      "ogólne",
+      "regulacje"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 1,
+      "application": 0
+    },
+    "timestamp": "2025-07-21T00:13:23.860298"
   }
 ]
