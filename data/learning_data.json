@@ -1,58 +1,5 @@
 [
   {
-    "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "wpływa",
-          1
-        ],
-        [
-          "oblodzenie",
-          1
-        ],
-        [
-          "samolotu",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 6.0,
-        "min_length": 6,
-        "max_length": 6,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-18T13:17:13.121593"
-  },
-  {
     "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
     "user_id": null,
     "total_messages": 2,
@@ -9084,5 +9031,101 @@
       "application": 0
     },
     "timestamp": "2025-07-18T13:36:01.379276"
+  },
+  {
+    "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2",
+    "user_id": null,
+    "total_messages": 11,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "prawo",
+          3
+        ],
+        [
+          "coriolisa",
+          3
+        ],
+        [
+          "sila",
+          1
+        ],
+        [
+          "nosna",
+          1
+        ],
+        [
+          "siła",
+          1
+        ],
+        [
+          "nośna",
+          1
+        ],
+        [
+          "lotnictwo",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 2.8333333333333335,
+        "min_length": 2,
+        "max_length": 5,
+        "preferred_range": "short"
+      },
+      "request_types": {
+        "explanations": 2
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 1355.0,
+        "min_length": 173,
+        "max_length": 2537,
+        "word_count_avg": 152.0
+      },
+      "structure_types": {
+        "has_headers": 0.5,
+        "has_lists": 0.5,
+        "has_examples": 0.5,
+        "has_formulas": 0.5,
+        "has_summaries": 0.5
+      },
+      "content_types": {
+        "theoretical": 0,
+        "practical": 1,
+        "examples": 1,
+        "procedures": 0,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 60,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 9,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "regulacje",
+      "regulacje",
+      "ogólne",
+      "aerodynamika",
+      "regulacje",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 2,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-20T21:53:37.640373"
   }
 ]
