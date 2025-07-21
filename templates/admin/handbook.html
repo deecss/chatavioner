@@ -845,43 +845,15 @@
     </div>
 </div>
 
-                                                <h5 class="font-medium text-orange-800">🎯 {{ topic.title }}</h5>
-                                                <p class="text-sm text-gray-600">{{ topic.description or 'Brak opisu' }}</p>
-                                                {% set topic_key = module.id + '_' + chapter.id + '_' + topic.id %}
-                                                {% if progress and progress.progress_details and topic_key in progress.progress_details %}
-                                                    <span class="status-badge status-{{ progress.progress_details[topic_key].status }}">
-                                                        {{ progress.progress_details[topic_key].status|title }}
-                                                    </span>
-                                                {% else %}
-                                                    <span class="status-badge status-not-generated">Nie wygenerowane</span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <button onclick="generateContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
-                                                        class="text-blue-600 hover:text-blue-800 text-sm">
-                                                    🔮 Generuj
-                                                </button>
-                                                <button onclick="viewContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
-                                                        class="text-green-600 hover:text-green-800 text-sm">
-                                                    👁️ Zobacz
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-gray-500 text-center py-8">Brak struktury podręcznika</p>
-                {% endif %}
-            </div>
+<!-- Panel AI Generation -->
+<div class="ai-panel" id="aiPanel">
+    <div class="ai-panel-content">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-900">🤖 Generowanie AI</h3>
+            <button onclick="hideAIPanel()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
         </div>
-
-        <!-- Panel treści -->
         <div class="bg-white rounded-lg shadow-sm">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-900">✏️ Edytor Treści</h2>
@@ -897,7 +869,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
 
 <!-- Modal dla edycji treści -->
@@ -1619,30 +1590,51 @@ function showMessage(message, type = 'info') {
             const contentArea = document.getElementById('contentArea');
             
             if (result.content) {
-                contentArea.innerHTML = `
-                    <div class="content-preview">${escapeHtml(result.content)}</div>
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button onclick="editContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
-                                class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
-                            ✏️ Edytuj
-                        </button>
-                        <button onclick="generateContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            🔄 Regeneruj
-                        </button>
-                    </div>
-                `;
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'content-preview';
+                contentDiv.innerHTML = escapeHtml(result.content);
+                
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'mt-4 flex justify-end space-x-3';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700';
+                editBtn.innerHTML = '✏️ Edytuj';
+                editBtn.onclick = function() { editContent(moduleId, chapterId, topicId || ''); };
+                
+                const regenBtn = document.createElement('button');
+                regenBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700';
+                regenBtn.innerHTML = '🔄 Regeneruj';
+                regenBtn.onclick = function() { generateContent(moduleId, chapterId, topicId || ''); };
+                
+                buttonsDiv.appendChild(editBtn);
+                buttonsDiv.appendChild(regenBtn);
+                
+                contentArea.innerHTML = '';
+                contentArea.appendChild(contentDiv);
+                contentArea.appendChild(buttonsDiv);
             } else {
-                contentArea.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-file-plus text-4xl mb-4"></i>
-                        <p class="mb-4">Treść jeszcze nie została wygenerowana</p>
-                        <button onclick="generateContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            🔮 Generuj Treść
-                        </button>
-                    </div>
-                `;
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'text-center py-8 text-gray-500';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-file-plus text-4xl mb-4';
+                
+                const message = document.createElement('p');
+                message.className = 'mb-4';
+                message.textContent = 'Treść jeszcze nie została wygenerowana';
+                
+                const genBtn = document.createElement('button');
+                genBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700';
+                genBtn.innerHTML = '🔮 Generuj Treść';
+                genBtn.onclick = function() { generateContent(moduleId, chapterId, topicId || ''); };
+                
+                emptyDiv.appendChild(icon);
+                emptyDiv.appendChild(message);
+                emptyDiv.appendChild(genBtn);
+                
+                contentArea.innerHTML = '';
+                contentArea.appendChild(emptyDiv);
             }
         } else {
             showMessage('Błąd: ' + result.message, 'error');
@@ -1808,26 +1800,6 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
-
-function showLoading(message) {
-    // Tu można dodać spinner lub modal z informacją o ładowaniu
-    console.log('Loading:', message);
-}
-
-function hideLoading() {
-    // Tu można ukryć spinner
-    console.log('Loading finished');
-}
-
-function showMessage(message, type) {
-    // Tu można dodać powiadomienia toast
-    if (type === 'success') {
-        console.log('✅', message);
-    } else {
-        console.error('❌', message);
-    }
-    alert(message); // Tymczasowo używamy alert
 }
 </script>
 {% endblock %}
