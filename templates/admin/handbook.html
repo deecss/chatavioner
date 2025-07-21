@@ -1,0 +1,653 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Generator Podręcznika ATPL - Panel Admin{% endblock %}
+
+{% block extra_head %}
+<style>
+    .tree-item {
+        margin-left: 20px;
+        padding: 8px;
+        border-left: 2px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+    
+    .tree-item.module {
+        margin-left: 0;
+        border-left: 4px solid #3b82f6;
+        background-color: #f0f9ff;
+    }
+    
+    .tree-item.chapter {
+        margin-left: 20px;
+        border-left: 3px solid #10b981;
+        background-color: #f0fdf4;
+    }
+    
+    .tree-item.topic {
+        margin-left: 40px;
+        border-left: 2px solid #f59e0b;
+        background-color: #fffbeb;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    
+    .status-not-generated {
+        background-color: #fef2f2;
+        color: #dc2626;
+    }
+    
+    .status-generated {
+        background-color: #f0fdf4;
+        color: #16a34a;
+    }
+    
+    .status-edited {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+    
+    .content-preview {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 16px;
+        background-color: #f9fafb;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        stroke-dasharray: 251.2;
+        stroke-dashoffset: 251.2;
+        transition: stroke-dashoffset 0.5s ease-in-out;
+    }
+    
+    .loading-spinner {
+        border: 3px solid #f3f4f6;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    📚 Generator Podręcznika ATPL
+                </h1>
+                <p class="text-gray-600">
+                    Automatyczne tworzenie podręcznika szkoleniowego na podstawie programu ATPL i dostępnych dokumentów
+                </p>
+            </div>
+            <div class="flex space-x-3">
+                {% if not structure %}
+                <button onclick="analyzeProgram()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    🔍 Analizuj Program
+                </button>
+                {% else %}
+                <button onclick="exportHandbook()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    📄 Eksportuj Podręcznik
+                </button>
+                <button onclick="resetHandbook()" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                        onclick="return confirm('Czy na pewno chcesz zresetować cały podręcznik?')">
+                    🔄 Resetuj
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if not structure %}
+    <!-- Instrukcje -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold text-blue-900 mb-3">🚀 Jak zacząć?</h2>
+        <div class="text-blue-800">
+            <p class="mb-3">System automatycznie znajdzie plik z programem szkolenia ATPL i przeanalizuje jego strukturę.</p>
+            <ol class="list-decimal list-inside space-y-2">
+                <li>Kliknij <strong>"Analizuj Program"</strong> aby przeprowadzić jednorazową analizę OCR</li>
+                <li>System wyciągnie listę modułów, rozdziałów i tematów</li>
+                <li>Będziesz mógł generować treść dla każdego elementu</li>
+                <li>Treść można edytować i rozwijać według potrzeb</li>
+                <li>Gotowy podręcznik można wyeksportować do pliku</li>
+            </ol>
+        </div>
+    </div>
+    {% else %}
+    
+    <!-- Progress Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Postęp ogólny</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ progress.completion_percentage if progress else 0 }}%</p>
+                </div>
+                <div class="relative w-16 h-16">
+                    <svg class="progress-ring w-16 h-16">
+                        <circle 
+                            class="progress-ring-circle stroke-blue-600"
+                            stroke-width="4"
+                            fill="transparent"
+                            r="40"
+                            cx="32"
+                            cy="32">
+                        </circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-xs font-bold text-blue-600">{{ progress.completion_percentage if progress else 0 }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-book text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Modułów</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ progress.modules_count if progress else 0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-green-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Ukończone</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ progress.completed_items if progress else 0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-list text-gray-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Łącznie</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ progress.total_items if progress else 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Struktura podręcznika -->
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">📖 Struktura Podręcznika</h2>
+                <p class="text-gray-600 text-sm mt-1">{{ structure.title if structure else '' }}</p>
+            </div>
+            <div class="p-6 max-h-96 overflow-y-auto" id="handbookStructure">
+                {% if structure and structure.modules %}
+                    {% for module in structure.modules %}
+                    <div class="tree-item module">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-blue-900">📚 {{ module.title }}</h3>
+                                <p class="text-sm text-gray-600">{{ module.description or 'Brak opisu' }}</p>
+                                {% if module.hours %}
+                                <p class="text-xs text-gray-500">Godziny: {{ module.hours }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if module.chapters %}
+                            {% for chapter in module.chapters %}
+                            <div class="tree-item chapter mt-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-green-800">📄 {{ chapter.title }}</h4>
+                                        <p class="text-sm text-gray-600">{{ chapter.description or 'Brak opisu' }}</p>
+                                        {% set chapter_key = module.id + '_' + chapter.id %}
+                                        {% if progress and progress.progress_details and chapter_key in progress.progress_details %}
+                                            <span class="status-badge status-{{ progress.progress_details[chapter_key].status }}">
+                                                {{ progress.progress_details[chapter_key].status|title }}
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge status-not-generated">Nie wygenerowane</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="generateContent('{{ module.id }}', '{{ chapter.id }}')" 
+                                                class="text-blue-600 hover:text-blue-800 text-sm">
+                                            🔮 Generuj
+                                        </button>
+                                        <button onclick="viewContent('{{ module.id }}', '{{ chapter.id }}')" 
+                                                class="text-green-600 hover:text-green-800 text-sm">
+                                            👁️ Zobacz
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {% if chapter.topics %}
+                                    {% for topic in chapter.topics %}
+                                    <div class="tree-item topic mt-1">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <h5 class="font-medium text-orange-800">🎯 {{ topic.title }}</h5>
+                                                <p class="text-sm text-gray-600">{{ topic.description or 'Brak opisu' }}</p>
+                                                {% set topic_key = module.id + '_' + chapter.id + '_' + topic.id %}
+                                                {% if progress and progress.progress_details and topic_key in progress.progress_details %}
+                                                    <span class="status-badge status-{{ progress.progress_details[topic_key].status }}">
+                                                        {{ progress.progress_details[topic_key].status|title }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="status-badge status-not-generated">Nie wygenerowane</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <button onclick="generateContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
+                                                        class="text-blue-600 hover:text-blue-800 text-sm">
+                                                    🔮 Generuj
+                                                </button>
+                                                <button onclick="viewContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
+                                                        class="text-green-600 hover:text-green-800 text-sm">
+                                                    👁️ Zobacz
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500 text-center py-8">Brak struktury podręcznika</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Panel treści -->
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">✏️ Edytor Treści</h2>
+                <p class="text-gray-600 text-sm mt-1" id="contentTitle">Wybierz element do edycji</p>
+            </div>
+            <div class="p-6">
+                <div id="contentArea" class="space-y-4">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-file-alt text-4xl mb-4"></i>
+                        <p>Wybierz rozdział lub temat z lewej strony aby zobaczyć lub edytować treść</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal dla edycji treści -->
+<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Edytuj Treść</h3>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 max-h-96 overflow-y-auto">
+                <textarea id="contentEditor" 
+                          class="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm"
+                          placeholder="Treść zostanie załadowana..."></textarea>
+                <div class="mt-4 flex justify-end space-x-3">
+                    <button onclick="closeEditModal()" 
+                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Anuluj
+                    </button>
+                    <button onclick="saveContent()" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Zapisz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentEditItem = null;
+
+async function analyzeProgram() {
+    try {
+        showLoading('Analizuję program ATPL...');
+        
+        const response = await fetch('/admin/api/handbook/analyze-program', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage(result.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd analizy programu:', error);
+        showMessage('Błąd analizy programu: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function generateContent(moduleId, chapterId, topicId = null) {
+    try {
+        const item = topicId ? `${moduleId}/${chapterId}/${topicId}` : `${moduleId}/${chapterId}`;
+        showLoading(`Generuję treść dla: ${item}`);
+        
+        const response = await fetch('/admin/api/handbook/generate-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                module_id: moduleId,
+                chapter_id: chapterId,
+                topic_id: topicId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage(result.message, 'success');
+            // Odśwież strukturę
+            await refreshStructure();
+            // Pokaż wygenerowaną treść
+            viewContent(moduleId, chapterId, topicId);
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd generowania treści:', error);
+        showMessage('Błąd generowania treści: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function viewContent(moduleId, chapterId, topicId = null) {
+    try {
+        const params = new URLSearchParams({
+            module_id: moduleId,
+            chapter_id: chapterId
+        });
+        
+        if (topicId) {
+            params.append('topic_id', topicId);
+        }
+        
+        const response = await fetch(`/admin/api/handbook/content?${params}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const title = topicId ? `${moduleId}/${chapterId}/${topicId}` : `${moduleId}/${chapterId}`;
+            document.getElementById('contentTitle').textContent = title;
+            
+            const contentArea = document.getElementById('contentArea');
+            
+            if (result.content) {
+                contentArea.innerHTML = `
+                    <div class="content-preview">${escapeHtml(result.content)}</div>
+                    <div class="mt-4 flex justify-end space-x-3">
+                        <button onclick="editContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
+                                class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                            ✏️ Edytuj
+                        </button>
+                        <button onclick="generateContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            🔄 Regeneruj
+                        </button>
+                    </div>
+                `;
+            } else {
+                contentArea.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-file-plus text-4xl mb-4"></i>
+                        <p class="mb-4">Treść jeszcze nie została wygenerowana</p>
+                        <button onclick="generateContent('${moduleId}', '${chapterId}', '${topicId || ''}')" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            🔮 Generuj Treść
+                        </button>
+                    </div>
+                `;
+            }
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd pobierania treści:', error);
+        showMessage('Błąd pobierania treści: ' + error.message, 'error');
+    }
+}
+
+async function editContent(moduleId, chapterId, topicId) {
+    try {
+        currentEditItem = { moduleId, chapterId, topicId: topicId || null };
+        
+        const params = new URLSearchParams({
+            module_id: moduleId,
+            chapter_id: chapterId
+        });
+        
+        if (topicId) {
+            params.append('topic_id', topicId);
+        }
+        
+        const response = await fetch(`/admin/api/handbook/content?${params}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const title = topicId ? `${moduleId}/${chapterId}/${topicId}` : `${moduleId}/${chapterId}`;
+            document.getElementById('modalTitle').textContent = `Edytuj: ${title}`;
+            document.getElementById('contentEditor').value = result.content || '';
+            document.getElementById('editModal').classList.remove('hidden');
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd ładowania treści do edycji:', error);
+        showMessage('Błąd ładowania treści: ' + error.message, 'error');
+    }
+}
+
+async function saveContent() {
+    if (!currentEditItem) return;
+    
+    try {
+        const content = document.getElementById('contentEditor').value;
+        
+        const response = await fetch('/admin/api/handbook/edit-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                module_id: currentEditItem.moduleId,
+                chapter_id: currentEditItem.chapterId,
+                topic_id: currentEditItem.topicId,
+                content: content
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage(result.message, 'success');
+            closeEditModal();
+            // Odśwież wyświetlaną treść
+            viewContent(currentEditItem.moduleId, currentEditItem.chapterId, currentEditItem.topicId);
+            await refreshStructure();
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd zapisywania treści:', error);
+        showMessage('Błąd zapisywania treści: ' + error.message, 'error');
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+    currentEditItem = null;
+}
+
+async function exportHandbook() {
+    try {
+        showLoading('Eksportuję podręcznik...');
+        
+        const response = await fetch('/admin/api/handbook/export?format=markdown');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `atpl_handbook_${new Date().toISOString().slice(0,10)}.md`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showMessage('Podręcznik wyeksportowany', 'success');
+        } else {
+            const result = await response.json();
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd eksportu:', error);
+        showMessage('Błąd eksportu: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function resetHandbook() {
+    if (!confirm('Czy na pewno chcesz zresetować cały podręcznik? Ta operacja jest nieodwracalna!')) {
+        return;
+    }
+    
+    try {
+        showLoading('Resetuję podręcznik...');
+        
+        const response = await fetch('/admin/api/handbook/reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage(result.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showMessage('Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd resetowania:', error);
+        showMessage('Błąd resetowania: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function refreshStructure() {
+    try {
+        const response = await fetch('/admin/api/handbook/structure');
+        const result = await response.json();
+        
+        if (result.success) {
+            // Tu można by odświeżyć strukturę bez pełnego przeładowania strony
+            // Dla prostoty używamy reload
+            setTimeout(() => location.reload(), 1000);
+        }
+    } catch (error) {
+        console.error('Błąd odświeżania struktury:', error);
+    }
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function showLoading(message) {
+    // Tu można dodać spinner lub modal z informacją o ładowaniu
+    console.log('Loading:', message);
+}
+
+function hideLoading() {
+    // Tu można ukryć spinner
+    console.log('Loading finished');
+}
+
+function showMessage(message, type) {
+    // Tu można dodać powiadomienia toast
+    if (type === 'success') {
+        console.log('✅', message);
+    } else {
+        console.error('❌', message);
+    }
+    alert(message); // Tymczasowo używamy alert
+}
+</script>
+{% endblock %}

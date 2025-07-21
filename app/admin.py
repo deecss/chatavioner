@@ -1197,3 +1197,209 @@ def api_update_email_config():
     except Exception as e:
         logger.error(f"Błąd aktualizowania konfiguracji email: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# === NOWA FUNKCJONALNOŚĆ: PODRĘCZNIK ATPL ===
+
+@admin_bp.route('/handbook')
+@login_required
+def handbook():
+    """Panel podręcznika ATPL"""
+    if not current_user.is_admin():
+        flash('Brak uprawnień do panelu administratora', 'error')
+        return redirect(url_for('main.index'))
+    
+    try:
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        
+        # Sprawdź czy struktura istnieje
+        try:
+            structure = generator.get_handbook_structure()
+            progress = generator.get_progress_overview()
+        except Exception:
+            structure = None
+            progress = None
+        
+        return render_template('admin/handbook.html', 
+                             structure=structure,
+                             progress=progress)
+    except Exception as e:
+        logger.error(f"Błąd ładowania podręcznika: {e}")
+        flash(f'Błąd ładowania podręcznika: {e}', 'error')
+        return redirect(url_for('admin.dashboard'))
+
+@admin_bp.route('/api/handbook/analyze-program', methods=['POST'])
+@login_required
+def api_analyze_program():
+    """API endpoint do analizy programu ATPL"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        structure = generator.analyze_program_structure()
+        
+        return jsonify({
+            'success': True,
+            'structure': structure,
+            'message': f'Program przeanalizowany: {len(structure.get("modules", []))} modułów'
+        })
+    except Exception as e:
+        logger.error(f"Błąd analizy programu: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/structure')
+@login_required
+def api_handbook_structure():
+    """API endpoint do pobierania struktury podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        structure = generator.get_handbook_structure()
+        progress = generator.get_progress_overview()
+        
+        return jsonify({
+            'success': True,
+            'structure': structure,
+            'progress': progress
+        })
+    except Exception as e:
+        logger.error(f"Błąd pobierania struktury: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/generate-content', methods=['POST'])
+@login_required
+def api_generate_content():
+    """API endpoint do generowania treści rozdziału/tematu"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        data = request.get_json()
+        module_id = data.get('module_id')
+        chapter_id = data.get('chapter_id')
+        topic_id = data.get('topic_id')
+        
+        if not module_id or not chapter_id:
+            return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
+        
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        content = generator.generate_chapter_content(module_id, chapter_id, topic_id)
+        
+        return jsonify({
+            'success': True,
+            'content': content,
+            'message': 'Treść wygenerowana pomyślnie'
+        })
+    except Exception as e:
+        logger.error(f"Błąd generowania treści: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/content')
+@login_required
+def api_get_content():
+    """API endpoint do pobierania treści"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        module_id = request.args.get('module_id')
+        chapter_id = request.args.get('chapter_id')
+        topic_id = request.args.get('topic_id')
+        
+        if not module_id or not chapter_id:
+            return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
+        
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        content = generator.get_content(module_id, chapter_id, topic_id)
+        
+        return jsonify({
+            'success': True,
+            'content': content
+        })
+    except Exception as e:
+        logger.error(f"Błąd pobierania treści: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/edit-content', methods=['POST'])
+@login_required
+def api_edit_content():
+    """API endpoint do edycji treści"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        data = request.get_json()
+        module_id = data.get('module_id')
+        chapter_id = data.get('chapter_id')
+        topic_id = data.get('topic_id')
+        content = data.get('content')
+        
+        if not module_id or not chapter_id or not content:
+            return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
+        
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        generator.edit_content(module_id, chapter_id, topic_id, content)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Treść zaktualizowana pomyślnie'
+        })
+    except Exception as e:
+        logger.error(f"Błąd edycji treści: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/export')
+@login_required
+def api_export_handbook():
+    """API endpoint do eksportu podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        format_type = request.args.get('format', 'markdown')
+        
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        export_path = generator.export_handbook(format_type)
+        
+        return send_file(export_path, as_attachment=True)
+    except Exception as e:
+        logger.error(f"Błąd eksportu podręcznika: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/reset', methods=['POST'])
+@login_required
+def api_reset_handbook():
+    """API endpoint do resetowania podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        generator.reset_handbook()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Podręcznik został zresetowany'
+        })
+    except Exception as e:
+        logger.error(f"Błąd resetowania podręcznika: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500

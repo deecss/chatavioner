@@ -72,6 +72,12 @@
                         <span>🧠</span>
                         <span>Raporty Uczenia</span>
                     </a>
+                    <a href="{{ url_for('admin.handbook') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
+                              {% if request.endpoint == 'admin.handbook' %}bg-blue-100 text-blue-700{% endif %}">
+                        <span>📚</span>
+                        <span>Podręcznik ATPL</span>
+                    </a>
                     {# Settings link temporarily disabled
                     <a href="{{ url_for('admin.settings') }}" 
                        class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100
