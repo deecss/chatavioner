@@ -1203,28 +1203,46 @@ function selectItem(type, moduleId, chapterId, topicId) {
 }
 
 async function generateContent(moduleId, chapterId, topicId) {
+    console.log('=== generateContent wywołane ===');
+    console.log('Parametry:', { moduleId, chapterId, topicId });
+    
     // Określ typ na podstawie dostępnych parametrów
     let type = 'module';
     if (topicId) type = 'topic';
     else if (chapterId) type = 'chapter';
     
+    console.log('Typ elementu:', type);
+    
     currentEditItem = { type, moduleId, chapterId, topicId };
+    console.log('currentEditItem ustawiony:', currentEditItem);
     
     showAIPanel();
+    console.log('Panel AI powinien być widoczny');
     
     const title = buildItemTitle(type, moduleId, chapterId, topicId);
+    console.log('Tytuł elementu:', title);
     document.getElementById('editorTitle').textContent = `🤖 Generowanie: ${title}`;
     
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('editorPanel').style.display = 'flex';
+    
+    console.log('=== generateContent zakończone ===');
 }
 
 async function generateWithAI() {
-    if (!currentEditItem) return;
+    console.log('=== generateWithAI wywołane ===');
+    console.log('currentEditItem:', currentEditItem);
+    
+    if (!currentEditItem) {
+        console.error('Brak currentEditItem!');
+        showMessage('❌ Błąd: Nie wybrano elementu do generowania', 'error');
+        return;
+    }
     
     try {
         const { type, moduleId, chapterId, topicId } = currentEditItem;
         console.log('Generowanie AI dla:', { type, moduleId, chapterId, topicId });
+        console.log('Wybrany typ AI:', selectedAIType);
         
         const item = buildItemTitle(type, moduleId, chapterId, topicId);
         
@@ -1239,12 +1257,16 @@ async function generateWithAI() {
         };
         
         console.log('Dane żądania API:', requestData);
+        console.log('Wysyłam żądanie POST do /admin/api/handbook/generate-content');
         
         const response = await fetch('/admin/api/handbook/generate-content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestData)
         });
+        
+        console.log('Odpowiedź HTTP status:', response.status);
+        console.log('Odpowiedź HTTP headers:', response.headers);
         
         const result = await response.json();
         console.log('Odpowiedź generowania:', result);
@@ -1343,10 +1365,21 @@ function showEditor(hasContent) {
 }
 
 function showAIPanel() {
-    document.getElementById('aiPanel').style.display = 'block';
+    console.log('=== showAIPanel wywołane ===');
+    const aiPanel = document.getElementById('aiPanel');
+    console.log('Element aiPanel:', aiPanel);
+    
+    if (aiPanel) {
+        aiPanel.style.display = 'block';
+        console.log('aiPanel.style.display ustawione na block');
+    } else {
+        console.error('Nie znaleziono elementu aiPanel!');
+    }
+    
     document.getElementById('editorToolbar').style.display = 'none';
     document.getElementById('contentEditor').style.display = 'none';
     document.getElementById('saveActions').style.display = 'none';
+    console.log('Ukryto inne elementy interfejsu');
 }
 
 function hideAIPanel() {
