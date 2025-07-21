@@ -478,8 +478,8 @@
         background: rgba(255, 255, 255, 0.3);
         border-color: rgba(255, 255, 255, 0.5);
     }
-</style>
-{% endblock %}
+    
+    .warning {
         background-color: #fef3c7;
         color: #d97706;
     }
@@ -844,7 +844,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
                                                 <h5 class="font-medium text-orange-800">🎯 {{ topic.title }}</h5>
                                                 <p class="text-sm text-gray-600">{{ topic.description or 'Brak opisu' }}</p>
                                                 {% set topic_key = module.id + '_' + chapter.id + '_' + topic.id %}

@@ -306,7 +306,7 @@ class ATPLHandbookGenerator:
             return self.analyze_program_structure()
         return self.handbook_structure
     
-    def generate_chapter_content(self, module_id: str, chapter_id: str, topic_id: str = None) -> str:
+    def generate_chapter_content(self, module_id: str, chapter_id: str, topic_id: str = None, ai_type: str = 'comprehensive') -> str:
         """Generuj treść rozdziału/tematu używając AI i dostępnych dokumentów"""
         structure = self.get_handbook_structure()
         
@@ -335,41 +335,9 @@ class ATPLHandbookGenerator:
         # Znajdź powiązane dokumenty
         related_docs = self._find_related_documents(target_item['title'], target_item.get('description', ''))
         
-        # Generuj treść używając AI
+        # Generuj treść używając AI z odpowiednim promptem
         try:
-            system_prompt = """Jesteś ekspertem lotniczym i instruktorem ATPL. Tworzysz profesjonalny podręcznik szkoleniowy.
-            
-            Wygeneruj kompletną treść dla podanego tematu w formacie markdown z następującymi sekcjami:
-            
-            # Tytuł tematu
-            
-            ## Wprowadzenie
-            Krótkie wprowadzenie do tematu
-            
-            ## Cele szkoleniowe
-            - Cel 1
-            - Cel 2
-            
-            ## Teoria
-            Szczegółowe wyjaśnienie teorii z przykładami
-            
-            ## Procedury (jeśli dotyczy)
-            Krok po kroku procedury
-            
-            ## Przykłady praktyczne
-            Rzeczywiste przykłady z lotnictwa
-            
-            ## Regulacje i przepisy
-            Odnośne przepisy ICAO, EASA itp.
-            
-            ## Pytania kontrolne
-            5-10 pytań sprawdzających zrozumienie
-            
-            ## Dodatkowe źródła
-            Bibliografia i dodatkowe materiały
-            
-            Użyj profesjonalnego języka, dodaj diagramy w formie tekstu ASCII gdzie to możliwe.
-            Opieraj się na faktach i aktualnych przepisach lotniczych."""
+            system_prompt = self._get_ai_system_prompt(ai_type)
             
             user_prompt = f"""Kontekst: {context}
             
@@ -379,10 +347,10 @@ class ATPLHandbookGenerator:
             Powiązane dokumenty dostępne w systemie:
             {chr(10).join(related_docs[:5])}  # Maksymalnie 5 dokumentów
             
-            Wygeneruj kompletną treść szkoleniową dla tego tematu."""
+            Wygeneruj treść szkoleniową zgodnie z wybranym typem."""
             
             response = self.client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4o",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -403,6 +371,169 @@ class ATPLHandbookGenerator:
         except Exception as e:
             print(f"❌ Błąd generowania treści: {e}")
             raise e
+    
+    def _get_ai_system_prompt(self, ai_type: str) -> str:
+        """Pobierz odpowiedni system prompt dla typu AI"""
+        prompts = {
+            'comprehensive': """Jesteś ekspertem lotniczym i instruktorem ATPL. Tworzysz kompletny, profesjonalny podręcznik szkoleniowy.
+            
+            Wygeneruj bardzo szczegółową treść w formacie markdown z następującymi sekcjami:
+            
+            # Tytuł tematu
+            
+            ## 📖 Wprowadzenie
+            Szczegółowe wprowadzenie do tematu z kontekstem historycznym i znaczeniem w lotnictwie
+            
+            ## 🎯 Cele szkoleniowe
+            - Konkretne cele uczenia się
+            - Kompetencje do osiągnięcia
+            - Standardy oceny
+            
+            ## 📚 Teoria i podstawy
+            Szczegółowe wyjaśnienie teorii z:
+            - Definicjami i pojęciami
+            - Wzorami matematycznymi (jeśli dotyczy)
+            - Diagramami ASCII
+            - Przykładami praktycznymi
+            
+            ## ⚙️ Procedury
+            Dokładne procedury krok po kroku z:
+            - Listami kontrolnymi
+            - Punktami decyzyjnymi
+            - Akcjami awaryjnymi
+            
+            ## 🛩️ Zastosowanie w praktyce
+            Rzeczywiste scenariusze lotnicze z:
+            - Studiami przypadków
+            - Analizą błędów
+            - Najlepszymi praktykami
+            
+            ## ⚖️ Regulacje i przepisy
+            Szczegółowe przepisy z:
+            - Przepisami ICAO
+            - Regulacjami EASA
+            - Przepisami krajowymi
+            - Interpretacjami prawymi
+            
+            ## 🔧 Aspekty techniczne
+            Techniczne szczegóły systemów i urządzeń
+            
+            ## ❓ Pytania kontrolne
+            10-15 pytań różnego typu:
+            - Pytania jednokrotnego wyboru
+            - Pytania wielokrotnego wyboru
+            - Pytania otwarte
+            - Zadania praktyczne
+            
+            ## 📋 Listy kontrolne
+            Praktyczne listy kontrolne do użycia
+            
+            ## 📚 Bibliografia i źródła
+            Kompletna lista źródeł i dodatkowej literatury
+            
+            ## 💡 Wskazówki dla instruktorów
+            Porady metodyczne i dydaktyczne
+            
+            Używaj profesjonalnego języka lotniczego, dodawaj tabele, diagramy ASCII, przykłady obliczeń.""",
+            
+            'summary': """Jesteś ekspertem lotniczym tworzącym zwięzłe streszczenia. 
+            
+            Wygeneruj kondensowaną treść w formacie markdown:
+            
+            # Tytuł tematu
+            
+            ## 🔍 Kluczowe pojęcia
+            Najważniejsze definicje i pojęcia (3-5 punktów)
+            
+            ## ⚡ Główne zasady
+            Fundamentalne zasady i reguły (3-5 punktów)
+            
+            ## 📊 Fakty i liczby
+            Ważne parametry, limity, wartości
+            
+            ## ⚠️ Kluczowe zagrożenia
+            Główne ryzyka i sposoby ich unikania
+            
+            ## 📝 Pamiętaj
+            Lista najważniejszych rzeczy do zapamiętania
+            
+            ## 🎯 Szybki test
+            3-5 krótkich pytań sprawdzających
+            
+            Maksymalnie 2 strony tekstu, konkretnie i na temat.""",
+            
+            'practical': """Jesteś instruktorem praktycznego szkolenia lotniczego.
+            
+            Wygeneruj treść skupioną na praktycznych aspektach:
+            
+            # Tytuł tematu
+            
+            ## 🛠️ Praktyczne zastosowanie
+            Jak to wygląda w rzeczywistości
+            
+            ## 📋 Procedury krok po kroku
+            Szczegółowe instrukcje wykonania
+            
+            ## 🎯 Typowe scenariusze
+            Prawdziwe sytuacje z kabiny pilota
+            
+            ## ⚠️ Częste błędy
+            Co może pójść nie tak i jak tego unikać
+            
+            ## 💡 Wskazówki praktyczne
+            Triki i rady od doświadczonych pilotów
+            
+            ## 🎮 Ćwiczenia symulatorowe
+            Scenariusze do treningu na symulatorze
+            
+            ## ✅ Lista kontrolna
+            Punkt po punkcie co sprawdzać
+            
+            ## 🚨 Procedury awaryjne
+            Co robić w sytuacjach nietypowych
+            
+            Fokus na praktykę, mniej teorii, więcej działania.""",
+            
+            'regulatory': """Jesteś specjalistą od przepisów lotniczych.
+            
+            Wygeneruj treść skupioną na aspektach prawnych:
+            
+            # Tytuł tematu
+            
+            ## ⚖️ Podstawa prawna
+            Główne akty prawne i przepisy
+            
+            ## 🌍 Przepisy ICAO
+            Międzynarodowe standardy i zalecane praktyki
+            
+            ## 🇪🇺 Regulacje EASA
+            Europejskie przepisy wykonawcze
+            
+            ## 🇵🇱 Przepisy krajowe
+            Polskie regulacje i interpretacje
+            
+            ## 📋 Wymagania szczegółowe
+            Konkretne wymagania i standardy
+            
+            ## 📊 Limity i ograniczenia
+            Wszystkie parametry i ograniczenia prawne
+            
+            ## 📝 Obowiązki i odpowiedzialność
+            Kto za co odpowiada zgodnie z prawem
+            
+            ## ⚠️ Konsekwencje naruszenia
+            Kary i sankcje za nieprzestrzeganie
+            
+            ## 📚 Źródła prawne
+            Dokładne odniesienia do przepisów
+            
+            ## 🔄 Aktualizacje przepisów
+            Najnowsze zmiany i nowelizacje
+            
+            Precyzyjnie, z numerami paragrafów i odniesień prawnych."""
+        }
+        
+        return prompts.get(ai_type, prompts['comprehensive'])
     
     def _find_related_documents(self, title: str, description: str) -> List[str]:
         """Znajdź dokumenty powiązane z tematem"""

@@ -1287,6 +1287,7 @@ def api_generate_content():
         module_id = data.get('module_id')
         chapter_id = data.get('chapter_id')
         topic_id = data.get('topic_id')
+        ai_type = data.get('ai_type', 'comprehensive')  # Domyślnie kompletny
         
         if not module_id or not chapter_id:
             return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
@@ -1294,7 +1295,7 @@ def api_generate_content():
         from utils.atpl_handbook_generator import get_handbook_generator
         
         generator = get_handbook_generator()
-        content = generator.generate_chapter_content(module_id, chapter_id, topic_id)
+        content = generator.generate_chapter_content(module_id, chapter_id, topic_id, ai_type)
         
         return jsonify({
             'success': True,
