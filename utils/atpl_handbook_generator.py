@@ -11,7 +11,6 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import PyPDF2
-import fitz  # PyMuPDF dla lepszego OCR
 from openai import OpenAI
 import re
 
@@ -46,24 +45,7 @@ class ATPLHandbookGenerator:
         return None
     
     def extract_text_from_pdf(self, pdf_path: str) -> str:
-        """Wyciągnij tekst z PDF używając PyMuPDF (lepsze OCR)"""
-        try:
-            doc = fitz.open(pdf_path)
-            text = ""
-            
-            for page_num in range(len(doc)):
-                page = doc.load_page(page_num)
-                text += page.get_text()
-            
-            doc.close()
-            return text
-        except Exception as e:
-            print(f"❌ Błąd wyciągania tekstu z PDF: {e}")
-            # Fallback do PyPDF2
-            return self._extract_text_pypdf2(pdf_path)
-    
-    def _extract_text_pypdf2(self, pdf_path: str) -> str:
-        """Fallback - wyciągnij tekst używając PyPDF2"""
+        """Wyciągnij tekst z PDF używając PyPDF2"""
         try:
             with open(pdf_path, 'rb') as file:
                 pdf_reader = PyPDF2.PdfReader(file)
@@ -74,7 +56,7 @@ class ATPLHandbookGenerator:
                 
                 return text
         except Exception as e:
-            print(f"❌ Błąd PyPDF2: {e}")
+            print(f"❌ Błąd wyciągania tekstu z PDF: {e}")
             return ""
     
     def analyze_program_structure(self) -> Dict[str, Any]:
