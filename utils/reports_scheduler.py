@@ -691,30 +691,6 @@ class ReportScheduler:
             print(f"❌ Błąd usuwania raportu: {e}")
             return False
     
-    def send_specific_report_email(self, report_id: str):
-        """Wysyła konkretny raport emailem"""
-        try:
-            report = self.get_report_details(report_id)
-            if not report:
-                return {
-                    'success': False,
-                    'message': 'Raport nie znaleziony'
-                }
-            
-            # Wyślij email
-            self._send_email_report(report)
-            
-            return {
-                'success': True,
-                'message': f'Raport {report_id} wysłany emailem'
-            }
-        except Exception as e:
-            print(f"❌ Błąd wysyłania raportu emailem: {e}")
-            return {
-                'success': False,
-                'message': str(e)
-            }
-    
     def generate_report_on_demand(self, date_str: str = None, report_type: str = 'daily'):
         """Generuje raport na żądanie"""
         try:

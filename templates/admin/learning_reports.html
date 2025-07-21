@@ -980,10 +980,10 @@
         fetch(`/admin/api/users/${userId}/activity`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    displayUserActivity(data.activity);
+                if (data.username) {
+                    displayUserActivity(data);
                 } else {
-                    showAlert('Błąd ładowania aktywności użytkownika: ' + data.message, 'danger');
+                    showAlert('Błąd ładowania aktywności użytkownika: ' + (data.error || 'Nieznany błąd'), 'danger');
                 }
             })
             .catch(error => {
@@ -992,8 +992,7 @@
     }
     
     function displayUserActivity(activity) {
-        const sessions = activity.sessions || [];
-        const questions = activity.questions || [];
+        const recent_questions = activity.recent_questions || [];
         
         let html = `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1006,11 +1005,11 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Łącznie sesji:</span>
-                            <span class="font-semibold">${sessions.length}</span>
+                            <span class="font-semibold">${activity.total_sessions || 0}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Łącznie pytań:</span>
-                            <span class="font-semibold">${questions.length}</span>
+                            <span class="font-semibold">${activity.total_questions || 0}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ostatnia aktywność:</span>
@@ -1023,17 +1022,27 @@
                     <div class="space-y-2 max-h-48 overflow-y-auto">
         `;
         
-        questions.slice(0, 5).forEach(question => {
-            html += `
-                <div class="bg-gray-50 p-3 rounded-lg">
-                    <div class="flex justify-between items-start mb-1">
-                        <h5 class="font-medium text-sm">${question.question.substring(0, 50)}...</h5>
-                        <span class="text-xs text-gray-500">${new Date(question.timestamp).toLocaleString('pl-PL')}</span>
+        if (recent_questions && recent_questions.length > 0) {
+            recent_questions.slice(0, 5).forEach(question => {
+                html += `
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-start mb-1">
+                            <h5 class="font-medium text-sm">${question.content ? question.content.substring(0, 50) + '...' : 'Brak treści'}</h5>
+                            <span class="text-xs text-gray-500">${question.timestamp ? new Date(question.timestamp).toLocaleString('pl-PL') : 'N/A'}</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Temat: ${question.topic || 'nieznany'}</p>
+                        <p class="text-xs text-gray-500">Sesja: ${question.session_id || 'N/A'}</p>
                     </div>
-                    <p class="text-xs text-gray-600">${question.response ? question.response.substring(0, 100) + '...' : 'Brak odpowiedzi'}</p>
+                `;
+            });
+        } else {
+            html += `
+                <div class="text-gray-500 text-sm">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Brak pytań w ostatnim czasie
                 </div>
             `;
-        });
+        }
         
         html += `
                     </div>
@@ -1207,22 +1216,16 @@
                 showAlert('Błąd ładowania listy użytkowników: ' + error.message, 'danger');
             });
     }
-    
-    function loadUserActivity() {
-        const userId = document.getElementById('userSelect').value;
-        if (!userId) {
-            document.getElementById('userActivityDetails').innerHTML = '';
-            return;
-        }
-        
-        fetch(`/admin/api/users/${userId}/activity`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    displayUserActivity(data.activity);
-                } else {
-                    showAlert('Błąd ładowania aktywności użytkownika: ' + data.message, 'danger');
-                }
+
+    // Inicjalizacja
+    document.addEventListener('DOMContentLoaded', function() {
+        loadReports();
+        loadUsersList();
+        loadSchedulerStatus();
+    });
+</script>
+</body>
+</html>
             })
             .catch(error => {
                 showAlert('Błąd ładowania aktywności użytkownika: ' + error.message, 'danger');
