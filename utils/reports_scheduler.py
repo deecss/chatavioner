@@ -164,17 +164,31 @@ class ReportScheduler:
             return None
     
     def send_daily_email_report(self):
-        """Wysyła dzienny raport emailem"""
+        """Wysyła dzienny raport emailem tylko jeśli była aktywność"""
         try:
             if not self.email_config['email_enabled']:
                 print("📧 Wysyłanie emaili wyłączone")
                 return
             
-            print("📧 Wysyłanie dziennego raportu emailem...")
+            print("📧 Sprawdzanie aktywności dla dziennego raportu emailem...")
             
             # Wygeneruj raport za wczorajszy dzień
             yesterday = datetime.now() - timedelta(days=1)
             report = self.reports_system.generate_daily_report(yesterday)
+            
+            # Sprawdź czy była jakakolwiek aktywność
+            total_questions = report.get('summary', {}).get('total_questions', 0)
+            total_users = report.get('summary', {}).get('total_users', 0)
+            
+            if total_questions == 0 and total_users == 0:
+                print(f"📧 Brak aktywności za {yesterday.strftime('%Y-%m-%d')} - nie wysyłam raportu emailem")
+                return
+            
+            if total_questions == 0:
+                print(f"📧 Brak pytań za {yesterday.strftime('%Y-%m-%d')} - nie wysyłam raportu emailem")
+                return
+            
+            print(f"📧 Wykryto aktywność: {total_questions} pytań od {total_users} użytkowników - wysyłam raport emailem...")
             
             # Wyślij email z raportem
             self._send_email_report(report)
@@ -185,7 +199,7 @@ class ReportScheduler:
             print(f"❌ Błąd wysyłania emaila: {e}")
     
     def send_email_on_demand(self, report_date=None):
-        """Wysyła raport emailem na żądanie"""
+        """Wysyła raport emailem na żądanie tylko jeśli była aktywność"""
         try:
             if not self.email_config['email_enabled']:
                 return {'success': False, 'error': 'Wysyłanie emaili wyłączone'}
@@ -195,10 +209,26 @@ class ReportScheduler:
             else:
                 date = datetime.now() - timedelta(days=1)
             
-            print(f"📧 Wysyłanie raportu emailem na żądanie za {date.strftime('%Y-%m-%d')}...")
+            print(f"📧 Sprawdzanie aktywności dla raportu emailem za {date.strftime('%Y-%m-%d')}...")
             
             # Wygeneruj raport
             report = self.reports_system.generate_daily_report(date)
+            
+            # Sprawdź czy była jakakolwiek aktywność
+            total_questions = report.get('summary', {}).get('total_questions', 0)
+            total_users = report.get('summary', {}).get('total_users', 0)
+            
+            if total_questions == 0 and total_users == 0:
+                message = f"Brak aktywności za {date.strftime('%Y-%m-%d')} - nie ma co wysyłać"
+                print(f"📧 {message}")
+                return {'success': False, 'error': message}
+            
+            if total_questions == 0:
+                message = f"Brak pytań za {date.strftime('%Y-%m-%d')} - nie ma co wysyłać"
+                print(f"📧 {message}")
+                return {'success': False, 'error': message}
+            
+            print(f"📧 Wykryto aktywność: {total_questions} pytań od {total_users} użytkowników - wysyłam raport emailem...")
             
             # Wyślij email
             self._send_email_report(report)
@@ -208,6 +238,63 @@ class ReportScheduler:
             
         except Exception as e:
             print(f"❌ Błąd wysyłania emaila na żądanie: {e}")
+            return {'success': False, 'error': str(e)}
+    
+    def send_specific_report_email(self, report_id):
+        """Wysyła konkretny raport emailem na podstawie ID"""
+        try:
+            if not self.email_config['email_enabled']:
+                return {'success': False, 'error': 'Wysyłanie emaili wyłączone'}
+            
+            # Pobierz raport
+            report = self.reports_system.get_report(report_id)
+            if not report:
+                return {'success': False, 'error': f'Nie znaleziono raportu o ID: {report_id}'}
+            
+            # Sprawdź czy była jakakolwiek aktywność
+            total_questions = report.get('summary', {}).get('total_questions', 0)
+            total_users = report.get('summary', {}).get('total_users', 0)
+            report_date = report.get('date', 'nieznana')
+            
+            if total_questions == 0 and total_users == 0:
+                message = f"Brak aktywności w raporcie za {report_date} - nie ma co wysyłać"
+                print(f"📧 {message}")
+                return {'success': False, 'error': message}
+            
+            if total_questions == 0:
+                message = f"Brak pytań w raporcie za {report_date} - nie ma co wysyłać"
+                print(f"📧 {message}")
+                return {'success': False, 'error': message}
+            
+            print(f"📧 Wykryto aktywność w raporcie: {total_questions} pytań od {total_users} użytkowników - wysyłam emailem...")
+            
+            # Wyślij email
+            self._send_email_report(report)
+            
+            print(f"✅ Raport {report_id} wysłany emailem")
+            return {'success': True, 'message': f'Raport wysłany emailem ({total_questions} pytań od {total_users} użytkowników)'}
+            
+        except Exception as e:
+            print(f"❌ Błąd wysyłania konkretnego raportu emailem: {e}")
+            return {'success': False, 'error': str(e)}
+    
+    def generate_report_on_demand(self, report_date, report_type='daily'):
+        """Generuje raport na żądanie"""
+        try:
+            if report_date:
+                date = datetime.strptime(report_date, '%Y-%m-%d')
+            else:
+                date = datetime.now() - timedelta(days=1)
+            
+            print(f"📊 Generowanie raportu na żądanie za {date.strftime('%Y-%m-%d')}...")
+            
+            # Wygeneruj raport
+            report = self.reports_system.generate_daily_report(date)
+            
+            return {'success': True, 'report_id': report['report_id'], 'message': 'Raport wygenerowany pomyślnie'}
+            
+        except Exception as e:
+            print(f"❌ Błąd generowania raportu na żądanie: {e}")
             return {'success': False, 'error': str(e)}
     
     def _send_email_report(self, report):

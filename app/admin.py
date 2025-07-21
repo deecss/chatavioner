@@ -1060,53 +1060,134 @@ def api_user_activity(user_id):
     try:
         import os
         import json
+        from utils.learning_reports import LearningReportsSystem
+        from datetime import datetime, timedelta
+        import glob
+        
+        # Użyj systemu raportów do analizy aktywności użytkownika
+        reports_system = LearningReportsSystem()
+        
+        # Analizuj ostatnie 30 dni
+        end_time = datetime.now()
+        start_time = end_time - timedelta(days=30)
         
         # Pobierz podstawowe dane użytkownika
-        users_data = {}
-        users_file = os.path.join('data', 'users.json')
+        user_info = reports_system._get_user_info(user_id)
         
-        if os.path.exists(users_file):
-            with open(users_file, 'r', encoding='utf-8') as f:
-                users_list = json.load(f)
-                
-                # Konwertuj listę na słownik z ID jako kluczem
-                for user in users_list:
-                    if isinstance(user, dict) and 'id' in user:
-                        users_data[user['id']] = user
-        
-        user_data = users_data.get(user_id, {})
-        
-        # Pobierz historię użytkownika
-        history_file = os.path.join('history', f'{user_id}.json')
-        sessions = []
+        # Analizuj aktywność użytkownika z plików historii
         questions = []
+        sessions_count = 0
+        total_questions = 0
+        last_activity = None
         
-        if os.path.exists(history_file):
-            with open(history_file, 'r', encoding='utf-8') as f:
-                history_data = json.load(f)
-                sessions = history_data.get('sessions', [])
-                
-                # Ekstraktuj pytania z sesji
-                for session in sessions:
-                    for interaction in session.get('interactions', []):
-                        if interaction.get('type') == 'question':
-                            questions.append({
-                                'question': interaction.get('content', ''),
-                                'response': interaction.get('response', ''),
-                                'timestamp': interaction.get('timestamp', '')
-                            })
+        if os.path.exists('history'):
+            for filename in os.listdir('history'):
+                if filename.endswith('.json'):
+                    filepath = os.path.join('history', filename)
+                    
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            history = json.load(f)
+                        
+                        # Sprawdź czy użytkownik był aktywny w tej sesji
+                        user_active_in_session = False
+                        session_questions = []
+                        
+                        for message in history:
+                            if not isinstance(message, dict):
+                                continue
+                            
+                            if message.get('user_id') == user_id:
+                                user_active_in_session = True
+                                
+                                msg_time = reports_system._parse_timestamp(message.get('timestamp'))
+                                if msg_time:
+                                    if not last_activity or msg_time > last_activity:
+                                        last_activity = msg_time
+                                
+                                if message.get('role') == 'user':
+                                    total_questions += 1
+                                    content = message.get('content', '')
+                                    
+                                    # Dodaj pytanie do listy
+                                    question_data = {
+                                        'content': content[:200] + "..." if len(content) > 200 else content,
+                                        'timestamp': msg_time.isoformat() if msg_time else message.get('timestamp', ''),
+                                        'session_id': filename.replace('.json', ''),
+                                        'topic': reports_system._detect_topic(content)
+                                    }
+                                    session_questions.append(question_data)
+                        
+                        if user_active_in_session:
+                            sessions_count += 1
+                            questions.extend(session_questions)
+                    
+                    except Exception as e:
+                        print(f"⚠️  Błąd analizy pliku historii {filename}: {e}")
+        
+        # Sortuj pytania chronologicznie (najnowsze pierwsze)
+        questions.sort(key=lambda x: x['timestamp'], reverse=True)
         
         activity = {
-            'username': user_data.get('username', user_id),
-            'last_activity': user_data.get('last_login', ''),
-            'sessions': sessions,
-            'questions': questions
+            'username': user_info.get('username', user_id),
+            'total_sessions': sessions_count,
+            'total_questions': total_questions,
+            'last_activity': last_activity.isoformat() if last_activity else None,
+            'recent_questions': questions[:20]  # Ostatnie 20 pytań
         }
+        
+        return jsonify(activity)
+        
+    except Exception as e:
+        print(f"⚠️  Błąd pobierania aktywności użytkownika {user_id}: {e}")
+        return jsonify({
+            'error': 'Błąd pobierania danych',
+            'username': user_id,
+            'total_sessions': 0,
+            'total_questions': 0,
+            'last_activity': None,
+            'recent_questions': []
+        })
+
+@admin_bp.route('/api/learning-reports/email-config')
+@login_required
+def api_email_config():
+    """API endpoint do pobierania konfiguracji email"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        config = scheduler.get_email_config()
         
         return jsonify({
             'success': True,
-            'activity': activity
+            'config': config
         })
     except Exception as e:
-        logger.error(f"Błąd ładowania aktywności użytkownika: {e}")
+        logger.error(f"Błąd pobierania konfiguracji email: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/learning-reports/email-config', methods=['POST'])
+@login_required
+def api_update_email_config():
+    """API endpoint do aktualizowania konfiguracji email"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.reports_scheduler import get_scheduler
+        
+        data = request.get_json()
+        scheduler = get_scheduler()
+        scheduler.set_email_config(data)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Konfiguracja email zaktualizowana'
+        })
+    except Exception as e:
+        logger.error(f"Błąd aktualizowania konfiguracji email: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
