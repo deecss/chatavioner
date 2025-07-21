@@ -1289,8 +1289,8 @@ def api_generate_content():
         topic_id = data.get('topic_id')
         ai_type = data.get('ai_type', 'comprehensive')  # Domyślnie kompletny
         
-        if not module_id or not chapter_id:
-            return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
+        if not module_id:
+            return jsonify({'success': False, 'message': 'Brak module_id'}), 400
         
         from utils.atpl_handbook_generator import get_handbook_generator
         
@@ -1318,8 +1318,8 @@ def api_get_content():
         chapter_id = request.args.get('chapter_id')
         topic_id = request.args.get('topic_id')
         
-        if not module_id or not chapter_id:
-            return jsonify({'success': False, 'message': 'Brak wymaganych parametrów'}), 400
+        if not module_id:
+            return jsonify({'success': False, 'message': 'Brak module_id'}), 400
         
         from utils.atpl_handbook_generator import get_handbook_generator
         
@@ -1461,7 +1461,7 @@ def api_save_handbook_content():
         topic_id = data.get('topic_id')
         content = data.get('content')
         
-        if not module_id or not chapter_id or content is None:
+        if not module_id or content is None:
             return jsonify({'success': False, 'message': 'Brakuje wymaganych danych'}), 400
         
         from utils.atpl_handbook_generator import get_handbook_generator

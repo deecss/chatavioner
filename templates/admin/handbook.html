@@ -1123,6 +1123,9 @@ let currentContent = '';
 let isPreviewMode = false;
 let selectedAIType = 'comprehensive';
 
+// Struktura kursu do pobierania nazw
+let courseStructure = {% if structure and structure.modules %}{{ structure | tojson }}{% else %}null{% endif %};
+
 // Inicjalizacja
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
@@ -1176,6 +1179,12 @@ async function analyzeProgram() {
 }
 
 function selectItem(type, moduleId, chapterId, topicId) {
+    console.log('Wybieranie elementu:', { type, moduleId, chapterId, topicId });
+    
+    // Wyczyść poprzedni stan
+    currentContent = '';
+    document.getElementById('contentEditor').value = '';
+    
     currentEditItem = { type, moduleId, chapterId, topicId };
     
     const title = buildItemTitle(type, moduleId, chapterId, topicId);
@@ -1187,15 +1196,23 @@ function selectItem(type, moduleId, chapterId, topicId) {
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('editorPanel').style.display = 'flex';
     
+    // Ukryj AI panel jeśli był widoczny
+    hideAIPanel();
+    
     loadContent(moduleId, chapterId, topicId);
 }
 
 async function generateContent(moduleId, chapterId, topicId) {
-    currentEditItem = { moduleId, chapterId, topicId };
+    // Określ typ na podstawie dostępnych parametrów
+    let type = 'module';
+    if (topicId) type = 'topic';
+    else if (chapterId) type = 'chapter';
+    
+    currentEditItem = { type, moduleId, chapterId, topicId };
     
     showAIPanel();
     
-    const title = buildItemTitle('generate', moduleId, chapterId, topicId);
+    const title = buildItemTitle(type, moduleId, chapterId, topicId);
     document.getElementById('editorTitle').textContent = `🤖 Generowanie: ${title}`;
     
     document.getElementById('emptyState').style.display = 'none';
@@ -1206,24 +1223,31 @@ async function generateWithAI() {
     if (!currentEditItem) return;
     
     try {
-        const { moduleId, chapterId, topicId } = currentEditItem;
-        const item = buildItemTitle('item', moduleId, chapterId, topicId);
+        const { type, moduleId, chapterId, topicId } = currentEditItem;
+        console.log('Generowanie AI dla:', { type, moduleId, chapterId, topicId });
+        
+        const item = buildItemTitle(type, moduleId, chapterId, topicId);
         
         showLoading(`🤖 Generuję treść AI: ${item}`, `Typ: ${selectedAIType}`);
         hideAIPanel();
         
+        const requestData = {
+            module_id: moduleId,
+            chapter_id: chapterId,
+            topic_id: topicId,
+            ai_type: selectedAIType
+        };
+        
+        console.log('Dane żądania API:', requestData);
+        
         const response = await fetch('/admin/api/handbook/generate-content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                module_id: moduleId,
-                chapter_id: chapterId,
-                topic_id: topicId,
-                ai_type: selectedAIType
-            })
+            body: JSON.stringify(requestData)
         });
         
         const result = await response.json();
+        console.log('Odpowiedź generowania:', result);
         
         if (result.success) {
             currentContent = result.content || '';
@@ -1243,19 +1267,30 @@ async function generateWithAI() {
 
 async function loadContent(moduleId, chapterId, topicId) {
     try {
-        const params = new URLSearchParams({ module_id: moduleId, chapter_id: chapterId });
+        console.log('Ładowanie treści dla:', { moduleId, chapterId, topicId });
+        
+        const params = new URLSearchParams({ module_id: moduleId });
+        if (chapterId) params.append('chapter_id', chapterId);
         if (topicId) params.append('topic_id', topicId);
+        
+        console.log('URL parametry:', params.toString());
         
         const response = await fetch(`/admin/api/handbook/content?${params}`);
         const result = await response.json();
+        
+        console.log('Odpowiedź API:', result);
         
         if (result.success && result.content) {
             currentContent = result.content;
             showEditor(true);
             document.getElementById('contentEditor').value = currentContent;
+            console.log('Załadowano treść, długość:', result.content.length);
         } else {
-            showEditor(false);
+            currentContent = '';
+            showEditor(true);
+            document.getElementById('contentEditor').value = '';
             showMessage('ℹ️ Brak treści. Wygeneruj za pomocą AI lub zacznij pisać.', 'info');
+            console.log('Brak treści - wyczyścono edytor');
         }
     } catch (error) {
         console.error('Błąd ładowania treści:', error);
@@ -1425,13 +1460,56 @@ function togglePreview() {
 
 // === UTILITY FUNCTIONS ===
 
+function findItemInStructure(moduleId, chapterId, topicId) {
+    if (!courseStructure || !courseStructure.modules) return null;
+    
+    const module = courseStructure.modules.find(m => m.id === moduleId);
+    if (!module) return null;
+    
+    if (!chapterId) return { type: 'module', item: module };
+    
+    const chapter = module.chapters?.find(c => c.id === chapterId);
+    if (!chapter) return null;
+    
+    if (!topicId) return { type: 'chapter', item: chapter, module: module };
+    
+    const topic = chapter.topics?.find(t => t.id === topicId);
+    if (!topic) return null;
+    
+    return { type: 'topic', item: topic, chapter: chapter, module: module };
+}
+
 function buildItemTitle(type, moduleId, chapterId, topicId) {
+    const found = findItemInStructure(moduleId, chapterId, topicId);
+    
+    if (found) {
+        return found.item.title || found.item.name || 'Bez nazwy';
+    }
+    
+    // Fallback dla przypadków gdy struktura nie jest dostępna
     if (topicId) return `Temat ${topicId}`;
     if (chapterId) return `Rozdział ${chapterId}`;
     return `Moduł ${moduleId}`;
 }
 
 function buildBreadcrumb(type, moduleId, chapterId, topicId) {
+    const found = findItemInStructure(moduleId, chapterId, topicId);
+    
+    if (found) {
+        let breadcrumb = found.module?.title || `Moduł ${moduleId}`;
+        
+        if (chapterId && found.chapter) {
+            breadcrumb += ` › ${found.chapter.title || `Rozdział ${chapterId}`}`;
+        }
+        
+        if (topicId && found.item && found.type === 'topic') {
+            breadcrumb += ` › ${found.item.title || `Temat ${topicId}`}`;
+        }
+        
+        return breadcrumb;
+    }
+    
+    // Fallback
     let breadcrumb = `Moduł ${moduleId}`;
     if (chapterId) breadcrumb += ` › Rozdział ${chapterId}`;
     if (topicId) breadcrumb += ` › Temat ${topicId}`;

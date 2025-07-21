@@ -306,7 +306,7 @@ class ATPLHandbookGenerator:
             return self.analyze_program_structure()
         return self.handbook_structure
     
-    def generate_chapter_content(self, module_id: str, chapter_id: str, topic_id: str = None, ai_type: str = 'comprehensive') -> str:
+    def generate_chapter_content(self, module_id: str, chapter_id: str = None, topic_id: str = None, ai_type: str = 'comprehensive') -> str:
         """Generuj treść rozdziału/tematu używając AI i dostępnych dokumentów"""
         structure = self.get_handbook_structure()
         
@@ -316,6 +316,12 @@ class ATPLHandbookGenerator:
         
         for module in structure.get('modules', []):
             if module['id'] == module_id:
+                if not chapter_id:
+                    # Generowanie dla modułu
+                    target_item = module
+                    context = f"Moduł: {module.get('title', module_id)}"
+                    break
+                
                 for chapter in module.get('chapters', []):
                     if chapter['id'] == chapter_id:
                         if topic_id:
@@ -330,7 +336,12 @@ class ATPLHandbookGenerator:
                         break
         
         if not target_item:
-            raise Exception(f"Nie znaleziono elementu: {module_id}/{chapter_id}/{topic_id}")
+            if topic_id and chapter_id:
+                raise Exception(f"Nie znaleziono tematu: {module_id}/{chapter_id}/{topic_id}")
+            elif chapter_id:
+                raise Exception(f"Nie znaleziono rozdziału: {module_id}/{chapter_id}")
+            else:
+                raise Exception(f"Nie znaleziono modułu: {module_id}")
         
         # Znajdź powiązane dokumenty
         related_docs = self._find_related_documents(target_item['title'], target_item.get('description', ''))
@@ -561,15 +572,18 @@ class ATPLHandbookGenerator:
         
         return list(set(related_docs))  # Usuń duplikaty
     
-    def _save_generated_content(self, module_id: str, chapter_id: str, topic_id: str, content: str):
+    def _save_generated_content(self, module_id: str, chapter_id: str = None, topic_id: str = None, content: str = ''):
         """Zapisz wygenerowaną treść do pliku"""
         content_dir = os.path.join(self.handbook_dir, 'content')
         os.makedirs(content_dir, exist_ok=True)
         
-        if topic_id:
+        # Ustal nazwę pliku na podstawie dostępnych parametrów
+        if topic_id and chapter_id:
             filename = f"{module_id}_{chapter_id}_{topic_id}.md"
-        else:
+        elif chapter_id:
             filename = f"{module_id}_{chapter_id}.md"
+        else:
+            filename = f"{module_id}.md"
         
         filepath = os.path.join(content_dir, filename)
         
@@ -578,14 +592,18 @@ class ATPLHandbookGenerator:
         
         print(f"💾 Zapisano treść: {filepath}")
     
-    def _update_progress(self, module_id: str, chapter_id: str, topic_id: str, status: str):
+    def _update_progress(self, module_id: str, chapter_id: str = None, topic_id: str = None, status: str = 'unknown'):
         """Zaktualizuj postęp generowania"""
         if 'progress' not in self.handbook_structure:
             self.handbook_structure['progress'] = {}
         
-        key = f"{module_id}_{chapter_id}"
-        if topic_id:
-            key += f"_{topic_id}"
+        # Ustal klucz na podstawie dostępnych parametrów
+        if topic_id and chapter_id:
+            key = f"{module_id}_{chapter_id}_{topic_id}"
+        elif chapter_id:
+            key = f"{module_id}_{chapter_id}"
+        else:
+            key = f"{module_id}"
         
         self.handbook_structure['progress'][key] = {
             'status': status,
@@ -629,14 +647,16 @@ class ATPLHandbookGenerator:
             'progress_details': progress
         }
     
-    def get_content(self, module_id: str, chapter_id: str, topic_id: str = None) -> Optional[str]:
+    def get_content(self, module_id: str, chapter_id: str = None, topic_id: str = None) -> Optional[str]:
         """Pobierz wygenerowaną treść"""
         content_dir = os.path.join(self.handbook_dir, 'content')
         
-        if topic_id:
+        if topic_id and chapter_id:
             filename = f"{module_id}_{chapter_id}_{topic_id}.md"
-        else:
+        elif chapter_id:
             filename = f"{module_id}_{chapter_id}.md"
+        else:
+            filename = f"{module_id}.md"
         
         filepath = os.path.join(content_dir, filename)
         
@@ -646,11 +666,17 @@ class ATPLHandbookGenerator:
         
         return None
     
-    def edit_content(self, module_id: str, chapter_id: str, topic_id: str, new_content: str):
+    def edit_content(self, module_id: str, chapter_id: str = None, topic_id: str = None, new_content: str = ''):
         """Edytuj treść rozdziału/tematu"""
         self._save_generated_content(module_id, chapter_id, topic_id, new_content)
         self._update_progress(module_id, chapter_id, topic_id, 'edited')
-        print(f"✅ Zaktualizowano treść: {module_id}/{chapter_id}/{topic_id}")
+        
+        if topic_id and chapter_id:
+            print(f"✅ Zaktualizowano treść tematu: {module_id}/{chapter_id}/{topic_id}")
+        elif chapter_id:
+            print(f"✅ Zaktualizowano treść rozdziału: {module_id}/{chapter_id}")
+        else:
+            print(f"✅ Zaktualizowano treść modułu: {module_id}")
     
     def export_handbook(self, format_type: str = 'markdown') -> str:
         """Eksportuj cały podręcznik do jednego pliku"""
