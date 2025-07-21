@@ -1,0 +1,161 @@
+{
+  "report_id": "66045af9-3d4c-4111-a0b1-d96fb9be9b34",
+  "report_type": "daily",
+  "date": "2025-07-20",
+  "generated_at": "2025-07-21T20:00:17.851716",
+  "period": {
+    "start": "2025-07-20T00:00:00",
+    "end": "2025-07-21T00:00:00"
+  },
+  "summary": {
+    "total_users": 1,
+    "total_questions": 1,
+    "total_feedback": 0,
+    "avg_questions_per_user": 1.0,
+    "feedback_ratio": 0
+  },
+  "user_activity": [
+    {
+      "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+      "username": "damian",
+      "role": "user",
+      "sessions_count": 1,
+      "questions_count": 1,
+      "responses_received": 1,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "pilotaż"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-20T21:53:34.431507",
+      "last_activity": "2025-07-20T21:54:09.818906",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-20T21:53:34.431507",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "co to jest lotnictwo",
+          "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2"
+        }
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
+    }
+  ],
+  "questions_analysis": {
+    "total_questions": 1,
+    "unique_users": 1,
+    "avg_per_user": 1.0,
+    "questions_by_type": {
+      "definicyjne": 1
+    },
+    "questions_by_complexity": {
+      "proste": 1
+    },
+    "avg_question_length": 20.0,
+    "sample_questions": [
+      {
+        "content": "Co to jest lotnictwo",
+        "length": 20,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-20T21:53:34.431507",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      }
+    ],
+    "recent_questions": [
+      {
+        "content": "Co to jest lotnictwo",
+        "length": 20,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-20T21:53:34.431507",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
+      }
+    ],
+    "questions_by_topic": {
+      "pilotaż": [
+        {
+          "content": "Co to jest lotnictwo",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-20T21:53:34.431507",
+          "complexity": "proste"
+        }
+      ]
+    }
+  },
+  "feedback_analysis": {
+    "total_feedback": 0,
+    "positive_feedback": 0,
+    "negative_feedback": 0,
+    "feedback_ratio": 0,
+    "avg_rating": 0,
+    "recent_feedback": []
+  },
+  "learning_insights": {
+    "user_preferences": {
+      "null": {
+        "detail_level": "medium",
+        "preferred_topics": [],
+        "learning_speed": "normal",
+        "question_style": "direct"
+      }
+    },
+    "topic_progression": {},
+    "question_evolution": {},
+    "common_misconceptions": []
+  },
+  "topic_distribution": {
+    "topic_distribution": {
+      "pilotaż": 1
+    },
+    "most_popular_topics": [
+      {
+        "topic": "pilotaż",
+        "count": 1
+      }
+    ],
+    "most_popular": [
+      {
+        "topic": "pilotaż",
+        "count": 1
+      }
+    ],
+    "topics_by_user": {
+      "f404ca1e-385c-4d48-aee5-198e8e988f57": [
+        "pilotaż"
+      ]
+    },
+    "unique_topics": 1,
+    "avg_topics_per_user": 1.0
+  }
+}
