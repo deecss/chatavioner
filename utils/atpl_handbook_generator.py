@@ -19,7 +19,12 @@ class ATPLHandbookGenerator:
     """Generator podręcznika ATPL na podstawie dostępnych dokumentów"""
     
     def __init__(self):
-        self.client = OpenAI()
+        try:
+            self.client = OpenAI()
+        except Exception as e:
+            print(f"⚠️  Błąd inicjalizacji OpenAI: {e}")
+            self.client = None
+        
         self.handbook_dir = 'handbook'
         self.program_file = None
         self.handbook_structure = {}
@@ -75,6 +80,9 @@ class ATPLHandbookGenerator:
         
         # Użyj AI do analizy struktury
         try:
+            if not self.client:
+                raise Exception("Klient OpenAI nie jest dostępny")
+            
             response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=[
