@@ -6,6 +6,7 @@ Automatyczne generowanie dziennych raportów i czyszczenie starych plików
 """
 import os
 import sys
+import json
 import time
 import schedule
 import threading
@@ -672,11 +673,20 @@ class ReportScheduler:
     def get_report_details(self, report_id: str):
         """Pobiera szczegóły konkretnego raportu"""
         try:
+            # Znajdź raport w dostępnych raportach
             reports = self.reports_system.get_available_reports()
             
-            for report in reports:
-                if report.get('report_id') == report_id:
-                    return report
+            for report_metadata in reports:
+                if report_metadata.get('report_id') == report_id:
+                    # Załaduj pełny raport z pliku
+                    filepath = report_metadata.get('filepath')
+                    if filepath and os.path.exists(filepath):
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            full_report = json.load(f)
+                        return full_report
+                    else:
+                        print(f"⚠️  Plik raportu nie znaleziony: {filepath}")
+                        return report_metadata
             
             return None
         except Exception as e:
