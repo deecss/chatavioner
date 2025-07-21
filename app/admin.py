@@ -1364,7 +1364,7 @@ def api_edit_content():
         logger.error(f"Błąd edycji treści: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
-@admin_bp.route('/api/handbook/export')
+@admin_bp.route('/api/handbook/export', methods=['POST'])
 @login_required
 def api_export_handbook():
     """API endpoint do eksportu podręcznika"""
@@ -1372,14 +1372,29 @@ def api_export_handbook():
         return jsonify({'error': 'Brak uprawnień'}), 403
     
     try:
-        format_type = request.args.get('format', 'markdown')
+        data = request.get_json() or {}
+        format_type = data.get('format', 'markdown')
         
         from utils.atpl_handbook_generator import get_handbook_generator
         
         generator = get_handbook_generator()
-        export_path = generator.export_handbook(format_type)
+        export_result = generator.export_handbook(format_type)
         
-        return send_file(export_path, as_attachment=True)
+        if isinstance(export_result, dict):
+            return jsonify({
+                'success': True,
+                'download_url': export_result.get('download_url'),
+                'filename': export_result.get('filename'),
+                'message': 'Podręcznik wyeksportowany pomyślnie'
+            })
+        else:
+            # Fallback for old format
+            return jsonify({
+                'success': True,
+                'download_url': f'/handbook/exports/{export_result}',
+                'filename': export_result,
+                'message': 'Podręcznik wyeksportowany pomyślnie'
+            })
     except Exception as e:
         logger.error(f"Błąd eksportu podręcznika: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500

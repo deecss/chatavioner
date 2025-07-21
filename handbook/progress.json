@@ -154,11 +154,11 @@
       ]
     }
   ],
-  "last_updated": "2025-07-21T13:55:39.496352",
+  "last_updated": "2025-07-21T14:10:36.281374",
   "progress": {
     "module_1_chapter_1_1": {
-      "status": "generated",
-      "updated_at": "2025-07-21T13:55:39.496339",
+      "status": "edited",
+      "updated_at": "2025-07-21T14:10:36.281361",
       "module_id": "module_1",
       "chapter_id": "chapter_1_1",
       "topic_id": null

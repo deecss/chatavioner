@@ -106,78 +106,54 @@
     .action-buttons {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
+        gap: 10px;
+        margin-bottom: 15px;
     }
 
     .btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0.875rem 1.25rem !important;
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
-        border-radius: 0.625rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        border: none !important;
-        cursor: pointer !important;
-        text-decoration: none !important;
-        gap: 0.625rem !important;
-        margin: 0 !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-
-    .btn::before {
-        content: '' !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: -100% !important;
-        width: 100% !important;
-        height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
-        transition: left 0.5s !important;
-    }
-
-    .btn:hover::before {
-        left: 100% !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid;
+        cursor: pointer;
+        text-decoration: none;
+        margin: 0;
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
-        color: white !important;
-        border: 1px solid #2563eb !important;
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
     }
 
     .btn-primary:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3) !important;
+        background: #0056b3;
+        border-color: #0056b3;
     }
 
     .btn-success {
-        background: linear-gradient(135deg, #10b981, #059669) !important;
-        color: white !important;
-        border: 1px solid #059669 !important;
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
     }
 
     .btn-success:hover {
-        background: linear-gradient(135deg, #059669, #047857) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3) !important;
+        background: #1e7e34;
+        border-color: #1e7e34;
     }
 
     .btn-danger {
-        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-        color: white !important;
-        border: 1px solid #dc2626 !important;
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
     }
 
     .btn-danger:hover {
-        background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3) !important;
+        background: #c82333;
+        border-color: #c82333;
     }
 
     .btn-full {
@@ -236,87 +212,72 @@
         text-align: center;
     }
 
-    /* Tree Structure - PROSTY TEKST, BEZ EFEKTÓW */
+    /* Tree Structure - NAJPROSTSZY TEKST */
     .tree-container {
-        max-height: calc(100vh - 500px) !important;
-        overflow-y: auto !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: var(--gray-300) transparent !important;
-        padding: 0.5rem !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        max-height: calc(100vh - 500px);
+        overflow-y: auto;
+        padding: 10px;
     }
 
     .tree-item {
-        margin-bottom: 2px !important;
-        cursor: pointer !important;
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
+        margin-bottom: 1px;
+        cursor: pointer;
     }
 
     .tree-item:hover {
-        background: #f3f4f6 !important;
+        background: #f9f9f9;
     }
 
     /* Module - poziom 0 */
     .tree-item.module {
-        margin-bottom: 8px !important;
-        margin-left: 0 !important;
+        margin-left: 0;
+        margin-bottom: 5px;
     }
 
     /* Chapter - poziom 1 */
     .tree-item.chapter {
-        margin-left: 20px !important;
-        margin-bottom: 4px !important;
+        margin-left: 15px;
     }
 
     /* Topic - poziom 2 */
     .tree-item.topic {
-        margin-left: 40px !important;
-        margin-bottom: 2px !important;
+        margin-left: 30px;
     }
 
     .tree-item-content {
-        padding: 8px 12px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: 12px !important;
-        border-radius: 4px !important;
+        padding: 5px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .tree-item-info {
-        flex: 1 !important;
-        min-width: 0 !important;
+        flex: 1;
     }
 
     .tree-item-title {
-        font-weight: normal !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: block !important;
-        font-size: 14px !important;
-        line-height: 1.4 !important;
-        color: #374151 !important;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+        line-height: 1.4;
+        color: #333;
     }
 
-    /* Różne style dla poziomów - TYLKO tekst */
+    /* Różne style dla poziomów */
     .tree-item.module .tree-item-title {
-        font-size: 16px !important;
-        font-weight: 600 !important;
-        color: #1f2937 !important;
+        font-size: 15px;
+        font-weight: bold;
+        color: #000;
     }
 
     .tree-item.chapter .tree-item-title {
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        color: #374151 !important;
+        font-size: 14px;
+        color: #333;
     }
 
     .tree-item.topic .tree-item-title {
-        font-size: 13px !important;
-        font-weight: normal !important;
-        color: #6b7280 !important;
+        font-size: 13px;
+        color: #666;
     }
 
     .tree-item-description {
@@ -330,76 +291,22 @@
         white-space: nowrap !important;
     }
 
-    /* Status badges - PROSTY TEKST */
-    .status-badge {
-        display: inline !important;
-        font-size: 11px !important;
-        font-weight: normal !important;
-        color: #6b7280 !important;
-        margin-left: 8px !important;
-        padding: 0 !important;
-        border: none !important;
-        background: none !important;
-        text-transform: none !important;
-    }
-
-    .status-not-generated {
-        color: #dc2626 !important;
-    }
-
-    .status-not-generated::before {
-        content: '[brak]' !important;
-    }
-
-    .status-generated {
-        color: #059669 !important;
-    }
-
-    .status-generated::before {
-        content: '[gotowe]' !important;
-    }
-
-    .status-edited {
-        color: #d97706 !important;
-    }
-
-    .status-edited::before {
-        content: '[edytowane]' !important;
-    }
-
-    /* Action button - MAŁY TEKST */
+    /* Action button - MAŁY I SUBTELNY */
     .action-btn {
-        font-size: 12px !important;
-        padding: 4px 8px !important;
-        background: #f3f4f6 !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 3px !important;
-        color: #374151 !important;
-        cursor: pointer !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        transition: none !important;
-        text-transform: none !important;
-        letter-spacing: normal !important;
-        font-weight: normal !important;
-        position: static !important;
-        overflow: visible !important;
-        gap: 4px !important;
-        min-width: auto !important;
-    }
-
-    .action-btn::before {
-        display: none !important;
+        font-size: 10px;
+        padding: 2px 6px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        color: #666;
+        cursor: pointer;
+        margin: 0;
+        font-weight: normal;
     }
 
     .action-btn:hover {
-        background: #e5e7eb !important;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-
-    .action-btn:active {
-        transform: none !important;
+        background: #e0e0e0;
+        color: #333;
     }
 
     /* Status Badges - Simple and Clean */
@@ -450,54 +357,6 @@
         content: '◐' !important;
         margin-right: 0.25rem !important;
         font-weight: bold !important;
-    }
-
-    /* Action Buttons - Enhanced design */
-    .action-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0.6rem 0.9rem !important;
-        font-size: 0.8rem !important;
-        font-weight: 700 !important;
-        border-radius: 0.5rem !important;
-        border: none !important;
-        cursor: pointer !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        gap: 0.4rem !important;
-        min-width: 75px !important;
-        background: linear-gradient(135deg, #10b981, #059669) !important;
-        color: white !important;
-        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3) !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.025em !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-
-    .action-btn::before {
-        content: '' !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: -100% !important;
-        width: 100% !important;
-        height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
-        transition: left 0.4s !important;
-    }
-
-    .action-btn:hover::before {
-        left: 100% !important;
-    }
-
-    .action-btn:hover {
-        background: linear-gradient(135deg, #059669, #047857) !important;
-        transform: translateY(-2px) scale(1.05) !important;
-        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4) !important;
-    }
-
-    .action-btn:active {
-        transform: translateY(0) scale(0.98) !important;
     }
 
     /* Main Content */
@@ -956,7 +815,7 @@
                             <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', null, null)" 
                                     class="action-btn"
                                     aria-label="Generuj AI dla {{ module.title }}">
-                                🤖
+                                AI
                             </button>
                         </div>
                         
@@ -990,7 +849,7 @@
                                         <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', '{{ chapter.id }}', null)" 
                                                 class="action-btn"
                                                 aria-label="Generuj AI dla {{ chapter.title }}">
-                                            🤖
+                                            AI
                                         </button>
                                     </div>
                                     
@@ -1024,7 +883,7 @@
                                                     <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
                                                             class="action-btn"
                                                             aria-label="Generuj AI dla {{ topic.title }}">
-                                                        🤖
+                                                        AI
                                                     </button>
                                                 </div>
                                             </div>
