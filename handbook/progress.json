@@ -1,0 +1,158 @@
+{
+  "title": "TRAINING PROGRAM IN THE FIELD OF THEORETICAL KNOWLEDGE FOR ATPL(A) LICENSE",
+  "description": "Program szkolenia teoretycznego dla licencji ATPL(A) obejmujący prawo lotnicze, organizacje międzynarodowe, certyfikaty zdatności do lotu, oznaczenia rejestracyjne statków powietrznych oraz licencjonowanie personelu.",
+  "total_hours": "Łączna liczba godzin nie została podana w tej części dokumentu.",
+  "modules": [
+    {
+      "id": "module_1",
+      "title": "AIR LAW",
+      "description": "Prawo lotnicze obejmujące konwencje międzynarodowe, organizacje oraz przepisy dotyczące lotnictwa cywilnego.",
+      "hours": "Liczba godzin nie została podana w tej części dokumentu.",
+      "chapters": [
+        {
+          "id": "chapter_1_1",
+          "title": "INTERNATIONAL LAW: CONVENTIONS, AGREEMENTS AND ORGANISATIONS",
+          "description": "Prawo międzynarodowe: konwencje, umowy i organizacje.",
+          "topics": [
+            {
+              "id": "topic_1_1_1",
+              "title": "The Convention on International Civil Aviation (Chicago)",
+              "description": "Konwencja o międzynarodowym lotnictwie cywilnym (Chicago).",
+              "subtopics": [
+                "Okoliczności ustanowienia Konwencji o międzynarodowym lotnictwie cywilnym, Chicago, 7 grudnia 1944.",
+                "Ogólne zasady i zastosowanie Konwencji.",
+                "Prawo do lotów nieregularnych i regularnych usług lotniczych.",
+                "Obowiązki państw-stron w zakresie dokumentów na pokładzie."
+              ]
+            },
+            {
+              "id": "topic_1_1_2",
+              "title": "The International Civil Aviation Organization (ICAO)",
+              "description": "Międzynarodowa Organizacja Lotnictwa Cywilnego (ICAO).",
+              "subtopics": [
+                "Cele ICAO.",
+                "Organizacja i obowiązki Zgromadzenia ICAO, Rady i Komisji Nawigacji Powietrznej.",
+                "Aneksy do Konwencji."
+              ]
+            },
+            {
+              "id": "topic_1_1_3",
+              "title": "Other conventions and agreements",
+              "description": "Inne konwencje i umowy.",
+              "subtopics": [
+                "Międzynarodowa Umowa Tranzytowa Usług Lotniczych.",
+                "Międzynarodowa Umowa Transportu Lotniczego.",
+                "Tokijska Konwencja z 1963 roku."
+              ]
+            },
+            {
+              "id": "topic_1_1_4",
+              "title": "Private international law",
+              "description": "Prywatne prawo międzynarodowe.",
+              "subtopics": [
+                "Znaczenie prawne wydania biletu pasażerskiego lub dokumentów bagażowych.",
+                "Konsekwencje braku wydania dokumentu przewozowego.",
+                "Odpowiedzialność przewoźnika lotniczego."
+              ]
+            },
+            {
+              "id": "topic_1_1_5",
+              "title": "World organisations",
+              "description": "Organizacje światowe.",
+              "subtopics": [
+                "Cele Międzynarodowego Stowarzyszenia Transportu Lotniczego (IATA)."
+              ]
+            },
+            {
+              "id": "topic_1_1_6",
+              "title": "European organisations",
+              "description": "Organizacje europejskie.",
+              "subtopics": [
+                "Cele Europejskiej Agencji Bezpieczeństwa Lotniczego (EASA).",
+                "Rola EASA w europejskim lotnictwie cywilnym.",
+                "Regulacje Jednolitego Europejskiego Nieba (SES)."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chapter_1_2",
+          "title": "AIRWORTHINESS OF AIRCRAFT, AIRCRAFT NATIONALITY AND REGISTRATION MARKS",
+          "description": "Zdatność do lotu statków powietrznych, oznaczenia narodowości i rejestracyjne.",
+          "topics": [
+            {
+              "id": "topic_1_2_1",
+              "title": "Certificate of Airworthiness (CofA)",
+              "description": "Certyfikat zdatności do lotu (CofA).",
+              "subtopics": [
+                "Organ wydający CofA.",
+                "Konieczność posiadania CofA.",
+                "Warunki wydania CofA zgodnie z regulacjami UE.",
+                "Kto określa ciągłą zdatność do lotu statku powietrznego.",
+                "Odnawianie i ważność CofA."
+              ]
+            },
+            {
+              "id": "topic_1_2_2",
+              "title": "ICAO Annex 7 - Aircraft Nationality and Registration Marks",
+              "description": "ICAO Aneks 7 - Oznaczenia narodowości i rejestracyjne statków powietrznych.",
+              "subtopics": [
+                "Definicje związane z oznaczeniami.",
+                "Lokalizacja oznaczeń narodowości i rejestracyjnych.",
+                "Odpowiedzialność za przypisanie oznaczeń."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chapter_1_3",
+          "title": "PERSONNEL LICENSING",
+          "description": "Licencjonowanie personelu.",
+          "topics": [
+            {
+              "id": "topic_1_3_1",
+              "title": "ICAO Annex 1",
+              "description": "ICAO Aneks 1.",
+              "subtopics": [
+                "Różnice między ICAO Aneks 1 a Regulacją Aircrew.",
+                "Definicje związane z licencjonowaniem personelu.",
+                "Struktura Part-FCL.",
+                "Wymagania dotyczące członków załogi lotniczej."
+              ]
+            },
+            {
+              "id": "topic_1_3_2",
+              "title": "Commercial pilot licence (CPL)",
+              "description": "Licencja pilota komercyjnego (CPL).",
+              "subtopics": [
+                "Wymagania dotyczące wydania CPL.",
+                "Przywileje CPL."
+              ]
+            },
+            {
+              "id": "topic_1_3_3",
+              "title": "Airline transport pilot licence (ATPL) and multi-crew pilot licence (MPL)",
+              "description": "Licencja pilota transportu lotniczego (ATPL) i licencja pilota wielozałogowego (MPL).",
+              "subtopics": [
+                "Wymagania dotyczące wydania ATPL.",
+                "Przywileje ATPL.",
+                "Wymagania dotyczące wydania MPL.",
+                "Przywileje MPL."
+              ]
+            },
+            {
+              "id": "topic_1_3_4",
+              "title": "Ratings",
+              "description": "Uprawnienia.",
+              "subtopics": [
+                "Wymagania dotyczące uprawnień klasowych i typowych.",
+                "Wymagania dotyczące uprawnień do lotów przyrządowych."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "last_updated": "2025-07-21T12:45:52.327101"
+}

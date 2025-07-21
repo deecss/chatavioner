@@ -1383,6 +1383,117 @@ def api_export_handbook():
         logger.error(f"Błąd eksportu podręcznika: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@admin_bp.route('/api/handbook/upload-image', methods=['POST'])
+@login_required
+def api_upload_handbook_image():
+    """API endpoint do przesyłania obrazów do podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        if 'image' not in request.files:
+            return jsonify({'success': False, 'message': 'Brak pliku'}), 400
+        
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'Nie wybrano pliku'}), 400
+        
+        # Sprawdź typ pliku
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+        file_ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+        
+        if file_ext not in allowed_extensions:
+            return jsonify({'success': False, 'message': 'Nieprawidłowy typ pliku'}), 400
+        
+        # Utwórz katalog na obrazy
+        images_dir = os.path.join('handbook', 'images')
+        os.makedirs(images_dir, exist_ok=True)
+        
+        # Wygeneruj unikalną nazwę pliku
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"{timestamp}_{file.filename}"
+        filepath = os.path.join(images_dir, filename)
+        
+        # Zapisz plik
+        file.save(filepath)
+        
+        # Zwróć URL do pliku
+        file_url = f"/handbook/images/{filename}"
+        
+        return jsonify({
+            'success': True,
+            'message': 'Obraz przesłany pomyślnie',
+            'url': file_url,
+            'filename': filename
+        })
+        
+    except Exception as e:
+        logger.error(f"Błąd przesyłania obrazu: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/save-content', methods=['POST'])
+@login_required
+def api_save_handbook_content():
+    """API endpoint do zapisywania treści podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        data = request.get_json()
+        module_id = data.get('module_id')
+        chapter_id = data.get('chapter_id')
+        topic_id = data.get('topic_id')
+        content = data.get('content')
+        
+        if not module_id or not chapter_id or content is None:
+            return jsonify({'success': False, 'message': 'Brakuje wymaganych danych'}), 400
+        
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        generator.edit_content(module_id, chapter_id, topic_id, content)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Treść została zapisana'
+        })
+        
+    except Exception as e:
+        logger.error(f"Błąd zapisywania treści: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/api/handbook/progress')
+@login_required
+def api_handbook_progress():
+    """API endpoint do pobierania postępu podręcznika"""
+    if not current_user.is_admin():
+        return jsonify({'error': 'Brak uprawnień'}), 403
+    
+    try:
+        from utils.atpl_handbook_generator import get_handbook_generator
+        
+        generator = get_handbook_generator()
+        progress = generator.get_progress_overview()
+        
+        return jsonify({
+            'success': True,
+            'progress': progress
+        })
+        
+    except Exception as e:
+        logger.error(f"Błąd pobierania postępu: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@admin_bp.route('/handbook/images/<filename>')
+def serve_handbook_image(filename):
+    """Serwowanie obrazów z podręcznika"""
+    try:
+        images_dir = os.path.join('handbook', 'images')
+        return send_file(os.path.join(images_dir, filename))
+    except Exception as e:
+        logger.error(f"Błąd serwowania obrazu: {e}")
+        return "Obraz nie znaleziony", 404
+
 @admin_bp.route('/api/handbook/reset', methods=['POST'])
 @login_required
 def api_reset_handbook():

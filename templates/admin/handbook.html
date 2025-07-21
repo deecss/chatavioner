@@ -4,50 +4,482 @@
 
 {% block extra_head %}
 <style>
+    /* Główne style interfejsu */
+    .handbook-container {
+        display: flex;
+        height: calc(100vh - 120px);
+        gap: 16px;
+    }
+    
+    .handbook-sidebar {
+        width: 350px;
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .handbook-main {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Style drzewa struktury */
     .tree-item {
         margin-left: 20px;
-        padding: 8px;
+        padding: 12px;
         border-left: 2px solid #e5e7eb;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .tree-item:hover {
+        background-color: #f1f5f9;
+        transform: translateX(4px);
     }
     
     .tree-item.module {
         margin-left: 0;
         border-left: 4px solid #3b82f6;
-        background-color: #f0f9ff;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        font-weight: 600;
     }
     
     .tree-item.chapter {
         margin-left: 20px;
         border-left: 3px solid #10b981;
-        background-color: #f0fdf4;
+        background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+        font-weight: 500;
     }
     
     .tree-item.topic {
         margin-left: 40px;
         border-left: 2px solid #f59e0b;
-        background-color: #fffbeb;
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     }
     
+    /* Status badges */
     .status-badge {
         display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
+        padding: 4px 12px;
+        border-radius: 16px;
         font-size: 11px;
-        font-weight: 500;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .status-not-generated {
-        background-color: #fef2f2;
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
         color: #dc2626;
+        border: 1px solid #fecaca;
     }
     
     .status-generated {
-        background-color: #f0fdf4;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
         color: #16a34a;
+        border: 1px solid #bbf7d0;
     }
     
     .status-edited {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        color: #d97706;
+        border: 1px solid #fed7aa;
+    }
+    
+    /* Przyciski akcji */
+    .action-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0 4px;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    .action-btn.generate {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .action-btn.edit {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .action-btn.delete {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    
+    /* Panel główny - pusty stan */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+    }
+    
+    .empty-state .icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    /* Panel edytora */
+    .editor-panel {
+        display: none;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .editor-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px 12px 0 0;
+        margin: -24px -24px 20px -24px;
+    }
+    
+    .editor-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    
+    .editor-breadcrumb {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+    
+    /* Toolbar edytora */
+    .editor-toolbar {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .toolbar-group {
+        display: flex;
+        gap: 4px;
+        padding-right: 12px;
+        border-right: 1px solid #e2e8f0;
+    }
+    
+    .toolbar-group:last-child {
+        border-right: none;
+    }
+    
+    .toolbar-btn {
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #374151;
+    }
+    
+    .toolbar-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
+    
+    .toolbar-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #2563eb;
+    }
+    
+    /* Edytor tekstu */
+    .content-editor {
+        flex: 1;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        padding: 20px;
+        resize: none;
+        outline: none;
+        background: #fafafa;
+    }
+    
+    .content-editor:focus {
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Panel podglądu */
+    .preview-panel {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+        margin-top: 20px;
+    }
+    
+    .preview-panel h1,
+    .preview-panel h2,
+    .preview-panel h3,
+    .preview-panel h4 {
+        color: #1e293b;
+        margin-top: 24px;
+        margin-bottom: 12px;
+    }
+    
+    .preview-panel h1 {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+    }
+    
+    .preview-panel h2 {
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 4px;
+    }
+    
+    .preview-panel ul, .preview-panel ol {
+        margin-left: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .preview-panel blockquote {
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+        margin: 16px 0;
+        color: #64748b;
+        background: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .preview-panel code {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+    }
+    
+    .preview-panel pre {
+        background: #1e293b;
+        color: #f1f5f9;
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 16px 0;
+    }
+    
+    .preview-panel pre code {
+        background: none;
+        padding: 0;
+        color: inherit;
+    }
+    
+    /* Przyciski zapisywania */
+    .save-actions {
+        display: flex;
+        gap: 12px;
+        padding: 20px 0;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 20px;
+    }
+    
+    .save-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    
+    .cancel-btn {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #d1d5db;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .cancel-btn:hover {
+        background: #e2e8f0;
+        color: #475569;
+    }
+    
+    /* Modal dla wstawiania obrazów */
+    .image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .image-modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .image-upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .image-upload-area:hover {
+        border-color: #3b82f6;
+        background: #f0f9ff;
+    }
+    
+    .image-upload-area.dragover {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+    
+    /* Progress bar */
+    .progress-container {
+        background: #f1f5f9;
+        border-radius: 8px;
+        height: 8px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #10b981);
+        transition: width 0.3s ease;
+        border-radius: 8px;
+    }
+    
+    /* Responsywność */
+    @media (max-width: 1024px) {
+        .handbook-container {
+            flex-direction: column;
+            height: auto;
+        }
+        
+        .handbook-sidebar {
+            width: 100%;
+            height: 300px;
+        }
+        
+        .handbook-main {
+            min-height: 600px;
+        }
+    }
+    
+    /* Loading states */
+    .loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+    
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* AI Generation Panel */
+    .ai-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .ai-panel h3 {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .ai-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .ai-option {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .ai-option:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .ai-option.selected {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+</style>
+{% endblock %}
         background-color: #fef3c7;
         color: #d97706;
     }
@@ -93,179 +525,326 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-6">
-    <!-- Header -->
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                    📚 Generator Podręcznika ATPL
-                </h1>
-                <p class="text-gray-600">
-                    Automatyczne tworzenie podręcznika szkoleniowego na podstawie programu ATPL i dostępnych dokumentów
-                </p>
-            </div>
-            <div class="flex space-x-3">
-                {% if not structure %}
-                <button onclick="analyzeProgram()" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    🔍 Analizuj Program
-                </button>
-                {% else %}
+<div class="handbook-container">
+    <!-- Sidebar z strukturą -->
+    <div class="handbook-sidebar">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">� Struktura Podręcznika</h2>
+            {% if not structure %}
+            <button onclick="analyzeProgram()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                <i class="fas fa-search mr-2"></i>
+                Analizuj Program ATPL
+            </button>
+            {% else %}
+            <div class="flex gap-2 mb-4">
                 <button onclick="exportHandbook()" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    📄 Eksportuj Podręcznik
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <i class="fas fa-download mr-1"></i> Eksportuj
                 </button>
                 <button onclick="resetHandbook()" 
-                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                        onclick="return confirm('Czy na pewno chcesz zresetować cały podręcznik?')">
-                    🔄 Resetuj
+                        class="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                        onclick="return confirm('Resetować podręcznik?')">
+                    <i class="fas fa-redo mr-1"></i> Reset
                 </button>
-                {% endif %}
             </div>
+            {% endif %}
         </div>
-    </div>
 
-    {% if not structure %}
-    <!-- Instrukcje -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold text-blue-900 mb-3">🚀 Jak zacząć?</h2>
-        <div class="text-blue-800">
-            <p class="mb-3">System automatycznie znajdzie plik z programem szkolenia ATPL i przeanalizuje jego strukturę.</p>
-            <ol class="list-decimal list-inside space-y-2">
-                <li>Kliknij <strong>"Analizuj Program"</strong> aby przeprowadzić jednorazową analizę OCR</li>
-                <li>System wyciągnie listę modułów, rozdziałów i tematów</li>
-                <li>Będziesz mógł generować treść dla każdego elementu</li>
-                <li>Treść można edytować i rozwijać według potrzeb</li>
-                <li>Gotowy podręcznik można wyeksportować do pliku</li>
-            </ol>
-        </div>
-    </div>
-    {% else %}
-    
-    <!-- Progress Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Postęp ogólny</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ progress.completion_percentage if progress else 0 }}%</p>
-                </div>
-                <div class="relative w-16 h-16">
-                    <svg class="progress-ring w-16 h-16">
-                        <circle 
-                            class="progress-ring-circle stroke-blue-600"
-                            stroke-width="4"
-                            fill="transparent"
-                            r="40"
-                            cx="32"
-                            cy="32">
-                        </circle>
-                    </svg>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-xs font-bold text-blue-600">{{ progress.completion_percentage if progress else 0 }}%</span>
-                    </div>
-                </div>
+        {% if structure and structure.modules %}
+        <!-- Progress Overview -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg mb-4">
+            <h3 class="font-semibold text-gray-800 mb-2">� Postęp</h3>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">Ukończone:</span>
+                <span class="font-bold text-blue-600">{{ progress.completion_percentage if progress else 0 }}%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: {{ progress.completion_percentage if progress else 0 }}%"></div>
+            </div>
+            <div class="text-xs text-gray-500 mt-2">
+                {{ progress.completed_items if progress else 0 }} / {{ progress.total_items if progress else 0 }} elementów
             </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-book text-blue-600"></i>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Modułów</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ progress.modules_count if progress else 0 }}</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-check text-green-600"></i>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Ukończone</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ progress.completed_items if progress else 0 }}</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-list text-gray-600"></i>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Łącznie</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ progress.total_items if progress else 0 }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Struktura podręcznika -->
-        <div class="bg-white rounded-lg shadow-sm">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">📖 Struktura Podręcznika</h2>
-                <p class="text-gray-600 text-sm mt-1">{{ structure.title if structure else '' }}</p>
-            </div>
-            <div class="p-6 max-h-96 overflow-y-auto" id="handbookStructure">
-                {% if structure and structure.modules %}
-                    {% for module in structure.modules %}
-                    <div class="tree-item module">
+        <!-- Struktura drzewa -->
+        <div class="space-y-2" style="max-height: calc(100vh - 400px); overflow-y: auto;">
+            {% for module in structure.modules %}
+            <div class="tree-item module" onclick="selectItem('module', '{{ module.id }}', null, null)">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-blue-900 text-sm">📚 {{ module.title }}</h3>
+                        <p class="text-xs text-gray-600 mt-1">{{ module.description[:50] + '...' if module.description and module.description|length > 50 else module.description or 'Brak opisu' }}</p>
+                    </div>
+                    <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', null, null)" 
+                            class="action-btn generate">
+                        🤖 AI
+                    </button>
+                </div>
+                
+                {% if module.chapters %}
+                    {% for chapter in module.chapters %}
+                    <div class="tree-item chapter" onclick="event.stopPropagation(); selectItem('chapter', '{{ module.id }}', '{{ chapter.id }}', null)">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-blue-900">📚 {{ module.title }}</h3>
-                                <p class="text-sm text-gray-600">{{ module.description or 'Brak opisu' }}</p>
-                                {% if module.hours %}
-                                <p class="text-xs text-gray-500">Godziny: {{ module.hours }}</p>
+                                <h4 class="font-medium text-green-800 text-sm">📄 {{ chapter.title }}</h4>
+                                <p class="text-xs text-gray-600 mt-1">{{ chapter.description[:40] + '...' if chapter.description and chapter.description|length > 40 else chapter.description or 'Brak opisu' }}</p>
+                                {% set chapter_key = module.id + '_' + chapter.id %}
+                                {% if progress and progress.progress_details and chapter_key in progress.progress_details %}
+                                    <span class="status-badge status-{{ progress.progress_details[chapter_key].status }}">
+                                        {{ progress.progress_details[chapter_key].status|title }}
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-not-generated">Brak</span>
                                 {% endif %}
                             </div>
+                            <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', '{{ chapter.id }}', null)" 
+                                    class="action-btn generate">
+                                🤖 AI
+                            </button>
                         </div>
                         
-                        {% if module.chapters %}
-                            {% for chapter in module.chapters %}
-                            <div class="tree-item chapter mt-2">
+                        {% if chapter.topics %}
+                            {% for topic in chapter.topics %}
+                            <div class="tree-item topic" onclick="event.stopPropagation(); selectItem('topic', '{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')">
                                 <div class="flex items-center justify-between">
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-green-800">📄 {{ chapter.title }}</h4>
-                                        <p class="text-sm text-gray-600">{{ chapter.description or 'Brak opisu' }}</p>
-                                        {% set chapter_key = module.id + '_' + chapter.id %}
-                                        {% if progress and progress.progress_details and chapter_key in progress.progress_details %}
-                                            <span class="status-badge status-{{ progress.progress_details[chapter_key].status }}">
-                                                {{ progress.progress_details[chapter_key].status|title }}
+                                        <h5 class="font-medium text-orange-800 text-sm">📝 {{ topic.title }}</h5>
+                                        <p class="text-xs text-gray-600 mt-1">{{ topic.description[:35] + '...' if topic.description and topic.description|length > 35 else topic.description or 'Brak opisu' }}</p>
+                                        {% set topic_key = module.id + '_' + chapter.id + '_' + topic.id %}
+                                        {% if progress and progress.progress_details and topic_key in progress.progress_details %}
+                                            <span class="status-badge status-{{ progress.progress_details[topic_key].status }}">
+                                                {{ progress.progress_details[topic_key].status|title }}
                                             </span>
                                         {% else %}
-                                            <span class="status-badge status-not-generated">Nie wygenerowane</span>
+                                            <span class="status-badge status-not-generated">Brak</span>
                                         {% endif %}
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <button onclick="generateContent('{{ module.id }}', '{{ chapter.id }}')" 
-                                                class="text-blue-600 hover:text-blue-800 text-sm">
-                                            🔮 Generuj
-                                        </button>
-                                        <button onclick="viewContent('{{ module.id }}', '{{ chapter.id }}')" 
-                                                class="text-green-600 hover:text-green-800 text-sm">
-                                            👁️ Zobacz
-                                        </button>
-                                    </div>
+                                    <button onclick="event.stopPropagation(); generateContent('{{ module.id }}', '{{ chapter.id }}', '{{ topic.id }}')" 
+                                            class="action-btn generate">
+                                        🤖 AI
+                                    </button>
                                 </div>
-                                
-                                {% if chapter.topics %}
-                                    {% for topic in chapter.topics %}
-                                    <div class="tree-item topic mt-1">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex-1">
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Panel główny -->
+    <div class="handbook-main">
+        {% if not structure %}
+        <!-- Stan początkowy -->
+        <div class="empty-state">
+            <div class="icon">📚</div>
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Generator Podręcznika ATPL</h2>
+            <p class="text-lg text-gray-600 mb-6">Automatyczne tworzenie podręcznika szkoleniowego na podstawie programu ATPL</p>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-left max-w-2xl mx-auto">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">🚀 Jak rozpocząć:</h3>
+                <ol class="text-blue-800 space-y-2">
+                    <li><strong>1.</strong> Kliknij "Analizuj Program ATPL" aby przeanalizować strukturę dokumentu</li>
+                    <li><strong>2.</strong> System automatycznie wyciągnie moduły, rozdziały i tematy</li>
+                    <li><strong>3.</strong> Wybierz element i kliknij "🤖 AI" aby wygenerować treść</li>
+                    <li><strong>4.</strong> Edytuj treść w zaawansowanym edytorze</li>
+                    <li><strong>5.</strong> Eksportuj gotowy podręcznik</li>
+                </ol>
+            </div>
+        </div>
+        {% else %}
+        <!-- Panel edytora -->
+        <div class="empty-state" id="emptyState">
+            <div class="icon">✨</div>
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Wybierz element do edycji</h2>
+            <p class="text-lg text-gray-600 mb-6">Kliknij na dowolny moduł, rozdział lub temat w strukturze po lewej stronie</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-blue-900 mb-2">📚 Moduły</h4>
+                    <p class="text-sm text-blue-700">Główne działy programu szkoleniowego</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-900 mb-2">📄 Rozdziały</h4>
+                    <p class="text-sm text-green-700">Sekcje tematyczne w ramach modułów</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-orange-900 mb-2">📝 Tematy</h4>
+                    <p class="text-sm text-orange-700">Szczegółowe zagadnienia do opracowania</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zaawansowany panel edytora -->
+        <div class="editor-panel" id="editorPanel">
+            <!-- Header edytora -->
+            <div class="editor-header">
+                <div class="editor-title" id="editorTitle">Edytor treści</div>
+                <div class="editor-breadcrumb" id="editorBreadcrumb">Wybierz element</div>
+            </div>
+
+            <!-- AI Panel -->
+            <div class="ai-panel" id="aiPanel" style="display: none;">
+                <h3><i class="fas fa-robot"></i> Asystent AI - Generator Treści</h3>
+                <div class="ai-options">
+                    <div class="ai-option" data-type="comprehensive">
+                        <h4 class="font-semibold mb-1">📖 Kompletny Przewodnik</h4>
+                        <p class="text-sm opacity-90">Szczegółowa treść z teorią, przykładami i procedurami</p>
+                    </div>
+                    <div class="ai-option" data-type="summary">
+                        <h4 class="font-semibold mb-1">📋 Streszczenie</h4>
+                        <p class="text-sm opacity-90">Zwięzłe omówienie najważniejszych punktów</p>
+                    </div>
+                    <div class="ai-option" data-type="practical">
+                        <h4 class="font-semibold mb-1">🛠️ Praktyczne Aspekty</h4>
+                        <p class="text-sm opacity-90">Fokus na zastosowanie w praktyce lotniczej</p>
+                    </div>
+                    <div class="ai-option" data-type="regulatory">
+                        <h4 class="font-semibold mb-1">⚖️ Przepisy i Regulacje</h4>
+                        <p class="text-sm opacity-90">Szczegółowe omówienie przepisów ICAO/EASA</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="generateWithAI()" class="save-btn">
+                        <i class="fas fa-magic"></i> Wygeneruj Treść AI
+                    </button>
+                    <button onclick="hideAIPanel()" class="cancel-btn">
+                        Anuluj
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toolbar edytora -->
+            <div class="editor-toolbar" id="editorToolbar" style="display: none;">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('bold')" title="Pogrubienie">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('italic')" title="Kursywa">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('underline')" title="Podkreślenie">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('h1')" title="Nagłówek 1">H1</button>
+                    <button class="toolbar-btn" onclick="formatText('h2')" title="Nagłówek 2">H2</button>
+                    <button class="toolbar-btn" onclick="formatText('h3')" title="Nagłówek 3">H3</button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('ul')" title="Lista punktowana">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('ol')" title="Lista numerowana">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('quote')" title="Cytat">
+                        <i class="fas fa-quote-left"></i>
+                    </button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="insertImage()" title="Wstaw obraz">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="insertTable()" title="Wstaw tabelę">
+                        <i class="fas fa-table"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="insertCode()" title="Kod">
+                        <i class="fas fa-code"></i>
+                    </button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="togglePreview()" title="Podgląd" id="previewBtn">
+                        <i class="fas fa-eye"></i> Podgląd
+                    </button>
+                </div>
+            </div>
+
+            <!-- Edytor tekstu -->
+            <textarea class="content-editor" id="contentEditor" style="display: none;" 
+                      placeholder="Rozpocznij pisanie lub wygeneruj treść za pomocą AI..."></textarea>
+
+            <!-- Panel podglądu -->
+            <div class="preview-panel" id="previewPanel" style="display: none;">
+                <div id="previewContent">Brak treści do podglądu</div>
+            </div>
+
+            <!-- Przyciski akcji -->
+            <div class="save-actions" id="saveActions" style="display: none;">
+                <button onclick="saveContent()" class="save-btn">
+                    <i class="fas fa-save"></i> Zapisz Zmiany
+                </button>
+                <button onclick="cancelEdit()" class="cancel-btn">
+                    <i class="fas fa-times"></i> Anuluj
+                </button>
+                <button onclick="showAIPanel()" class="action-btn generate">
+                    <i class="fas fa-robot"></i> Regeneruj AI
+                </button>
+                <button onclick="exportCurrentContent()" class="action-btn">
+                    <i class="fas fa-download"></i> Eksportuj
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal wstawiania obrazów -->
+<div class="image-modal" id="imageModal">
+    <div class="image-modal-content">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-900">📷 Wstaw Obraz</h3>
+            <button onclick="closeImageModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="tabs mb-4">
+            <button class="toolbar-btn active" onclick="switchImageTab('upload')" id="uploadTab">
+                <i class="fas fa-upload"></i> Upload
+            </button>
+            <button class="toolbar-btn" onclick="switchImageTab('url')" id="urlTab">
+                <i class="fas fa-link"></i> URL
+            </button>
+        </div>
+        
+        <div id="uploadImagePanel">
+            <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
+                <div class="text-center">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-lg font-medium text-gray-700 mb-2">Przeciągnij obraz tutaj lub kliknij aby wybrać</p>
+                    <p class="text-sm text-gray-500">PNG, JPG, GIF do 10MB</p>
+                </div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            </div>
+        </div>
+        
+        <div id="urlImagePanel" style="display: none;">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">URL obrazu:</label>
+                    <input type="url" id="imageUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                           placeholder="https://example.com/image.jpg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tekst alternatywny:</label>
+                    <input type="text" id="imageAlt" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                           placeholder="Opis obrazu dla czytników ekranu">
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+            <button onclick="closeImageModal()" class="cancel-btn">Anuluj</button>
+            <button onclick="insertImageFromModal()" class="save-btn">Wstaw Obraz</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
                                                 <h5 class="font-medium text-orange-800">🎯 {{ topic.title }}</h5>
                                                 <p class="text-sm text-gray-600">{{ topic.description or 'Brak opisu' }}</p>
                                                 {% set topic_key = module.id + '_' + chapter.id + '_' + topic.id %}
@@ -353,72 +932,673 @@
 </div>
 
 <script>
+// Globalne zmienne
 let currentEditItem = null;
+let currentContent = '';
+let isPreviewMode = false;
+let selectedAIType = 'comprehensive';
+let markdownConverter = null;
+
+// Inicjalizacja
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMarkdown();
+    setupEventListeners();
+    setupDragAndDrop();
+});
+
+// === CORE FUNCTIONS ===
+
+function initializeMarkdown() {
+    // Można dodać bibliotekę markdown converter jeśli potrzeba
+    console.log('Markdown converter initialized');
+}
+
+function setupEventListeners() {
+    // AI Panel options
+    document.querySelectorAll('.ai-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedAIType = this.dataset.type;
+        });
+    });
+
+    // Content editor auto-resize
+    const editor = document.getElementById('contentEditor');
+    if (editor) {
+        editor.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+            if (isPreviewMode) {
+                updatePreview();
+            }
+        });
+    }
+}
+
+function setupDragAndDrop() {
+    const uploadArea = document.getElementById('imageUploadArea');
+    if (uploadArea) {
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageFile(files[0]);
+            }
+        });
+    }
+}
+
+// === MAIN FUNCTIONALITY ===
 
 async function analyzeProgram() {
     try {
-        showLoading('Analizuję program ATPL...');
+        showLoading('🔍 Analizuję program ATPL...', 'Może to potrwać kilka minut');
         
         const response = await fetch('/admin/api/handbook/analyze-program', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
         
         const result = await response.json();
         
         if (result.success) {
-            showMessage(result.message, 'success');
-            setTimeout(() => location.reload(), 1500);
+            showMessage('✅ ' + result.message, 'success');
+            setTimeout(() => location.reload(), 2000);
         } else {
-            showMessage('Błąd: ' + result.message, 'error');
+            showMessage('❌ Błąd: ' + result.message, 'error');
         }
     } catch (error) {
         console.error('Błąd analizy programu:', error);
-        showMessage('Błąd analizy programu: ' + error.message, 'error');
+        showMessage('❌ Błąd analizy: ' + error.message, 'error');
     } finally {
         hideLoading();
     }
 }
 
-async function generateContent(moduleId, chapterId, topicId = null) {
+function selectItem(type, moduleId, chapterId, topicId) {
+    currentEditItem = { type, moduleId, chapterId, topicId };
+    
+    // Aktualizuj UI
+    const title = buildItemTitle(type, moduleId, chapterId, topicId);
+    const breadcrumb = buildBreadcrumb(type, moduleId, chapterId, topicId);
+    
+    document.getElementById('editorTitle').textContent = `✏️ ${title}`;
+    document.getElementById('editorBreadcrumb').textContent = breadcrumb;
+    
+    // Ukryj pusty stan i pokaż edytor
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('editorPanel').style.display = 'flex';
+    
+    // Załaduj istniejącą treść
+    loadContent(moduleId, chapterId, topicId);
+}
+
+async function generateContent(moduleId, chapterId, topicId) {
+    currentEditItem = { moduleId, chapterId, topicId };
+    
+    // Pokaż panel AI
+    showAIPanel();
+    
+    // Aktualizuj UI
+    const title = buildItemTitle('generate', moduleId, chapterId, topicId);
+    document.getElementById('editorTitle').textContent = `🤖 Generowanie: ${title}`;
+    
+    // Ukryj pusty stan i pokaż panel AI
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('editorPanel').style.display = 'flex';
+}
+
+async function generateWithAI() {
+    if (!currentEditItem) return;
+    
     try {
-        const item = topicId ? `${moduleId}/${chapterId}/${topicId}` : `${moduleId}/${chapterId}`;
-        showLoading(`Generuję treść dla: ${item}`);
+        const { moduleId, chapterId, topicId } = currentEditItem;
+        const item = buildItemTitle('item', moduleId, chapterId, topicId);
+        
+        showLoading(`🤖 Generuję treść AI: ${item}`, `Typ: ${selectedAIType}`);
+        hideAIPanel();
         
         const response = await fetch('/admin/api/handbook/generate-content', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 module_id: moduleId,
                 chapter_id: chapterId,
-                topic_id: topicId
+                topic_id: topicId,
+                ai_type: selectedAIType
             })
         });
         
         const result = await response.json();
         
         if (result.success) {
-            showMessage(result.message, 'success');
-            // Odśwież strukturę
-            await refreshStructure();
-            // Pokaż wygenerowaną treść
-            viewContent(moduleId, chapterId, topicId);
+            currentContent = result.content || '';
+            showEditor(true);
+            document.getElementById('contentEditor').value = currentContent;
+            showMessage('✅ Treść wygenerowana pomyślnie!', 'success');
+            
+            // Auto-preview if enabled
+            if (isPreviewMode) {
+                updatePreview();
+            }
         } else {
-            showMessage('Błąd: ' + result.message, 'error');
+            showMessage('❌ Błąd: ' + result.message, 'error');
         }
     } catch (error) {
         console.error('Błąd generowania treści:', error);
-        showMessage('Błąd generowania treści: ' + error.message, 'error');
+        showMessage('❌ Błąd generowania: ' + error.message, 'error');
     } finally {
         hideLoading();
     }
 }
 
-async function viewContent(moduleId, chapterId, topicId = null) {
+async function loadContent(moduleId, chapterId, topicId) {
+    try {
+        const params = new URLSearchParams({ module_id: moduleId, chapter_id: chapterId });
+        if (topicId) params.append('topic_id', topicId);
+        
+        const response = await fetch(`/admin/api/handbook/content?${params}`);
+        const result = await response.json();
+        
+        if (result.success && result.content) {
+            currentContent = result.content;
+            showEditor(true);
+            document.getElementById('contentEditor').value = currentContent;
+            
+            if (isPreviewMode) {
+                updatePreview();
+            }
+        } else {
+            // Brak treści - pokaż opcje generowania
+            showEditor(false);
+            showMessage('ℹ️ Brak treści. Wygeneruj za pomocą AI lub zacznij pisać.', 'info');
+        }
+    } catch (error) {
+        console.error('Błąd ładowania treści:', error);
+        showMessage('❌ Błąd ładowania treści: ' + error.message, 'error');
+    }
+}
+
+async function saveContent() {
+    if (!currentEditItem) return;
+    
+    try {
+        const { moduleId, chapterId, topicId } = currentEditItem;
+        const content = document.getElementById('contentEditor').value;
+        
+        showLoading('💾 Zapisuję zmiany...');
+        
+        const response = await fetch('/admin/api/handbook/save-content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                module_id: moduleId,
+                chapter_id: chapterId,
+                topic_id: topicId,
+                content: content
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            currentContent = content;
+            showMessage('✅ Zmiany zapisane pomyślnie!', 'success');
+            // Odśwież strukturę w tle
+            setTimeout(refreshProgress, 1000);
+        } else {
+            showMessage('❌ Błąd: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd zapisywania:', error);
+        showMessage('❌ Błąd zapisywania: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// === UI CONTROL FUNCTIONS ===
+
+function showEditor(hasContent) {
+    document.getElementById('editorToolbar').style.display = 'flex';
+    document.getElementById('contentEditor').style.display = 'block';
+    document.getElementById('saveActions').style.display = 'flex';
+    
+    if (hasContent && isPreviewMode) {
+        updatePreview();
+    }
+}
+
+function showAIPanel() {
+    document.getElementById('aiPanel').style.display = 'block';
+    document.getElementById('editorToolbar').style.display = 'none';
+    document.getElementById('contentEditor').style.display = 'none';
+    document.getElementById('previewPanel').style.display = 'none';
+    document.getElementById('saveActions').style.display = 'none';
+}
+
+function hideAIPanel() {
+    document.getElementById('aiPanel').style.display = 'none';
+}
+
+function cancelEdit() {
+    // Reset UI
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('editorPanel').style.display = 'none';
+    currentEditItem = null;
+    currentContent = '';
+    isPreviewMode = false;
+    
+    // Reset form
+    document.getElementById('contentEditor').value = '';
+    document.getElementById('previewContent').innerHTML = 'Brak treści do podglądu';
+}
+
+function togglePreview() {
+    const editor = document.getElementById('contentEditor');
+    const preview = document.getElementById('previewPanel');
+    const previewBtn = document.getElementById('previewBtn');
+    
+    isPreviewMode = !isPreviewMode;
+    
+    if (isPreviewMode) {
+        editor.style.display = 'none';
+        preview.style.display = 'block';
+        previewBtn.innerHTML = '<i class="fas fa-edit"></i> Edytuj';
+        previewBtn.classList.add('active');
+        updatePreview();
+    } else {
+        editor.style.display = 'block';
+        preview.style.display = 'none';
+        previewBtn.innerHTML = '<i class="fas fa-eye"></i> Podgląd';
+        previewBtn.classList.remove('active');
+    }
+}
+
+function updatePreview() {
+    const content = document.getElementById('contentEditor').value;
+    const previewContent = document.getElementById('previewContent');
+    
+    // Prosty markdown parser (można rozszerzyć)
+    let html = content
+        .replace(/### (.*)/g, '<h3>$1</h3>')
+        .replace(/## (.*)/g, '<h2>$1</h2>')
+        .replace(/# (.*)/g, '<h1>$1</h1>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+    
+    if (html) {
+        html = '<p>' + html + '</p>';
+    }
+    
+    previewContent.innerHTML = html || 'Brak treści do podglądu';
+}
+
+// === FORMATTING FUNCTIONS ===
+
+function formatText(type) {
+    const editor = document.getElementById('contentEditor');
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selectedText = editor.value.substring(start, end);
+    const beforeText = editor.value.substring(0, start);
+    const afterText = editor.value.substring(end);
+    
+    let formattedText = '';
+    
+    switch (type) {
+        case 'bold':
+            formattedText = `**${selectedText || 'tekst'}**`;
+            break;
+        case 'italic':
+            formattedText = `*${selectedText || 'tekst'}*`;
+            break;
+        case 'underline':
+            formattedText = `<u>${selectedText || 'tekst'}</u>`;
+            break;
+        case 'h1':
+            formattedText = `# ${selectedText || 'Nagłówek 1'}`;
+            break;
+        case 'h2':
+            formattedText = `## ${selectedText || 'Nagłówek 2'}`;
+            break;
+        case 'h3':
+            formattedText = `### ${selectedText || 'Nagłówek 3'}`;
+            break;
+        case 'ul':
+            formattedText = `- ${selectedText || 'Element listy'}`;
+            break;
+        case 'ol':
+            formattedText = `1. ${selectedText || 'Element listy'}`;
+            break;
+        case 'quote':
+            formattedText = `> ${selectedText || 'Cytat'}`;
+            break;
+    }
+    
+    editor.value = beforeText + formattedText + afterText;
+    editor.focus();
+    
+    // Ustaw kursor na końcu sformatowanego tekstu
+    const newPosition = start + formattedText.length;
+    editor.setSelectionRange(newPosition, newPosition);
+    
+    if (isPreviewMode) {
+        updatePreview();
+    }
+}
+
+// === IMAGE FUNCTIONS ===
+
+function insertImage() {
+    document.getElementById('imageModal').style.display = 'flex';
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').style.display = 'none';
+    document.getElementById('imageInput').value = '';
+    document.getElementById('imageUrl').value = '';
+    document.getElementById('imageAlt').value = '';
+}
+
+function switchImageTab(tab) {
+    const uploadTab = document.getElementById('uploadTab');
+    const urlTab = document.getElementById('urlTab');
+    const uploadPanel = document.getElementById('uploadImagePanel');
+    const urlPanel = document.getElementById('urlImagePanel');
+    
+    if (tab === 'upload') {
+        uploadTab.classList.add('active');
+        urlTab.classList.remove('active');
+        uploadPanel.style.display = 'block';
+        urlPanel.style.display = 'none';
+    } else {
+        urlTab.classList.add('active');
+        uploadTab.classList.remove('active');
+        urlPanel.style.display = 'block';
+        uploadPanel.style.display = 'none';
+    }
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        handleImageFile(file);
+    }
+}
+
+async function handleImageFile(file) {
+    if (!file.type.startsWith('image/')) {
+        showMessage('❌ Proszę wybrać plik graficzny', 'error');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) { // 10MB
+        showMessage('❌ Plik jest za duży (max 10MB)', 'error');
+        return;
+    }
+    
+    try {
+        showLoading('📤 Przesyłam obraz...');
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        const response = await fetch('/admin/api/handbook/upload-image', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const imageMarkdown = `![${file.name}](${result.url})`;
+            insertTextAtCursor(imageMarkdown);
+            closeImageModal();
+            showMessage('✅ Obraz przesłany pomyślnie', 'success');
+        } else {
+            showMessage('❌ Błąd przesyłania: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd przesyłania obrazu:', error);
+        showMessage('❌ Błąd przesyłania obrazu: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function insertImageFromModal() {
+    const url = document.getElementById('imageUrl').value;
+    const alt = document.getElementById('imageAlt').value || 'Obraz';
+    
+    if (url) {
+        const imageMarkdown = `![${alt}](${url})`;
+        insertTextAtCursor(imageMarkdown);
+        closeImageModal();
+    } else {
+        showMessage('❌ Proszę podać URL obrazu', 'error');
+    }
+}
+
+// === UTILITY FUNCTIONS ===
+
+function insertTextAtCursor(text) {
+    const editor = document.getElementById('contentEditor');
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const beforeText = editor.value.substring(0, start);
+    const afterText = editor.value.substring(end);
+    
+    editor.value = beforeText + text + afterText;
+    editor.focus();
+    
+    const newPosition = start + text.length;
+    editor.setSelectionRange(newPosition, newPosition);
+    
+    if (isPreviewMode) {
+        updatePreview();
+    }
+}
+
+function insertTable() {
+    const tableMarkdown = `
+| Kolumna 1 | Kolumna 2 | Kolumna 3 |
+|-----------|-----------|-----------|
+| Wiersz 1  | Dane      | Dane      |
+| Wiersz 2  | Dane      | Dane      |
+`;
+    insertTextAtCursor(tableMarkdown);
+}
+
+function insertCode() {
+    const codeMarkdown = '```\n// Twój kod tutaj\n```';
+    insertTextAtCursor(codeMarkdown);
+}
+
+function buildItemTitle(type, moduleId, chapterId, topicId) {
+    if (topicId) return `Temat ${topicId}`;
+    if (chapterId) return `Rozdział ${chapterId}`;
+    return `Moduł ${moduleId}`;
+}
+
+function buildBreadcrumb(type, moduleId, chapterId, topicId) {
+    let breadcrumb = `Moduł ${moduleId}`;
+    if (chapterId) breadcrumb += ` › Rozdział ${chapterId}`;
+    if (topicId) breadcrumb += ` › Temat ${topicId}`;
+    return breadcrumb;
+}
+
+// === EXPORT FUNCTIONS ===
+
+async function exportHandbook() {
+    try {
+        showLoading('📄 Eksportuję podręcznik...', 'Tworzenie pliku PDF');
+        
+        const response = await fetch('/admin/api/handbook/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ format: 'markdown' })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Pobierz plik
+            const link = document.createElement('a');
+            link.href = result.download_url;
+            link.download = result.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('✅ Podręcznik wyeksportowany pomyślnie!', 'success');
+        } else {
+            showMessage('❌ Błąd eksportu: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd eksportu:', error);
+        showMessage('❌ Błąd eksportu: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function exportCurrentContent() {
+    if (!currentEditItem || !currentContent) {
+        showMessage('❌ Brak treści do eksportu', 'error');
+        return;
+    }
+    
+    const { moduleId, chapterId, topicId } = currentEditItem;
+    const title = buildItemTitle('item', moduleId, chapterId, topicId);
+    
+    const blob = new Blob([currentContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showMessage('✅ Treść wyeksportowana!', 'success');
+}
+
+async function resetHandbook() {
+    if (!confirm('🗑️ Czy na pewno chcesz zresetować cały podręcznik? Wszystkie dane zostaną utracone!')) {
+        return;
+    }
+    
+    try {
+        showLoading('🔄 Resetuję podręcznik...', 'Usuwanie danych');
+        
+        const response = await fetch('/admin/api/handbook/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('✅ Podręcznik zresetowany pomyślnie!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showMessage('❌ Błąd resetowania: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Błąd resetowania:', error);
+        showMessage('❌ Błąd resetowania: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// === HELPER FUNCTIONS ===
+
+async function refreshProgress() {
+    try {
+        const response = await fetch('/admin/api/handbook/progress');
+        const result = await response.json();
+        
+        if (result.success) {
+            // Odśwież paski postępu
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.width = (result.progress.completion_percentage || 0) + '%';
+            }
+        }
+    } catch (error) {
+        console.error('Błąd odświeżania postępu:', error);
+    }
+}
+
+function showLoading(message, subtitle = '') {
+    const loadingHtml = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="loadingOverlay">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+                <div class="spinner mb-4"></div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">${message}</h3>
+                ${subtitle ? `<p class="text-gray-600">${subtitle}</p>` : ''}
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', loadingHtml);
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+function showMessage(message, type = 'info') {
+    const bgColor = {
+        'success': 'bg-green-500',
+        'error': 'bg-red-500',
+        'info': 'bg-blue-500',
+        'warning': 'bg-yellow-500'
+    }[type] || 'bg-gray-500';
+    
+    const messageHtml = `
+        <div class="fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-md" id="messageToast">
+            <div class="flex items-center">
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing messages
+    document.querySelectorAll('#messageToast').forEach(el => el.remove());
+    
+    document.body.insertAdjacentHTML('beforeend', messageHtml);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        const toast = document.getElementById('messageToast');
+        if (toast) toast.remove();
+    }, 5000);
+}
+</script>
     try {
         const params = new URLSearchParams({
             module_id: moduleId,
