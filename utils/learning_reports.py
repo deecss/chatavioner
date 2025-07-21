@@ -839,14 +839,28 @@ class LearningReportsSystem:
     def delete_report(self, report_id: str) -> bool:
         """Usuwa raport o podanym ID"""
         try:
-            report_file = os.path.join(self.reports_dir, f"{report_id}.json")
+            # Najpierw znajdź raport w liście dostępnych raportów
+            reports = self.get_available_reports()
+            target_report = None
+            
+            for report in reports:
+                if report['report_id'] == report_id:
+                    target_report = report
+                    break
+            
+            if not target_report:
+                print(f"⚠️  Nie znaleziono raportu o ID: {report_id}")
+                return False
+            
+            # Usuń plik używając filepath z metadanych raportu
+            report_file = target_report['filepath']
             
             if os.path.exists(report_file):
                 os.remove(report_file)
-                print(f"✅ Usunięto raport: {report_id}")
+                print(f"✅ Usunięto raport: {report_file}")
                 return True
             else:
-                print(f"⚠️  Raport {report_id} nie istnieje")
+                print(f"⚠️  Plik raportu nie istnieje: {report_file}")
                 return False
                 
         except Exception as e:

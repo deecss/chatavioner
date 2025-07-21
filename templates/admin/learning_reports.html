@@ -582,28 +582,38 @@
         `;
         
         const popularTopics = topicDistribution.most_popular_topics || [];
-        popularTopics.slice(0, 5).forEach(topicItem => {
-            // Sprawdź czy to obiekt czy tablica
-            let topic, count;
-            if (Array.isArray(topicItem)) {
-                [topic, count] = topicItem;
-            } else if (typeof topicItem === 'object' && topicItem !== null) {
-                topic = topicItem.topic || 'Nieznany';
-                count = topicItem.count || 0;
-            } else {
-                topic = 'Nieznany';
-                count = 0;
-            }
-            
+        
+        if (popularTopics.length > 0) {
+            popularTopics.slice(0, 5).forEach(topicItem => {
+                // Sprawdź czy to obiekt czy tablica
+                let topic, count;
+                if (Array.isArray(topicItem)) {
+                    [topic, count] = topicItem;
+                } else if (typeof topicItem === 'object' && topicItem !== null) {
+                    topic = topicItem.topic || 'Nieznany';
+                    count = topicItem.count || 0;
+                } else {
+                    topic = 'Nieznany';
+                    count = 0;
+                }
+                
+                html += `
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">${topic}</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${count}
+                        </span>
+                    </div>
+                `;
+            });
+        } else {
             html += `
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600">${topic}</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        ${count}
-                    </span>
+                <div class="text-gray-500 text-sm italic">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Brak danych o tematach w tym okresie
                 </div>
             `;
-        });
+        }
         
         html += `
                     </div>
@@ -624,16 +634,27 @@
                         <tbody class="bg-white divide-y divide-gray-200">
         `;
         
-        userActivity.forEach(user => {
+        if (userActivity.length > 0) {
+            userActivity.forEach(user => {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-3 py-2 font-medium text-gray-900">${user.username || user.user_id}</td>
+                        <td class="px-3 py-2">${user.questions_count || 0}</td>
+                        <td class="px-3 py-2">${user.feedback_given || 0}</td>
+                        <td class="px-3 py-2 text-gray-600">${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
+                    </tr>
+                `;
+            });
+        } else {
             html += `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-3 py-2 font-medium text-gray-900">${user.username || user.user_id}</td>
-                    <td class="px-3 py-2">${user.questions_count || 0}</td>
-                    <td class="px-3 py-2">${user.feedback_given || 0}</td>
-                    <td class="px-3 py-2 text-gray-600">${user.last_activity ? new Date(user.last_activity).toLocaleString('pl-PL') : 'N/A'}</td>
+                <tr>
+                    <td colspan="4" class="px-3 py-8 text-center text-gray-500 italic">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Brak aktywności użytkowników w tym okresie
+                    </td>
                 </tr>
             `;
-        });
+        }
         
         html += `
                         </tbody>
@@ -642,8 +663,53 @@
             </div>
         `;
         
-        // Dodaj sekcję z przykładowymi pytaniami
+        // Dodaj sekcję "5 ostatnich pytań zadanych przez użytkowników"
         const questionsAnalysis = report.questions_analysis || {};
+        const recentQuestions = questionsAnalysis.recent_questions || [];
+        
+        if (recentQuestions.length > 0) {
+            html += `
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-3">🕒 5 ostatnich pytań zadanych przez użytkowników</h4>
+                    <div class="space-y-3">
+            `;
+            
+            recentQuestions.slice(-5).reverse().forEach((question, index) => {
+                const userName = report.user_activity.find(u => u.user_id === question.user_id)?.username || question.user_id || 'Nieznany';
+                html += `
+                    <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-medium text-blue-600">#${recentQuestions.length - index}</span>
+                            <span class="text-xs text-gray-500">${question.timestamp ? new Date(question.timestamp).toLocaleString('pl-PL') : 'N/A'}</span>
+                        </div>
+                        <div class="text-sm text-gray-900 mb-2 font-medium">${question.content}</div>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">👤 ${userName}</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">🏷️ ${question.topic || 'brak tematu'}</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">📊 ${question.complexity || 'brak danych'}</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">📝 ${question.type || 'brak typu'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-3">🕒 5 ostatnich pytań zadanych przez użytkowników</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center text-gray-500 italic">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Brak pytań w tym okresie
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Dodaj sekcję z przykładowymi pytaniami
         const sampleQuestions = questionsAnalysis.sample_questions || [];
         
         if (sampleQuestions.length > 0) {

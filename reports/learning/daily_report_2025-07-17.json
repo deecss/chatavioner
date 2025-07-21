@@ -1,8 +1,8 @@
 {
-  "report_id": "e2af383b-a19d-453f-801d-d637bc1f23d8",
+  "report_id": "7113e3c4-f3f3-49e4-97d5-e60f9ef53f1e",
   "report_type": "daily",
   "date": "2025-07-17",
-  "generated_at": "2025-07-18T20:00:28.418268",
+  "generated_at": "2025-07-21T11:27:03.370627",
   "period": {
     "start": "2025-07-17T00:00:00",
     "end": "2025-07-18T00:00:00"
@@ -24,8 +24,8 @@
       "responses_received": 4,
       "feedback_given": 0,
       "topics_discussed": [
-        "ogólne",
-        "aerodynamika"
+        "aerodynamika",
+        "ogólne"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-17T00:10:09.072332",
@@ -81,7 +81,14 @@
           "content_preview": "siła nośna",
           "session_id": "2b10f674-06d7-47c5-9da2-1477931197f2"
         }
-      ]
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
     },
     {
       "user_id": "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4",
@@ -92,8 +99,8 @@
       "responses_received": 5,
       "feedback_given": 0,
       "topics_discussed": [
-        "ogólne",
-        "meteorologia"
+        "meteorologia",
+        "ogólne"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-17T22:03:19.606820",
@@ -156,7 +163,14 @@
           "content_preview": "który z nich jest najniebezpieczniejszy i dlaczego - 5 zdań max",
           "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31"
         }
-      ]
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
     }
   ],
   "questions_analysis": {
@@ -424,27 +438,41 @@
       "meteorologia": 2
     },
     "most_popular_topics": [
-      [
-        "ogólne",
-        6
-      ],
-      [
-        "meteorologia",
-        2
-      ],
-      [
-        "aerodynamika",
-        1
-      ]
+      {
+        "topic": "ogólne",
+        "count": 6
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "aerodynamika",
+        "count": 1
+      }
+    ],
+    "most_popular": [
+      {
+        "topic": "ogólne",
+        "count": 6
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "aerodynamika",
+        "count": 1
+      }
     ],
     "topics_by_user": {
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
-        "ogólne",
-        "aerodynamika"
+        "aerodynamika",
+        "ogólne"
       ],
       "513ca962-262e-42e3-9eb5-d7d3ad4e4fb4": [
-        "ogólne",
-        "meteorologia"
+        "meteorologia",
+        "ogólne"
       ]
     },
     "unique_topics": 3,

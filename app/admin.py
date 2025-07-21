@@ -879,10 +879,16 @@ def api_delete_learning_report(report_id):
         scheduler = get_scheduler()
         result = scheduler.delete_report(report_id)
         
-        return jsonify({
-            'success': True,
-            'message': 'Raport usunięty pomyślnie'
-        })
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Raport usunięty pomyślnie'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Nie udało się usunąć raportu'
+            }), 404
     except Exception as e:
         logger.error(f"Błąd usuwania raportu: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
