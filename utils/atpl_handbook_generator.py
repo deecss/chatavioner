@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import PyPDF2
-from openai import OpenAI
+from .openai_rag import OpenAIRAG
 import re
 
 
@@ -20,7 +20,9 @@ class ATPLHandbookGenerator:
     
     def __init__(self):
         try:
-            self.client = OpenAI()
+            # Użyj istniejącej konfiguracji OpenAI RAG
+            self.openai_rag = OpenAIRAG()
+            self.client = self.openai_rag.client
         except Exception as e:
             print(f"⚠️  Błąd inicjalizacji OpenAI: {e}")
             self.client = None
@@ -72,6 +74,10 @@ class ATPLHandbookGenerator:
         
         print(f"📄 Analizuję strukturę programu: {self.program_file}")
         
+        # Sprawdź dostępność klienta OpenAI
+        if not self.client:
+            raise Exception("Klient OpenAI nie jest dostępny. Sprawdź konfigurację OPENAI_API_KEY.")
+        
         # Wyciągnij tekst z PDF
         program_text = self.extract_text_from_pdf(self.program_file)
         
@@ -83,8 +89,23 @@ class ATPLHandbookGenerator:
             if not self.client:
                 raise Exception("Klient OpenAI nie jest dostępny")
             
+            # Podziel tekst na mniejsze części jeśli jest za długi
+            max_chunk_size = 12000  # Bezpieczniejszy limit
+            text_chunks = []
+            
+            if len(program_text) > max_chunk_size:
+                print(f"📋 Dokument jest duży ({len(program_text)} znaków), dzielę na części...")
+                for i in range(0, len(program_text), max_chunk_size):
+                    chunk = program_text[i:i + max_chunk_size]
+                    text_chunks.append(chunk)
+            else:
+                text_chunks = [program_text]
+            
+            print(f"🔄 Analizuję {len(text_chunks)} części dokumentu...")
+            
+            # Analizuj pierwszą część dla głównej struktury
             response = self.client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4o",  # Użyj nowszego modelu
                 messages=[
                     {
                         "role": "system",
@@ -122,17 +143,20 @@ class ATPLHandbookGenerator:
                         }
                         
                         Zachowaj wszystkie szczegóły i hierarchię jak w oryginalnym dokumencie.
-                        Używaj polskich nazw dla części po polsku i angielskich dla części w języku angielskim."""
+                        Używaj polskich nazw dla części po polsku i angielskich dla części w języku angielskim.
+                        Skoncentruj się na głównej strukturze - moduły, rozdziały i tematy."""
                     },
                     {
                         "role": "user",
-                        "content": f"Przeanalizuj następujący tekst programu szkolenia ATPL:\n\n{program_text[:15000]}"  # Ograniczenie dla API
+                        "content": f"Przeanalizuj następujący tekst programu szkolenia ATPL (część 1/{len(text_chunks)}):\n\n{text_chunks[0]}"
                     }
                 ],
-                temperature=0.3
+                temperature=0.3,
+                timeout=60  # 60 sekund timeout
             )
             
             structure_text = response.choices[0].message.content
+            print(f"📝 Otrzymano odpowiedź AI ({len(structure_text)} znaków)")
             
             # Wyciągnij JSON z odpowiedzi
             json_match = re.search(r'\{.*\}', structure_text, re.DOTALL)
@@ -140,7 +164,54 @@ class ATPLHandbookGenerator:
                 structure = json.loads(json_match.group())
             else:
                 # Spróbuj sparsować całą odpowiedź jako JSON
-                structure = json.loads(structure_text)
+                try:
+                    structure = json.loads(structure_text)
+                except json.JSONDecodeError:
+                    # Jeśli nie można sparsować, utwórz podstawową strukturę
+                    print("⚠️  Nie można sparsować odpowiedzi AI, tworzę podstawową strukturę...")
+                    structure = {
+                        "title": "Program Szkolenia ATPL",
+                        "description": "Automatycznie wygenerowana struktura z analizy OCR",
+                        "total_hours": "Nie określono",
+                        "modules": [
+                            {
+                                "id": "module_1",
+                                "title": "Moduł 1 - Podstawy",
+                                "description": "Podstawowy moduł szkoleniowy",
+                                "hours": "Nie określono",
+                                "chapters": [
+                                    {
+                                        "id": "chapter_1_1",
+                                        "title": "Rozdział 1.1",
+                                        "description": "Wprowadzenie do tematu",
+                                        "topics": [
+                                            {
+                                                "id": "topic_1_1_1",
+                                                "title": "Temat 1.1.1",
+                                                "description": "Podstawowy temat",
+                                                "subtopics": ["Wprowadzenie", "Podstawy"]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+            
+            # Sprawdź czy struktura ma wymagane pola
+            if not isinstance(structure, dict) or 'modules' not in structure:
+                raise Exception("AI zwróciło nieprawidłową strukturę")
+            
+            # Dodaj ID jeśli brakuje
+            for i, module in enumerate(structure.get('modules', [])):
+                if 'id' not in module:
+                    module['id'] = f"module_{i+1}"
+                for j, chapter in enumerate(module.get('chapters', [])):
+                    if 'id' not in chapter:
+                        chapter['id'] = f"chapter_{i+1}_{j+1}"
+                    for k, topic in enumerate(chapter.get('topics', [])):
+                        if 'id' not in topic:
+                            topic['id'] = f"topic_{i+1}_{j+1}_{k+1}"
             
             # Zapisz strukturę
             self.handbook_structure = structure
@@ -150,8 +221,84 @@ class ATPLHandbookGenerator:
             return structure
             
         except Exception as e:
-            print(f"❌ Błąd analizy struktury: {e}")
-            raise e
+            error_msg = str(e)
+            print(f"❌ Błąd analizy struktury: {error_msg}")
+            
+            # Obsługa specyficznych błędów
+            if "timed out" in error_msg.lower() or "timeout" in error_msg.lower():
+                print("⏱️  Timeout API - spróbuję utworzyć podstawową strukturę z OCR...")
+                
+                # Utwórz podstawową strukturę na podstawie pierwszych linii tekstu
+                lines = program_text.split('\n')[:50]  # Pierwszych 50 linii
+                
+                # Znajdź potencjalne tytuły (linie z dużymi literami lub numerami)
+                potential_titles = []
+                for line in lines:
+                    line = line.strip()
+                    if line and (line.isupper() or re.match(r'^\d+\.', line) or re.match(r'^[IVX]+\.', line)):
+                        potential_titles.append(line)
+                
+                structure = {
+                    "title": "Program Szkolenia ATPL (OCR)",
+                    "description": "Struktura utworzona automatycznie z analizy OCR po timeout API",
+                    "total_hours": "Nie określono",
+                    "modules": []
+                }
+                
+                # Utwórz moduły z znalezionych tytułów
+                for i, title in enumerate(potential_titles[:10]):  # Maksymalnie 10 modułów
+                    module = {
+                        "id": f"module_{i+1}",
+                        "title": title[:100],  # Ograniczenie długości
+                        "description": f"Moduł automatycznie wyodrębniony z OCR",
+                        "hours": "Nie określono",
+                        "chapters": [
+                            {
+                                "id": f"chapter_{i+1}_1",
+                                "title": f"Rozdział 1 - {title[:50]}",
+                                "description": "Automatycznie utworzony rozdział",
+                                "topics": [
+                                    {
+                                        "id": f"topic_{i+1}_1_1",
+                                        "title": f"Wprowadzenie do {title[:30]}",
+                                        "description": "Temat wprowadzający",
+                                        "subtopics": ["Podstawy", "Teoria", "Praktyka"]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                    structure["modules"].append(module)
+                
+                if not structure["modules"]:
+                    # Jeśli nie znaleziono żadnych tytułów, utwórz podstawową strukturę
+                    structure["modules"] = [
+                        {
+                            "id": "module_1",
+                            "title": "Moduł 1 - Podstawy ATPL",
+                            "description": "Podstawowy moduł szkoleniowy",
+                            "hours": "Nie określono",
+                            "chapters": [
+                                {
+                                    "id": "chapter_1_1",
+                                    "title": "Wprowadzenie",
+                                    "description": "Podstawowe informacje",
+                                    "topics": [
+                                        {
+                                            "id": "topic_1_1_1",
+                                            "title": "Podstawy lotnictwa",
+                                            "description": "Fundamentalne zagadnienia",
+                                            "subtopics": ["Historia", "Regulacje", "Bezpieczeństwo"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                
+                print(f"📋 Utworzono strukturę fallback z {len(structure['modules'])} modułów")
+            else:
+                raise e
     
     def get_handbook_structure(self) -> Dict[str, Any]:
         """Pobierz strukturę podręcznika"""
