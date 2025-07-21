@@ -1030,7 +1030,7 @@
                         </div>
                     </div>
                     <div class="editor-actions">
-                        <button onclick="generateWithAI()" class="btn btn-success">
+                        <button onclick="console.log('Kliknięto przycisk Wygeneruj Treść AI'); alert('Test - przycisk kliknięty!'); generateWithAI()" class="btn btn-success">
                             <i class="fas fa-magic" aria-hidden="true"></i>
                             Wygeneruj Treść AI
                         </button>
@@ -1135,9 +1135,11 @@ function setupEventListeners() {
     // AI Panel options
     document.querySelectorAll('.ai-option').forEach(option => {
         option.addEventListener('click', function() {
+            console.log('Wybrano typ AI:', this.dataset.type);
             document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('selected'));
             this.classList.add('selected');
             selectedAIType = this.dataset.type;
+            console.log('selectedAIType ustawiony na:', selectedAIType);
         });
     });
 
