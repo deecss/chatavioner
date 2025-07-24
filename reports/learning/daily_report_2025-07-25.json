@@ -1,0 +1,480 @@
+{
+  "report_id": "5e5beb54-e06a-44e0-aaed-d05fc81fcd41",
+  "report_type": "daily",
+  "date": "2025-07-25",
+  "generated_at": "2025-07-25T00:34:31.511877",
+  "period": {
+    "start": "2025-07-25T00:00:00",
+    "end": "2025-07-26T00:00:00"
+  },
+  "summary": {
+    "total_users": 1,
+    "total_questions": 14,
+    "total_feedback": 0,
+    "avg_questions_per_user": 14.0,
+    "feedback_ratio": 0
+  },
+  "user_activity": [
+    {
+      "user_id": "admin",
+      "username": "admin",
+      "role": "admin",
+      "sessions_count": 2,
+      "questions_count": 14,
+      "responses_received": 14,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "nawigacja",
+        "ogólne"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-25T00:10:55.799981",
+      "last_activity": "2025-07-25T00:32:51.214906",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-25T00:17:59.953248",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiatpl musisz redagowac i pisac w...",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:20:02.960772",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiatpl musisz redagowac i pisac w...",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:21:19.447091",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:22:56.094597",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog...",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:25:13.312581",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "zadaj pytania kontrolne do tego opracowania w taki sopsob jak wczesniej prosilem",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:26:26.415915",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "zapamietaj to i wygeneraj jeszcze raz rozdzial ze wszystkimi instrukcjami ktore ci podalem",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:27:59.275074",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "nie dałes pytan i poropozycji obrazu zapamietaj to ze to ma byc w kazdej odpowiedzi!",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:30:21.615240",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "napisz mi jak masz odpowiadac jakie masz instrukcje sprawdzny poprawnosc",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:31:38.922525",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "a co z pytaniami i obrazami o ktore prosilem czemu tego nie pamietasz?",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        },
+        {
+          "timestamp": "2025-07-25T00:32:20.746493",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "zapisz to na stałe",
+          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+        }
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
+    }
+  ],
+  "questions_analysis": {
+    "total_questions": 14,
+    "unique_users": 1,
+    "avg_per_user": 14.0,
+    "questions_by_type": {
+      "proceduralne": 10,
+      "inne": 4
+    },
+    "questions_by_complexity": {
+      "średnie": 10,
+      "złożone": 2,
+      "proste": 2
+    },
+    "avg_question_length": 97.64285714285714,
+    "sample_questions": [
+      {
+        "content": "do jakich plikow masz dostep?",
+        "length": 29,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:10:55.799981",
+        "user_id": "admin"
+      },
+      {
+        "content": "czy mozesz wypisac z jakich plikow koes?luzyzego c yytatdac csji i s w sestalepzy",
+        "length": 81,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:11:46.799668",
+        "user_id": "admin"
+      },
+      {
+        "content": "Przygotuj obszerny jeden podrozdzial kursu Atpla wybierz i wyswietl ale tak jak by mial trafic do publikacji!",
+        "length": 109,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T00:15:03.901424",
+        "user_id": "admin"
+      },
+      {
+        "content": "to za mało aby opublikowac wybierz z tego na przykład 4. Wymagania dotyczące danych nadzorczych i interoperacyjności i rozwin tak aby mozna vtyło sie z tego nauczyc!",
+        "length": 165,
+        "type": "inne",
+        "complexity": "złożone",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:16:29.838280",
+        "user_id": "admin"
+      },
+      {
+        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+        "length": 139,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T00:17:59.953248",
+        "user_id": "admin"
+      },
+      {
+        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+        "length": 139,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T00:20:02.960772",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
+        "length": 67,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:21:19.447091",
+        "user_id": "admin"
+      },
+      {
+        "content": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog ciebie powinno sie znajdowac na obrazie dotyczacego generowanego tekstu imieszczaj obrazy tak aby p...",
+        "length": 224,
+        "type": "proceduralne",
+        "complexity": "złożone",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:22:56.094597",
+        "user_id": "admin"
+      },
+      {
+        "content": "zadaj pytania kontrolne do tego opracowania w taki sopsob jak wczesniej prosilem",
+        "length": 80,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:25:13.312581",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapamietaj to i wygeneraj jeszcze raz rozdzial ze wszystkimi instrukcjami ktore ci podalem",
+        "length": 90,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:26:26.415915",
+        "user_id": "admin"
+      },
+      {
+        "content": "nie dałes pytan i poropozycji obrazu zapamietaj to ze to ma byc w kazdej odpowiedzi!",
+        "length": 84,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:27:59.275074",
+        "user_id": "admin"
+      },
+      {
+        "content": "napisz mi jak masz odpowiadac jakie masz instrukcje sprawdzny poprawnosc",
+        "length": 72,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:30:21.615240",
+        "user_id": "admin"
+      },
+      {
+        "content": "a co z pytaniami i obrazami o ktore prosilem czemu tego nie pamietasz?",
+        "length": 70,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:31:38.922525",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapisz to na stałe",
+        "length": 18,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:32:20.746493",
+        "user_id": "admin"
+      }
+    ],
+    "recent_questions": [
+      {
+        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+        "length": 139,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T00:17:59.953248",
+        "user_id": "admin"
+      },
+      {
+        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+        "length": 139,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T00:20:02.960772",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
+        "length": 67,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:21:19.447091",
+        "user_id": "admin"
+      },
+      {
+        "content": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog ciebie powinno sie znajdowac na obrazie dotyczacego generowanego tekstu imieszczaj obrazy tak aby p...",
+        "length": 224,
+        "type": "proceduralne",
+        "complexity": "złożone",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:22:56.094597",
+        "user_id": "admin"
+      },
+      {
+        "content": "zadaj pytania kontrolne do tego opracowania w taki sopsob jak wczesniej prosilem",
+        "length": 80,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:25:13.312581",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapamietaj to i wygeneraj jeszcze raz rozdzial ze wszystkimi instrukcjami ktore ci podalem",
+        "length": 90,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:26:26.415915",
+        "user_id": "admin"
+      },
+      {
+        "content": "nie dałes pytan i poropozycji obrazu zapamietaj to ze to ma byc w kazdej odpowiedzi!",
+        "length": 84,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:27:59.275074",
+        "user_id": "admin"
+      },
+      {
+        "content": "napisz mi jak masz odpowiadac jakie masz instrukcje sprawdzny poprawnosc",
+        "length": 72,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:30:21.615240",
+        "user_id": "admin"
+      },
+      {
+        "content": "a co z pytaniami i obrazami o ktore prosilem czemu tego nie pamietasz?",
+        "length": 70,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:31:38.922525",
+        "user_id": "admin"
+      },
+      {
+        "content": "zapisz to na stałe",
+        "length": 18,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T00:32:20.746493",
+        "user_id": "admin"
+      }
+    ],
+    "questions_by_topic": {
+      "ogólne": [
+        {
+          "content": "do jakich plikow masz dostep?",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:10:55.799981",
+          "complexity": "proste"
+        },
+        {
+          "content": "czy mozesz wypisac z jakich plikow koes?luzyzego c yytatdac csji i s w sestalepzy",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:11:46.799668",
+          "complexity": "średnie"
+        },
+        {
+          "content": "to za mało aby opublikowac wybierz z tego na przykład 4. Wymagania dotyczące danych nadzorczych i interoperacyjności i rozwin tak aby mozna vtyło sie z tego nauczyc!",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:16:29.838280",
+          "complexity": "złożone"
+        },
+        {
+          "content": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:21:19.447091",
+          "complexity": "średnie"
+        },
+        {
+          "content": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog ciebie powinno sie znajdowac na obrazie dotyczacego generowanego tekstu imieszczaj obrazy tak aby p...",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:22:56.094597",
+          "complexity": "złożone"
+        }
+      ],
+      "nawigacja": [
+        {
+          "content": "Przygotuj obszerny jeden podrozdzial kursu Atpla wybierz i wyswietl ale tak jak by mial trafic do publikacji!",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:15:03.901424",
+          "complexity": "średnie"
+        },
+        {
+          "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:17:59.953248",
+          "complexity": "średnie"
+        },
+        {
+          "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T00:20:02.960772",
+          "complexity": "średnie"
+        }
+      ]
+    }
+  },
+  "feedback_analysis": {
+    "total_feedback": 0,
+    "positive_feedback": 0,
+    "negative_feedback": 0,
+    "feedback_ratio": 0,
+    "avg_rating": 0,
+    "recent_feedback": []
+  },
+  "learning_insights": {
+    "user_preferences": {
+      "null": {
+        "detail_level": "medium",
+        "preferred_topics": [],
+        "learning_speed": "normal",
+        "question_style": "direct"
+      }
+    },
+    "topic_progression": {},
+    "question_evolution": {},
+    "common_misconceptions": []
+  },
+  "topic_distribution": {
+    "topic_distribution": {
+      "nawigacja": 3,
+      "ogólne": 11
+    },
+    "most_popular_topics": [
+      {
+        "topic": "ogólne",
+        "count": 11
+      },
+      {
+        "topic": "nawigacja",
+        "count": 3
+      }
+    ],
+    "most_popular": [
+      {
+        "topic": "ogólne",
+        "count": 11
+      },
+      {
+        "topic": "nawigacja",
+        "count": 3
+      }
+    ],
+    "topics_by_user": {
+      "admin": [
+        "nawigacja",
+        "ogólne"
+      ]
+    },
+    "unique_topics": 2,
+    "avg_topics_per_user": 2.0
+  }
+}
