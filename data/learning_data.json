@@ -1,131 +1,5 @@
 [
   {
-    "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "wpływa",
-          1
-        ],
-        [
-          "oblodzenie",
-          1
-        ],
-        [
-          "samolotu",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 6.0,
-        "min_length": 6,
-        "max_length": 6,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-21T14:39:03.732839"
-  },
-  {
-    "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8",
-    "user_id": null,
-    "total_messages": 2,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czestotliwosci",
-          1
-        ],
-        [
-          "zakazane",
-          1
-        ],
-        [
-          "lotnictwie",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg_length": 4207.0,
-        "min_length": 4207,
-        "max_length": 4207,
-        "word_count_avg": 455.0
-      },
-      "structure_types": {
-        "has_headers": 1.0,
-        "has_lists": 1.0,
-        "has_examples": 1.0,
-        "has_formulas": 0.0,
-        "has_summaries": 1.0
-      },
-      "content_types": {
-        "theoretical": 0,
-        "practical": 0,
-        "examples": 1,
-        "procedures": 0,
-        "references": 1
-      },
-      "formatting_patterns": {
-        "html_tags": 79,
-        "markdown_headers": 0,
-        "bullet_points": 0,
-        "numbered_lists": 0,
-        "bold_text": 12,
-        "italic_text": 0
-      }
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-21T14:39:03.742864"
-  },
-  {
     "session_id": "2849f1d5-e34c-46ee-a939-2ebf6de5ff31",
     "user_id": null,
     "total_messages": 10,
@@ -10191,5 +10065,239 @@
       "application": 0
     },
     "timestamp": "2025-07-25T12:39:56.086611"
+  },
+  {
+    "session_id": "fa34320e-99b1-4bc0-8fd6-dbd57e613260",
+    "user_id": null,
+    "total_messages": 5,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "ortodroma",
+          1
+        ],
+        [
+          "lotnictwie",
+          1
+        ],
+        [
+          "odpowiedzi",
+          1
+        ],
+        [
+          "pytania",
+          1
+        ],
+        [
+          "jakie",
+          1
+        ],
+        [
+          "korzyści",
+          1
+        ],
+        [
+          "płyną",
+          1
+        ],
+        [
+          "wykorzystania",
+          1
+        ],
+        [
+          "ortodromy",
+          1
+        ],
+        [
+          "podczas",
+          1
+        ],
+        [
+          "planowania",
+          1
+        ],
+        [
+          "lotów",
+          1
+        ],
+        [
+          "długodystansowych",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 6.666666666666667,
+        "min_length": 4,
+        "max_length": 10,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 5244.5,
+        "min_length": 2354,
+        "max_length": 8135,
+        "word_count_avg": 608.5
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 0.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 2,
+        "practical": 2,
+        "examples": 0,
+        "procedures": 1,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 187,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 17,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-25T12:46:59.401163"
+  },
+  {
+    "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e",
+    "user_id": null,
+    "total_messages": 5,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "ortodroma",
+          2
+        ],
+        [
+          "lotnictwie",
+          1
+        ],
+        [
+          "piszesz",
+          1
+        ],
+        [
+          "ogólnikowo",
+          1
+        ],
+        [
+          "potrzebne",
+          1
+        ],
+        [
+          "konkretne",
+          1
+        ],
+        [
+          "definicje",
+          1
+        ],
+        [
+          "zastosowania",
+          1
+        ],
+        [
+          "lataniu",
+          1
+        ],
+        [
+          "planowaniu",
+          1
+        ],
+        [
+          "nawigacyjnym",
+          1
+        ],
+        [
+          "trasy",
+          1
+        ],
+        [
+          "lotniczej",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 9.0,
+        "min_length": 5,
+        "max_length": 16,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 2
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2863.0,
+        "min_length": 2863,
+        "max_length": 2863,
+        "word_count_avg": 326.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 1.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 1,
+        "practical": 1,
+        "examples": 1,
+        "procedures": 1,
+        "references": 1
+      },
+      "formatting_patterns": {
+        "html_tags": 54,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 5,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 2,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-25T12:53:49.687377"
   }
 ]
