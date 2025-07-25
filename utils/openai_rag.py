@@ -27,13 +27,22 @@ class OpenAIRAG:
             if not api_key or 'twoj-klucz' in api_key:
                 raise ValueError("Nieprawidłowy klucz OpenAI API")
             
-            # Konfiguracja proxy jeśli jest ustawiona
+            # Konfiguracja proxy jeśli jest ustawiona z większym timeout
             proxy_url = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+            
+            # Zwiększ timeout do 300 sekund (5 minut) dla długich odpowiedzi
+            timeout_config = httpx.Timeout(
+                connect=30.0,    # Czas na nawiązanie połączenia
+                read=300.0,      # Czas na odczyt danych (5 minut)
+                write=30.0,      # Czas na zapis
+                pool=30.0        # Timeout dla pool
+            )
+            
             if proxy_url:
                 transport = httpx.HTTPTransport(proxy=proxy_url)
-                http_client = httpx.Client(transport=transport, timeout=30.0)
+                http_client = httpx.Client(transport=transport, timeout=timeout_config)
             else:
-                http_client = httpx.Client(timeout=30.0)
+                http_client = httpx.Client(timeout=timeout_config)
             
             # Inicjalizuj klienta OpenAI z poprawną konfiguracją
             self.client = OpenAI(
@@ -571,12 +580,13 @@ class OpenAIRAG:
                     # Sprawdź czy wątek ma aktywne runy i je anuluj
                     self.cancel_active_runs(thread.id)
                     
-                    # Przygotuj parametry dla run
+                    # Przygotuj parametry dla run z większymi limitami
                     run_params = {
                         'thread_id': thread.id,
                         'assistant_id': self.assistant_id,
                         'stream': True,
-                        'max_completion_tokens': 4000  # Ograniczenie długości odpowiedzi
+                        'max_completion_tokens': 4000,  # Ograniczenie długości odpowiedzi
+                        'max_prompt_tokens': 8000       # Zwiększ limit prompt tokens
                     }
                     
                     # Dodaj temperature tylko jeśli model go obsługuje
@@ -590,12 +600,22 @@ class OpenAIRAG:
                         run_params.pop('temperature', None)
                         run = self.client.beta.threads.runs.create(**run_params)
                     
-                    # Przetwórz strumień odpowiedzi
+                    # Przetwórz strumień odpowiedzi z timeout monitoring
                     response_text = ""
                     chunk_count = 0
                     stream_failed = False
+                    last_chunk_time = time.time()
+                    stream_timeout = 300  # 5 minut timeout dla całego strumienia
                 
                     for event in run:
+                        current_time = time.time()
+                        
+                        # Sprawdź timeout strumienia
+                        if current_time - last_chunk_time > stream_timeout:
+                            print(f"⏰ Timeout strumienia po {stream_timeout} sekundach")
+                            stream_failed = True
+                            break
+                            
                         if event.event == 'thread.message.delta':
                             if hasattr(event.data, 'delta') and hasattr(event.data.delta, 'content'):
                                 for content in event.data.delta.content:
@@ -603,6 +623,7 @@ class OpenAIRAG:
                                         chunk = content.text.value
                                         response_text += chunk
                                         chunk_count += 1
+                                        last_chunk_time = current_time  # Aktualizuj czas ostatniego chunk
                                         if chunk_count <= 3:  # Loguj tylko pierwsze 3 chunki
                                             print(f"🔍 Otrzymano chunk #{chunk_count}: {chunk[:30]}...")
                                         yield chunk
@@ -634,21 +655,46 @@ class OpenAIRAG:
                             yield "Generowanie odpowiedzi zostało anulowane."
                             return
                     
+                    # Sprawdź czy nie ma aktywnego runa po timeout
+                    if stream_failed and current_time - last_chunk_time > stream_timeout:
+                        print("⏰ Przekroczono timeout strumienia - przerywam przetwarzanie")
+                        yield f"\n\n⏰ Timeout: Odpowiedź zajmuje zbyt długo. Spróbuj zadać prostsze pytanie."
+                        break
+                    
                     # Jeśli nie było błędu, zakończ retry loop
                     if not stream_failed:
                         print(f"🔍 Otrzymano łącznie {chunk_count} chunków, długość odpowiedzi: {len(response_text)}")
                         break
                         
                 except Exception as stream_error:
-                    print(f"❌ Błąd podczas streamowania: {stream_error}")
-                    if retry_count < max_retries - 1:
-                        print(f"🔄 Próbuję ponownie ({retry_count + 1}/{max_retries})...")
-                        retry_count += 1
-                        time.sleep(2 ** retry_count)  # Exponential backoff
-                        continue
+                    error_str = str(stream_error)
+                    print(f"❌ Błąd podczas streamowania: {error_str}")
+                    
+                    # Sprawdź czy to timeout
+                    is_timeout = any(keyword in error_str.lower() for keyword in [
+                        'timeout', 'timed out', 'read timeout', 'connection timeout'
+                    ])
+                    
+                    if is_timeout:
+                        print(f"⏰ Wykryto timeout - próba {retry_count + 1}/{max_retries}")
+                        if retry_count < max_retries - 1:
+                            print(f"🔄 Czekam przed kolejną próbą...")
+                            time.sleep(5)  # Czekaj 5 sekund przed retry
+                            retry_count += 1
+                            continue
+                        else:
+                            yield "Przepraszam, odpowiedź zajmuje zbyt długo. Spróbuj zadać prostsze pytanie lub podziel je na części."
+                            break
                     else:
-                        yield f"Przepraszam, wystąpił błąd podczas generowania odpowiedzi: {str(stream_error)}"
-                        break
+                        # Inny błąd
+                        if retry_count < max_retries - 1:
+                            print(f"🔄 Próbuję ponownie ({retry_count + 1}/{max_retries})...")
+                            retry_count += 1
+                            time.sleep(2 ** retry_count)  # Exponential backoff
+                            continue
+                        else:
+                            yield f"Przepraszam, wystąpił błąd podczas generowania odpowiedzi: {error_str}"
+                            break
                 
                 retry_count += 1
                 if stream_failed and retry_count < max_retries:
