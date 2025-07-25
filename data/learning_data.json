@@ -1,176 +1,5 @@
 [
   {
-    "session_id": "575056e8-dbe3-4e98-b01b-f0e2ee818eac_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "czego",
-          1
-        ],
-        [
-          "zaczelismy",
-          1
-        ],
-        [
-          "rozmowe",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "ogólne"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-21T14:39:03.689050"
-  },
-  {
-    "session_id": "e1066193-f3ce-4352-a22d-4109f1e0020e_full_context",
-    "user_id": null,
-    "total_messages": 5,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "samochód",
-          2
-        ],
-        [
-          "samochod",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 4.0,
-        "min_length": 4,
-        "max_length": 4,
-        "preferred_range": "short"
-      },
-      "request_types": {
-        "explanations": 3
-      },
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "silniki",
-      "silniki",
-      "silniki"
-    ],
-    "question_types": {
-      "definition": 3,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-21T14:39:03.715486"
-  },
-  {
-    "session_id": "93e50e30-76b1-424a-852f-8e077a6274d1_full_context",
-    "user_id": null,
-    "total_messages": 1,
-    "user_patterns": {
-      "common_keywords": [
-        [
-          "stworz",
-          1
-        ],
-        [
-          "opracowanie",
-          1
-        ],
-        [
-          "wprowadzenie",
-          1
-        ],
-        [
-          "kursu",
-          1
-        ],
-        [
-          "atpla",
-          1
-        ],
-        [
-          "2025",
-          1
-        ]
-      ],
-      "question_length": {
-        "avg_length": 8.0,
-        "min_length": 8,
-        "max_length": 8,
-        "preferred_range": "medium"
-      },
-      "request_types": {},
-      "follow_up_patterns": {},
-      "preferred_detail_level": "high"
-    },
-    "response_patterns": {
-      "response_length": {
-        "avg": 0,
-        "min": 0,
-        "max": 0
-      },
-      "structure_types": {},
-      "content_types": {},
-      "formatting_patterns": {}
-    },
-    "topic_progression": [
-      "nawigacja"
-    ],
-    "question_types": {
-      "definition": 0,
-      "explanation": 0,
-      "procedure": 0,
-      "comparison": 0,
-      "example": 0,
-      "calculation": 0,
-      "application": 0
-    },
-    "timestamp": "2025-07-21T14:39:03.724665"
-  },
-  {
     "session_id": "d05d7848-b118-41f3-aa97-d4ad82e1faeb_full_context",
     "user_id": null,
     "total_messages": 1,
@@ -10179,5 +10008,188 @@
       "application": 0
     },
     "timestamp": "2025-07-25T11:28:39.545900"
+  },
+  {
+    "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e",
+    "user_id": null,
+    "total_messages": 3,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "ortodroma",
+          2
+        ],
+        [
+          "lotnictwie",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 5.5,
+        "min_length": 5,
+        "max_length": 6,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 2
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 2,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-25T12:33:50.674612"
+  },
+  {
+    "session_id": "fa34320e-99b1-4bc0-8fd6-dbd57e613260",
+    "user_id": null,
+    "total_messages": 1,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "ortodroma",
+          1
+        ],
+        [
+          "lotnictwie",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 6.0,
+        "min_length": 6,
+        "max_length": 6,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "structure_types": {},
+      "content_types": {},
+      "formatting_patterns": {}
+    },
+    "topic_progression": [
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-25T12:38:40.737344"
+  },
+  {
+    "session_id": "fa34320e-99b1-4bc0-8fd6-dbd57e613260",
+    "user_id": null,
+    "total_messages": 3,
+    "user_patterns": {
+      "common_keywords": [
+        [
+          "ortodroma",
+          1
+        ],
+        [
+          "lotnictwie",
+          1
+        ],
+        [
+          "odpowiedzi",
+          1
+        ],
+        [
+          "pytania",
+          1
+        ]
+      ],
+      "question_length": {
+        "avg_length": 5.0,
+        "min_length": 4,
+        "max_length": 6,
+        "preferred_range": "medium"
+      },
+      "request_types": {
+        "explanations": 1
+      },
+      "follow_up_patterns": {},
+      "preferred_detail_level": "high"
+    },
+    "response_patterns": {
+      "response_length": {
+        "avg_length": 2354.0,
+        "min_length": 2354,
+        "max_length": 2354,
+        "word_count_avg": 278.0
+      },
+      "structure_types": {
+        "has_headers": 1.0,
+        "has_lists": 1.0,
+        "has_examples": 0.0,
+        "has_formulas": 0.0,
+        "has_summaries": 1.0
+      },
+      "content_types": {
+        "theoretical": 1,
+        "practical": 1,
+        "examples": 0,
+        "procedures": 0,
+        "references": 0
+      },
+      "formatting_patterns": {
+        "html_tags": 38,
+        "markdown_headers": 0,
+        "bullet_points": 0,
+        "numbered_lists": 0,
+        "bold_text": 2,
+        "italic_text": 0
+      }
+    },
+    "topic_progression": [
+      "ogólne",
+      "ogólne"
+    ],
+    "question_types": {
+      "definition": 1,
+      "explanation": 0,
+      "procedure": 0,
+      "comparison": 0,
+      "example": 0,
+      "calculation": 0,
+      "application": 0
+    },
+    "timestamp": "2025-07-25T12:39:56.086611"
   }
 ]
