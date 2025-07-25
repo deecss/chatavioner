@@ -112,12 +112,8 @@ def setup_learning_system():
         if os.path.exists(history_dir):
             sessions = [f.replace('.json', '') for f in os.listdir(history_dir) if f.endswith('.json')]
             if sessions:
-                # Analizuj wszystkich użytkowników - nowy system!
-                print("👥 Analizuję preferencje wszystkich użytkowników...")
-                learning_system.analyze_and_cache_all_users()
-                
-                # Analizuj ostatnie sesje (dla kompatybilności)
-                print(f"📚 Analizuję ostatnie {min(10, len(sessions))} sesji...")
+                # Analizuj ostatnie sesje
+                print(f"📚 Analizuję {len(sessions)} sesji...")
                 analyzed_count = 0
                 
                 for session_id in sessions[-10:]:  # Ostatnie 10 sesji
@@ -138,7 +134,7 @@ def setup_learning_system():
                 # Wygeneruj przykładowy raport jeśli nie ma żadnych
                 available_reports = learning_reports.get_available_reports()
                 if len(available_reports) == 0:
-                    print("📊 Generuję przykładowy raport uczenia się...")
+                    print("� Generuję przykładowy raport uczenia się...")
                     try:
                         from datetime import datetime
                         report = learning_reports.generate_daily_report(datetime.now())
@@ -149,7 +145,7 @@ def setup_learning_system():
                     print(f"📋 Znaleziono {len(available_reports)} istniejących raportów")
                 
             else:
-                print("📝 Brak sesji do analizy - system uczenia się gotowy na nowe dane")
+                print("�📝 Brak sesji do analizy - system uczenia się gotowy na nowe dane")
         else:
             print("📁 Tworzę katalog historii dla systemu uczenia się")
         
@@ -162,7 +158,6 @@ def setup_learning_system():
             print(f"⚠️  Błąd uruchamiania schedulera: {e}")
         
         print("🎯 System uczenia się uruchomiony pomyślnie!")
-        print("📊 System teraz analizuje WSZYSTKIE sesje każdego użytkownika!")
         
     except Exception as e:
         print(f"❌ Błąd inicjalizacji systemu uczenia się: {e}")
@@ -198,16 +193,7 @@ def main():
         print("\n🚀 Uruchamianie serwera...")
         
         app = create_app()
-        
-        # Konfiguracja SocketIO z większymi timeout dla długich odpowiedzi
-        socketio = SocketIO(
-            app, 
-            cors_allowed_origins="*", 
-            async_mode="threading",
-            ping_timeout=300,        # 5 minut na ping timeout
-            ping_interval=25,        # Ping co 25 sekund
-            max_http_buffer_size=1000000  # 1MB buffer
-        )
+        socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
         
         # Pobierz port z zmiennych środowiskowych
         port = int(os.environ.get("PORT", 5000))

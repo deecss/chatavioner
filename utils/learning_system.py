@@ -417,29 +417,8 @@ class LearningSystem:
             print(f"❌ Błąd zapisywania danych uczenia: {e}")
     
     def get_user_preferences(self, session_id: str, user_id: int = None) -> Dict:
-        """Pobiera preferencje użytkownika na podstawie WSZYSTKICH jego sesji"""
-        if user_id:
-            # Sprawdź czy istnieją zapisane preferencje użytkownika
-            saved_preferences = self.get_saved_user_preferences(user_id)
-            if saved_preferences:
-                # Sprawdź czy preferencje nie są starsze niż 24 godziny
-                saved_time = saved_preferences.get('updated_at')
-                if saved_time:
-                    try:
-                        saved_datetime = datetime.fromisoformat(saved_time.replace('Z', '+00:00'))
-                        time_diff = datetime.now() - saved_datetime
-                        if time_diff.total_seconds() < 24 * 3600:  # 24 godziny
-                            print(f"📋 Używam zapisanych preferencji użytkownika {user_id}")
-                            return saved_preferences
-                    except Exception as e:
-                        print(f"⚠️  Błąd parsowania czasu zapisanych preferencji: {e}")
-            
-            # Analizuj wszystkie sesje użytkownika
-            print(f"🔄 Przeprowadzam pełną analizę sesji użytkownika {user_id}")
-            analysis = self.analyze_all_user_sessions(user_id)
-        else:
-            # Fallback - analizuj tylko bieżącą sesję
-            analysis = self.analyze_conversation_history(session_id, user_id)
+        """Pobiera preferencje użytkownika na podstawie historii"""
+        analysis = self.analyze_conversation_history(session_id, user_id)
         
         if not analysis:
             return self._get_default_preferences()
@@ -458,239 +437,11 @@ class LearningSystem:
             'response_structure_preference': self._determine_structure_preference(analysis),
             'session_id': session_id,
             'user_id': user_id,
-            'total_sessions_analyzed': analysis.get('total_sessions', 1),
             'updated_at': datetime.now().isoformat()
         }
         
-        # Zapisz preferencje dla przyszłego użycia (tylko jeśli to analiza wszystkich sesji)
-        if user_id and analysis.get('total_sessions', 1) > 1:
-            self._save_user_preferences(user_id, preferences)
-        
         return preferences
     
-    def analyze_all_user_sessions(self, user_id: int) -> Dict:
-        """Analizuje wszystkie sesje danego użytkownika i sumuje dane"""
-        print(f"🧠 Analizuję wszystkie sesje użytkownika {user_id}...")
-        
-        # Pobierz wszystkie sesje użytkownika
-        user_sessions = self._get_user_sessions(user_id)
-        
-        if not user_sessions:
-            print(f"⚠️  Brak sesji dla użytkownika {user_id}")
-            return {}
-        
-        print(f"📊 Znaleziono {len(user_sessions)} sesji użytkownika {user_id}")
-        
-        # Inicjalizuj strukturę do sumowania danych
-        aggregated_analysis = {
-            'user_id': user_id,
-            'total_sessions': len(user_sessions),
-            'total_messages': 0,
-            'user_patterns': {
-                'common_keywords': Counter(),
-                'question_length': {'lengths': []},
-                'request_types': Counter(),
-                'follow_up_patterns': Counter(),
-                'preferred_detail_level': Counter()
-            },
-            'response_patterns': {
-                'response_length': {'lengths': []},
-                'structure_types': Counter(),
-                'content_types': Counter(),
-                'formatting_patterns': Counter()
-            },
-            'topic_progression': [],
-            'question_types': Counter(),
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        # Analizuj każdą sesję użytkownika
-        for session_id in user_sessions:
-            try:
-                session_analysis = self.analyze_conversation_history(session_id, user_id)
-                if session_analysis:
-                    self._merge_session_analysis(aggregated_analysis, session_analysis)
-                    print(f"✅ Przeanalizowano sesję {session_id}")
-            except Exception as e:
-                print(f"⚠️  Błąd analizy sesji {session_id}: {e}")
-                continue
-        
-        # Przetwórz zagregowane dane
-        aggregated_analysis = self._process_aggregated_data(aggregated_analysis)
-        
-        print(f"🎯 Analiza użytkownika {user_id} zakończona - {aggregated_analysis['total_sessions']} sesji, {aggregated_analysis['total_messages']} wiadomości")
-        
-        return aggregated_analysis
-    
-    def _get_user_sessions(self, user_id: int) -> List[str]:
-        """Pobiera listę wszystkich sesji użytkownika"""
-        user_sessions = []
-        
-        # Sprawdź plik sesji użytkownika
-        user_sessions_file = f'data/user_sessions/{user_id}.json'
-        if os.path.exists(user_sessions_file):
-            try:
-                with open(user_sessions_file, 'r', encoding='utf-8') as f:
-                    sessions_data = json.load(f)
-                    if isinstance(sessions_data, list):
-                        user_sessions = [session['session_id'] for session in sessions_data if 'session_id' in session]
-                        print(f"📋 Znaleziono {len(user_sessions)} sesji w pliku użytkownika")
-            except Exception as e:
-                print(f"❌ Błąd wczytywania sesji użytkownika {user_id}: {e}")
-        
-        # Również sprawdź katalog history dla wszystkich sesji (fallback)
-        history_dir = 'history'
-        if os.path.exists(history_dir):
-            try:
-                for filename in os.listdir(history_dir):
-                    if filename.endswith('.json') and not filename.endswith('_full_context.json'):
-                        session_id = filename.replace('.json', '')
-                        # Sprawdź czy sesja należy do użytkownika
-                        if self._session_belongs_to_user(session_id, user_id):
-                            if session_id not in user_sessions:
-                                user_sessions.append(session_id)
-            except Exception as e:
-                print(f"❌ Błąd skanowania katalogu history: {e}")
-        
-        return user_sessions
-    
-    def _session_belongs_to_user(self, session_id: str, user_id: int) -> bool:
-        """Sprawdza czy sesja należy do danego użytkownika"""
-        try:
-            history_file = f'history/{session_id}.json'
-            if os.path.exists(history_file):
-                with open(history_file, 'r', encoding='utf-8') as f:
-                    history = json.load(f)
-                    # Sprawdź czy w historii są wiadomości tego użytkownika
-                    for msg in history:
-                        if isinstance(msg, dict) and msg.get('user_id') == user_id:
-                            return True
-            return False
-        except Exception as e:
-            print(f"⚠️  Błąd sprawdzania przynależności sesji {session_id}: {e}")
-            return False
-    
-    def _merge_session_analysis(self, aggregated: Dict, session_analysis: Dict):
-        """Łączy analizę pojedynczej sesji z zagregowanymi danymi"""
-        try:
-            # Sumuj całkowitą liczbę wiadomości
-            aggregated['total_messages'] += session_analysis.get('total_messages', 0)
-            
-            # Łącz wzorce użytkownika
-            user_patterns = session_analysis.get('user_patterns', {})
-            
-            # Słowa kluczowe
-            keywords = user_patterns.get('common_keywords', [])
-            for keyword, count in keywords:
-                aggregated['user_patterns']['common_keywords'][keyword] += count
-            
-            # Długości pytań
-            question_length = user_patterns.get('question_length', {})
-            if 'avg_length' in question_length:
-                aggregated['user_patterns']['question_length']['lengths'].append(question_length['avg_length'])
-            
-            # Typy zapytań
-            request_types = user_patterns.get('request_types', {})
-            for req_type, count in request_types.items():
-                aggregated['user_patterns']['request_types'][req_type] += count
-            
-            # Wzorce follow-up
-            follow_up = user_patterns.get('follow_up_patterns', {})
-            for pattern_type, count in follow_up.items():
-                aggregated['user_patterns']['follow_up_patterns'][pattern_type] += count
-            
-            # Poziom szczegółowości
-            detail_level = user_patterns.get('preferred_detail_level', 'medium')
-            aggregated['user_patterns']['preferred_detail_level'][detail_level] += 1
-            
-            # Wzorce odpowiedzi
-            response_patterns = session_analysis.get('response_patterns', {})
-            
-            # Długości odpowiedzi
-            response_length = response_patterns.get('response_length', {})
-            if 'avg_length' in response_length:
-                aggregated['response_patterns']['response_length']['lengths'].append(response_length['avg_length'])
-            
-            # Typy struktur
-            structure_types = response_patterns.get('structure_types', {})
-            for struct_type, count in structure_types.items():
-                aggregated['response_patterns']['structure_types'][struct_type] += count
-            
-            # Typy treści
-            content_types = response_patterns.get('content_types', {})
-            for content_type, count in content_types.items():
-                aggregated['response_patterns']['content_types'][content_type] += count
-            
-            # Formatowanie
-            formatting = response_patterns.get('formatting_patterns', {})
-            for format_type, count in formatting.items():
-                aggregated['response_patterns']['formatting_patterns'][format_type] += count
-            
-            # Progresja tematów
-            topics = session_analysis.get('topic_progression', [])
-            aggregated['topic_progression'].extend(topics)
-            
-            # Typy pytań
-            question_types = session_analysis.get('question_types', {})
-            for q_type, count in question_types.items():
-                aggregated['question_types'][q_type] += count
-                
-        except Exception as e:
-            print(f"❌ Błąd łączenia analizy sesji: {e}")
-    
-    def _process_aggregated_data(self, aggregated: Dict) -> Dict:
-        """Przetwarza zagregowane dane do finalnej postaci"""
-        try:
-            # Przetwórz słowa kluczowe na listę top 20
-            aggregated['user_patterns']['common_keywords'] = aggregated['user_patterns']['common_keywords'].most_common(20)
-            
-            # Oblicz średnią długość pytań
-            lengths = aggregated['user_patterns']['question_length']['lengths']
-            if lengths:
-                avg_length = sum(lengths) / len(lengths)
-                aggregated['user_patterns']['question_length'] = {
-                    'avg': avg_length,
-                    'min': min(lengths),
-                    'max': max(lengths),
-                    'preferred_range': 'short' if avg_length < 5 else 'medium' if avg_length < 15 else 'long'
-                }
-            else:
-                aggregated['user_patterns']['question_length'] = {'avg': 0, 'preferred_range': 'medium'}
-            
-            # Konwertuj Countery na słowniki
-            aggregated['user_patterns']['request_types'] = dict(aggregated['user_patterns']['request_types'])
-            aggregated['user_patterns']['follow_up_patterns'] = dict(aggregated['user_patterns']['follow_up_patterns'])
-            
-            # Wybierz najczęstszy poziom szczegółowości
-            detail_counter = aggregated['user_patterns']['preferred_detail_level']
-            if detail_counter:
-                aggregated['user_patterns']['preferred_detail_level'] = detail_counter.most_common(1)[0][0]
-            else:
-                aggregated['user_patterns']['preferred_detail_level'] = 'medium'
-            
-            # Przetwórz długości odpowiedzi
-            response_lengths = aggregated['response_patterns']['response_length']['lengths']
-            if response_lengths:
-                aggregated['response_patterns']['response_length'] = {
-                    'avg_length': sum(response_lengths) / len(response_lengths),
-                    'min_length': min(response_lengths),
-                    'max_length': max(response_lengths)
-                }
-            else:
-                aggregated['response_patterns']['response_length'] = {'avg_length': 0}
-            
-            # Konwertuj pozostałe Countery
-            aggregated['response_patterns']['structure_types'] = dict(aggregated['response_patterns']['structure_types'])
-            aggregated['response_patterns']['content_types'] = dict(aggregated['response_patterns']['content_types'])
-            aggregated['response_patterns']['formatting_patterns'] = dict(aggregated['response_patterns']['formatting_patterns'])
-            aggregated['question_types'] = dict(aggregated['question_types'])
-            
-            return aggregated
-            
-        except Exception as e:
-            print(f"❌ Błąd przetwarzania zagregowanych danych: {e}")
-            return aggregated
-
     def _get_default_preferences(self) -> Dict:
         """Zwraca domyślne preferencje"""
         return {
@@ -727,18 +478,13 @@ class LearningSystem:
         return 'structured'
     
     def generate_learning_prompt(self, session_id: str, current_query: str, user_id: int = None) -> str:
-        """Generuje prompt uczenia na podstawie preferencji użytkownika z WSZYSTKICH sesji"""
+        """Generuje prompt uczenia na podstawie preferencji użytkownika"""
         preferences = self.get_user_preferences(session_id, user_id)
         
         prompt_parts = [
-            "KONTEKST UCZENIA UŻYTKOWNIKA (na podstawie WSZYSTKICH sesji):",
+            "KONTEKST UCZENIA UŻYTKOWNIKA:",
             f"Poziom szczegółowości: {preferences['detail_level']}",
         ]
-        
-        # Informacja o liczbie analizowanych sesji
-        total_sessions = preferences.get('total_sessions_analyzed', 1)
-        if total_sessions > 1:
-            prompt_parts.append(f"📊 Analiza oparta na {total_sessions} sesjach użytkownika")
         
         if preferences['prefers_examples']:
             prompt_parts.append("✅ Użytkownik preferuje PRZYKŁADY i WZORY - zawsze dodawaj praktyczne przykłady!")
@@ -752,14 +498,11 @@ class LearningSystem:
         if preferences['prefers_practical']:
             prompt_parts.append("✅ Użytkownik preferuje PRAKTYKĘ - pokazuj zastosowania w rzeczywistości!")
         
-        # Analiza wzorców z poprzednich pytań (ze wszystkich sesji)
+        # Analiza wzorców z poprzednich pytań
         common_topics = preferences.get('common_topics', [])
         if common_topics:
-            # Weź 10 najczęstszych tematów ze wszystkich sesji
-            topic_counter = Counter(common_topics)
-            most_common_topics = [topic for topic, count in topic_counter.most_common(10)]
-            if most_common_topics:
-                prompt_parts.append(f"🎯 Najczęstsze tematy ze wszystkich sesji: {', '.join(most_common_topics[:5])}")
+            recent_topics = list(set(common_topics[-5:]))  # Ostatnie 5 unikalnych tematów
+            prompt_parts.append(f"Ostatnie tematy: {', '.join(recent_topics)}")
         
         structure_pref = preferences.get('response_structure_preference', 'structured')
         if structure_pref == 'with_examples':
@@ -769,19 +512,10 @@ class LearningSystem:
         elif structure_pref == 'detailed_theory':
             prompt_parts.append("⚠️ OBOWIĄZKOWE: Dostarczaj szczegółowe wyjaśnienia teoretyczne!")
         
-        # Dodaj informację o wzorcach pytań ze wszystkich sesji
-        question_types = preferences.get('question_types', {})
-        if question_types:
-            top_question_types = sorted(question_types.items(), key=lambda x: x[1], reverse=True)[:3]
-            if top_question_types:
-                types_str = ', '.join([f"{qtype}({count})" for qtype, count in top_question_types])
-                prompt_parts.append(f"📋 Najczęstsze typy pytań: {types_str}")
-        
         return "\n".join(prompt_parts)
     
     def update_preferences_from_feedback(self, session_id: str, feedback_data: Dict, user_id: int = None):
-        """Aktualizuje preferencje na podstawie feedbacku (analizuje wszystkie sesje użytkownika)"""
-        # Pobierz preferencje na podstawie wszystkich sesji użytkownika
+        """Aktualizuje preferencje na podstawie feedbacku"""
         preferences = self.get_user_preferences(session_id, user_id)
         
         # Analiza pozytywnego feedbacku
@@ -801,11 +535,8 @@ class LearningSystem:
             if 'teoria' in content or 'zasada' in content:
                 preferences['prefers_theory'] = True
         
-        # Zapisz zaktualizowane preferencje (dla użytkownika, nie sesji)
-        if user_id:
-            self._save_user_preferences(user_id, preferences)
-        else:
-            self._save_preferences(session_id, preferences)
+        # Zapisz zaktualizowane preferencje
+        self._save_preferences(session_id, preferences)
     
     def _save_preferences(self, session_id: str, preferences: Dict):
         """Zapisuje preferencje użytkownika"""
@@ -827,30 +558,6 @@ class LearningSystem:
         except Exception as e:
             print(f"❌ Błąd zapisywania preferencji: {e}")
     
-    def _save_user_preferences(self, user_id: int, preferences: Dict):
-        """Zapisuje preferencje użytkownika na podstawie wszystkich jego sesji"""
-        user_preferences_file = f'data/user_preferences_{user_id}.json'
-        
-        try:
-            with open(user_preferences_file, 'w', encoding='utf-8') as f:
-                json.dump(preferences, f, ensure_ascii=False, indent=2)
-            print(f"✅ Zapisano preferencje użytkownika {user_id} bazujące na {preferences.get('total_sessions_analyzed', 1)} sesjach")
-        except Exception as e:
-            print(f"❌ Błąd zapisywania preferencji użytkownika {user_id}: {e}")
-    
-    def get_saved_user_preferences(self, user_id: int) -> Dict:
-        """Pobiera zapisane preferencje użytkownika"""
-        user_preferences_file = f'data/user_preferences_{user_id}.json'
-        
-        if os.path.exists(user_preferences_file):
-            try:
-                with open(user_preferences_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception as e:
-                print(f"❌ Błąd wczytywania preferencji użytkownika {user_id}: {e}")
-        
-        return None
-
     def analyze_all_sessions(self) -> Dict:
         """Analizuje wszystkie sesje i generuje globalne wzorce"""
         history_dir = 'history'
@@ -891,90 +598,6 @@ class LearningSystem:
         
         return global_patterns
     
-    def analyze_and_cache_all_users(self):
-        """Analizuje i cachuje preferencje dla wszystkich użytkowników"""
-        print("👥 Analizuję preferencje wszystkich użytkowników...")
-        
-        users_analyzed = 0
-        
-        # Sprawdź katalog user_sessions
-        user_sessions_dir = 'data/user_sessions'
-        if os.path.exists(user_sessions_dir):
-            for filename in os.listdir(user_sessions_dir):
-                if filename.endswith('.json') and filename != 'admin.json':
-                    try:
-                        # Wyodrębnij user_id z nazwy pliku (może być UUID lub nazwa)
-                        user_id_str = filename.replace('.json', '')
-                        
-                        # Sprawdź czy to jest user admin (specjalny przypadek)
-                        if user_id_str == 'admin':
-                            # Znajdź ID użytkownika admin
-                            user_id = self._get_admin_user_id()
-                            if user_id:
-                                self._analyze_and_cache_user(user_id)
-                                users_analyzed += 1
-                        else:
-                            # Sprawdź czy w pliku są sesje użytkownika
-                            sessions_file = os.path.join(user_sessions_dir, filename)
-                            with open(sessions_file, 'r', encoding='utf-8') as f:
-                                sessions_data = json.load(f)
-                                if sessions_data and len(sessions_data) > 0:
-                                    # Spróbuj pobrać user_id z pierwszej sesji
-                                    first_session_id = sessions_data[0].get('session_id')
-                                    if first_session_id:
-                                        actual_user_id = self._get_user_id_from_session(first_session_id)
-                                        if actual_user_id:
-                                            self._analyze_and_cache_user(actual_user_id)
-                                            users_analyzed += 1
-                                        
-                    except Exception as e:
-                        print(f"⚠️  Błąd analizy użytkownika z pliku {filename}: {e}")
-                        continue
-        
-        print(f"✅ Przeanalizowano i zachowano preferencje dla {users_analyzed} użytkowników")
-    
-    def _get_admin_user_id(self) -> int:
-        """Pobiera ID użytkownika admin"""
-        try:
-            users_file = 'data/users.json'
-            if os.path.exists(users_file):
-                with open(users_file, 'r', encoding='utf-8') as f:
-                    users_data = json.load(f)
-                    for user in users_data:
-                        if user.get('username') == 'admin':
-                            return user.get('id')
-            return None
-        except Exception as e:
-            print(f"❌ Błąd pobierania ID użytkownika admin: {e}")
-            return None
-    
-    def _get_user_id_from_session(self, session_id: str) -> int:
-        """Pobiera user_id z pierwszej wiadomości w sesji"""
-        try:
-            history_file = f'history/{session_id}.json'
-            if os.path.exists(history_file):
-                with open(history_file, 'r', encoding='utf-8') as f:
-                    history = json.load(f)
-                    for msg in history:
-                        if isinstance(msg, dict) and 'user_id' in msg:
-                            return msg['user_id']
-            return None
-        except Exception as e:
-            print(f"⚠️  Błąd pobierania user_id z sesji {session_id}: {e}")
-            return None
-    
-    def _analyze_and_cache_user(self, user_id: int):
-        """Analizuje i cachuje preferencje pojedynczego użytkownika"""
-        try:
-            print(f"🔍 Analizuję użytkownika {user_id}...")
-            preferences = self.get_user_preferences("", user_id)
-            if preferences.get('total_sessions_analyzed', 0) > 0:
-                print(f"✅ Przeanalizowano użytkownika {user_id}: {preferences['total_sessions_analyzed']} sesji")
-            else:
-                print(f"⚠️  Brak sesji dla użytkownika {user_id}")
-        except Exception as e:
-            print(f"❌ Błąd analizy użytkownika {user_id}: {e}")
-
     def detect_repeated_questions(self, history: List[Dict]) -> Dict:
         """Wykrywa powtarzające się pytania w historii"""
         user_messages = [msg for msg in history if msg['role'] == 'user']

@@ -173,49 +173,15 @@ def register_socketio_handlers(socketio):
             # Generuj odpowiedź ze strumieniem - ASYSTENT OTRZYMUJE PEŁNY KONTEKST
             response_text = ""
             documents_used = 0
-            last_chunk_time = time.time()
-            chunk_count = 0
             
-            print(f"🔄 Rozpoczynam streamowanie odpowiedzi...")
-            
-            try:
-                for chunk in rag.generate_response_stream(message, context, session_id):
-                    response_text += chunk
-                    chunk_count += 1
-                    last_chunk_time = time.time()
-                    
-                    # Wyślij surowy chunk (markdown)
-                    emit('response_chunk', {'chunk': chunk, 'message_id': message_id})
-                    
-                    # Sprawdź czy użyto dokumentów (można to zrobić w rag.py)
-                    if hasattr(rag, 'last_documents_used'):
-                        documents_used = rag.last_documents_used
+            for chunk in rag.generate_response_stream(message, context, session_id):
+                response_text += chunk
+                # Wyślij surowy chunk (markdown)
+                emit('response_chunk', {'chunk': chunk, 'message_id': message_id})
                 
-                print(f"✅ Streamowanie zakończone - otrzymano {chunk_count} chunków")
-                
-            except Exception as stream_error:
-                error_str = str(stream_error)
-                print(f"❌ Błąd podczas streamowania w socketio handler: {error_str}")
-                
-                # Sprawdź czy to timeout
-                is_timeout = any(keyword in error_str.lower() for keyword in [
-                    'timeout', 'timed out', 'read timeout', 'connection timeout'
-                ])
-                
-                if is_timeout:
-                    error_message = "⏰ Generowanie odpowiedzi trwa zbyt długo. Spróbuj zadać prostsze pytanie lub podziel je na mniejsze części."
-                else:
-                    error_message = f"❌ Wystąpił błąd podczas generowania: {error_str}"
-                
-                # Wyślij błąd do klienta
-                emit('response_chunk', {'chunk': f"\n\n{error_message}", 'message_id': message_id})
-                emit('error', {'message': error_message, 'message_id': message_id})
-                
-                # Jeśli mamy częściową odpowiedź, zapisz ją
-                if response_text:
-                    response_text += f"\n\n{error_message}"
-                else:
-                    response_text = error_message
+                # Sprawdź czy użyto dokumentów (można to zrobić w rag.py)
+                if hasattr(rag, 'last_documents_used'):
+                    documents_used = rag.last_documents_used
             
             # Wyślij informacje o użytych dokumentach
             emit('documents_used', {'count': documents_used})
