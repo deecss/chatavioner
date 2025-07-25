@@ -1,17 +1,17 @@
 {
-  "report_id": "5e5beb54-e06a-44e0-aaed-d05fc81fcd41",
+  "report_id": "2a59bd70-9aed-452a-83e7-e5d2b329511a",
   "report_type": "daily",
   "date": "2025-07-25",
-  "generated_at": "2025-07-25T00:34:31.511877",
+  "generated_at": "2025-07-25T11:34:38.693001",
   "period": {
     "start": "2025-07-25T00:00:00",
     "end": "2025-07-26T00:00:00"
   },
   "summary": {
-    "total_users": 1,
-    "total_questions": 14,
+    "total_users": 2,
+    "total_questions": 30,
     "total_feedback": 0,
-    "avg_questions_per_user": 14.0,
+    "avg_questions_per_user": 15.0,
     "feedback_ratio": 0
   },
   "user_activity": [
@@ -19,17 +19,21 @@
       "user_id": "admin",
       "username": "admin",
       "role": "admin",
-      "sessions_count": 2,
-      "questions_count": 14,
-      "responses_received": 14,
+      "sessions_count": 4,
+      "questions_count": 25,
+      "responses_received": 25,
       "feedback_given": 0,
       "topics_discussed": [
         "nawigacja",
+        "przepisy",
+        "meteorologia",
+        "pilotaż",
+        "awionika",
         "ogólne"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-25T00:10:55.799981",
-      "last_activity": "2025-07-25T00:32:51.214906",
+      "last_activity": "2025-07-25T11:29:14.273555",
       "learning_profile": {
         "learning_level": "beginner",
         "preferred_detail_level": "medium",
@@ -54,74 +58,156 @@
       },
       "detailed_activity": [
         {
-          "timestamp": "2025-07-25T00:17:59.953248",
+          "timestamp": "2025-07-25T10:45:51.845403",
+          "type": "question",
+          "topic": "meteorologia",
+          "content_preview": "oblodzenie skrzydel i samolotow  i wplyw na osiogi oraz niebespieczenstwo i zapobieganie",
+          "session_id": "399714e9-4041-4727-9483-a3f20f9d2b13"
+        },
+        {
+          "timestamp": "2025-07-25T10:48:51.366599",
           "type": "question",
           "topic": "nawigacja",
-          "content_preview": "piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiatpl musisz redagowac i pisac w...",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "na pisz cale rozlegle opracowanie na temat:\nwpływ oblodzenia na osiągi i bezpieczeństwo lotu\n\n\npamie...",
+          "session_id": "399714e9-4041-4727-9483-a3f20f9d2b13"
         },
         {
-          "timestamp": "2025-07-25T00:20:02.960772",
+          "timestamp": "2025-07-25T10:50:50.914192",
           "type": "question",
           "topic": "nawigacja",
-          "content_preview": "piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiatpl musisz redagowac i pisac w...",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "za krotkie i gdzie pytania kontrolne? gdzie propozycja obrazow? popraw sie to jes za malo szczegolow...",
+          "session_id": "399714e9-4041-4727-9483-a3f20f9d2b13"
         },
         {
-          "timestamp": "2025-07-25T00:21:19.447091",
+          "timestamp": "2025-07-25T10:57:33.665471",
           "type": "question",
-          "topic": "ogólne",
-          "content_preview": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "topic": "przepisy",
+          "content_preview": "icao annex 3 – wytyczne dotyczące usług meteorologicznych i raportowania niebezpiecznych zjawisk pog...",
+          "session_id": "399714e9-4041-4727-9483-a3f20f9d2b13"
         },
         {
-          "timestamp": "2025-07-25T00:22:56.094597",
+          "timestamp": "2025-07-25T11:01:06.401511",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog...",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "co to jest rurka pitot",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
         },
         {
-          "timestamp": "2025-07-25T00:25:13.312581",
+          "timestamp": "2025-07-25T11:02:02.978908",
           "type": "question",
-          "topic": "ogólne",
-          "content_preview": "zadaj pytania kontrolne do tego opracowania w taki sopsob jak wczesniej prosilem",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "topic": "pilotaż",
+          "content_preview": "co to jest rurka pitot jest to element samolotu",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
         },
         {
-          "timestamp": "2025-07-25T00:26:26.415915",
+          "timestamp": "2025-07-25T11:14:40.666223",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "zapamietaj to i wygeneraj jeszcze raz rozdzial ze wszystkimi instrukcjami ktore ci podalem",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "napisz rozszerzenia działu osiągi",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
         },
         {
-          "timestamp": "2025-07-25T00:27:59.275074",
+          "timestamp": "2025-07-25T11:18:34.178822",
           "type": "question",
-          "topic": "ogólne",
-          "content_preview": "nie dałes pytan i poropozycji obrazu zapamietaj to ze to ma byc w kazdej odpowiedzi!",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "topic": "awionika",
+          "content_preview": "masa samolotu i rozkład masy – większa masa zwiększa drogę startu i zmniejsza kąt wznoszenia; niepra...",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
         },
         {
-          "timestamp": "2025-07-25T00:30:21.615240",
+          "timestamp": "2025-07-25T11:24:26.731393",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "napisz mi jak masz odpowiadac jakie masz instrukcje sprawdzny poprawnosc",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "kim jestes? jakie masz zadanie jakie instrukcje",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
         },
         {
-          "timestamp": "2025-07-25T00:31:38.922525",
+          "timestamp": "2025-07-25T11:28:38.818445",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "a co z pytaniami i obrazami o ktore prosilem czemu tego nie pamietasz?",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "kim jestes? jakie masz zadanie jakie instrukcje",
+          "session_id": "dcbe8221-a002-430e-8dd8-fc9eb91b6295"
+        }
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
+    },
+    {
+      "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+      "username": "damian",
+      "role": "user",
+      "sessions_count": 2,
+      "questions_count": 5,
+      "responses_received": 5,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "pilotaż",
+        "ogólne"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-25T00:37:55.440218",
+      "last_activity": "2025-07-25T00:51:54.143614",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-25T00:37:55.440218",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "opracuj temat:\nrozdział: systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "session_id": "94cb0c44-23af-401d-aad0-359c372e76f6"
         },
         {
-          "timestamp": "2025-07-25T00:32:20.746493",
+          "timestamp": "2025-07-25T00:45:01.923601",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "opracuj:\nsystemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:46:46.125593",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność  opracuj",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:47:34.897836",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "zapisz to na stałe",
-          "session_id": "8f0b8a98-0961-422d-9a40-e742c2daf1c9"
+          "content_preview": "podaj mi id asystenta open ai",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:50:33.531225",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność\n opracuj ten temat",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
         }
       ],
       "learning_level": "beginner",
@@ -134,19 +220,21 @@
     }
   ],
   "questions_analysis": {
-    "total_questions": 14,
-    "unique_users": 1,
-    "avg_per_user": 14.0,
+    "total_questions": 30,
+    "unique_users": 2,
+    "avg_per_user": 15.0,
     "questions_by_type": {
-      "proceduralne": 10,
-      "inne": 4
+      "proceduralne": 13,
+      "inne": 14,
+      "faktyczne": 1,
+      "definicyjne": 2
     },
     "questions_by_complexity": {
-      "średnie": 10,
-      "złożone": 2,
-      "proste": 2
+      "średnie": 18,
+      "złożone": 4,
+      "proste": 8
     },
-    "avg_question_length": 97.64285714285714,
+    "avg_question_length": 114.8,
     "sample_questions": [
       {
         "content": "do jakich plikow masz dostep?",
@@ -273,97 +361,106 @@
         "topic": "ogólne",
         "timestamp": "2025-07-25T00:32:20.746493",
         "user_id": "admin"
+      },
+      {
+        "content": "Opracuj temat:\nRozdział: Systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+        "length": 90,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-25T00:37:55.440218",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
       }
     ],
     "recent_questions": [
       {
-        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
-        "length": 139,
-        "type": "proceduralne",
+        "content": "oblodzenie skrzydel i samolotow  i wplyw na osiogi oraz niebespieczenstwo i zapobieganie",
+        "length": 88,
+        "type": "inne",
+        "complexity": "średnie",
+        "topic": "meteorologia",
+        "timestamp": "2025-07-25T10:45:51.845403",
+        "user_id": "admin"
+      },
+      {
+        "content": "na pisz cale rozlegle opracowanie na temat:\nWpływ oblodzenia na osiągi i bezpieczeństwo lotu\n\n\npamietaj ze to ma byc rozdzial ksiazki do kursu ATPL",
+        "length": 147,
+        "type": "inne",
         "complexity": "średnie",
         "topic": "nawigacja",
-        "timestamp": "2025-07-25T00:17:59.953248",
+        "timestamp": "2025-07-25T10:48:51.366599",
         "user_id": "admin"
       },
       {
-        "content": "Piszesz do mnie jak chart bot a powinienes redakowac ksiazke do naukiATPL musisz redagowac i pisac w formie kursu ATPL i rodzialow ksiazki!",
-        "length": 139,
-        "type": "proceduralne",
+        "content": "za krotkie i gdzie pytania kontrolne? gdzie propozycja obrazow? popraw sie to jes za malo szczegolowe zeby dac do ksiazki",
+        "length": 121,
+        "type": "faktyczne",
         "complexity": "średnie",
         "topic": "nawigacja",
-        "timestamp": "2025-07-25T00:20:02.960772",
+        "timestamp": "2025-07-25T10:50:50.914192",
         "user_id": "admin"
       },
       {
-        "content": "zapamietaj jak masz generowac odpowiedzi i ytrzymaj sie zawsze tego",
-        "length": 67,
-        "type": "proceduralne",
-        "complexity": "średnie",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:21:19.447091",
-        "user_id": "admin"
-      },
-      {
-        "content": "podczas odpowiedzi proponuj umieszczenie dedykowanej grafiki  lub schamatu w  [ ] opisujac co wedłog ciebie powinno sie znajdowac na obrazie dotyczacego generowanego tekstu imieszczaj obrazy tak aby p...",
-        "length": 224,
+        "content": "ICAO Annex 3 – wytyczne dotyczące usług meteorologicznych i raportowania niebezpiecznych zjawisk pogodowych (w tym oblodzenia).\nFAA AC 91-74 – „Pilot Guide: Flight in Icing Conditions” – szczegółowe p...",
+        "length": 513,
         "type": "proceduralne",
         "complexity": "złożone",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:22:56.094597",
+        "topic": "przepisy",
+        "timestamp": "2025-07-25T10:57:33.665471",
         "user_id": "admin"
       },
       {
-        "content": "zadaj pytania kontrolne do tego opracowania w taki sopsob jak wczesniej prosilem",
-        "length": 80,
-        "type": "proceduralne",
-        "complexity": "średnie",
+        "content": "co to jest rurka pitot",
+        "length": 22,
+        "type": "definicyjne",
+        "complexity": "proste",
         "topic": "ogólne",
-        "timestamp": "2025-07-25T00:25:13.312581",
+        "timestamp": "2025-07-25T11:01:06.401511",
         "user_id": "admin"
       },
       {
-        "content": "zapamietaj to i wygeneraj jeszcze raz rozdzial ze wszystkimi instrukcjami ktore ci podalem",
-        "length": 90,
-        "type": "inne",
-        "complexity": "średnie",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:26:26.415915",
+        "content": "co to jest rurka pitot jest to element samolotu",
+        "length": 47,
+        "type": "definicyjne",
+        "complexity": "proste",
+        "topic": "pilotaż",
+        "timestamp": "2025-07-25T11:02:02.978908",
         "user_id": "admin"
       },
       {
-        "content": "nie dałes pytan i poropozycji obrazu zapamietaj to ze to ma byc w kazdej odpowiedzi!",
-        "length": 84,
-        "type": "inne",
-        "complexity": "średnie",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:27:59.275074",
-        "user_id": "admin"
-      },
-      {
-        "content": "napisz mi jak masz odpowiadac jakie masz instrukcje sprawdzny poprawnosc",
-        "length": 72,
-        "type": "proceduralne",
-        "complexity": "średnie",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:30:21.615240",
-        "user_id": "admin"
-      },
-      {
-        "content": "a co z pytaniami i obrazami o ktore prosilem czemu tego nie pamietasz?",
-        "length": 70,
-        "type": "proceduralne",
-        "complexity": "średnie",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T00:31:38.922525",
-        "user_id": "admin"
-      },
-      {
-        "content": "zapisz to na stałe",
-        "length": 18,
+        "content": "napisz rozszerzenia działu osiągi",
+        "length": 33,
         "type": "inne",
         "complexity": "proste",
         "topic": "ogólne",
-        "timestamp": "2025-07-25T00:32:20.746493",
+        "timestamp": "2025-07-25T11:14:40.666223",
+        "user_id": "admin"
+      },
+      {
+        "content": "Masa samolotu i rozkład masy – większa masa zwiększa drogę startu i zmniejsza kąt wznoszenia; nieprawidłowy balans może obniżyć stabilność i sterowność.\nWarunki atmosferyczne – gęstość powietrza (zale...",
+        "length": 595,
+        "type": "inne",
+        "complexity": "złożone",
+        "topic": "awionika",
+        "timestamp": "2025-07-25T11:18:34.178822",
+        "user_id": "admin"
+      },
+      {
+        "content": "Kim jestes? jakie masz zadanie jakie instrukcje",
+        "length": 47,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T11:24:26.731393",
+        "user_id": "admin"
+      },
+      {
+        "content": "Kim jestes? jakie masz zadanie jakie instrukcje",
+        "length": 47,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T11:28:38.818445",
         "user_id": "admin"
       }
     ],
@@ -418,6 +515,80 @@
           "user_id": "admin",
           "timestamp": "2025-07-25T00:20:02.960772",
           "complexity": "średnie"
+        },
+        {
+          "content": "na pisz cale rozlegle opracowanie na temat:\nWpływ oblodzenia na osiągi i bezpieczeństwo lotu\n\n\npamietaj ze to ma byc rozdzial ksiazki do kursu ATPL",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T10:48:51.366599",
+          "complexity": "średnie"
+        },
+        {
+          "content": "za krotkie i gdzie pytania kontrolne? gdzie propozycja obrazow? popraw sie to jes za malo szczegolowe zeby dac do ksiazki",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T10:50:50.914192",
+          "complexity": "średnie"
+        }
+      ],
+      "pilotaż": [
+        {
+          "content": "Opracuj temat:\nRozdział: Systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-25T00:37:55.440218",
+          "complexity": "średnie"
+        },
+        {
+          "content": "Opracuj:\nSystemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-25T00:45:01.923601",
+          "complexity": "średnie"
+        },
+        {
+          "content": "Systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność  opracuj",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-25T00:46:46.125593",
+          "complexity": "średnie"
+        },
+        {
+          "content": "Systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność\n opracuj ten temat",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-25T00:50:33.531225",
+          "complexity": "średnie"
+        },
+        {
+          "content": "co to jest rurka pitot jest to element samolotu",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T11:02:02.978908",
+          "complexity": "proste"
+        }
+      ],
+      "meteorologia": [
+        {
+          "content": "oblodzenie i wplyw na osiogi oraz niebespieczenstwo i zapobieganie",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T10:43:48.650647",
+          "complexity": "średnie"
+        },
+        {
+          "content": "oblodzenie skrzydel i samolotow  i wplyw na osiogi oraz niebespieczenstwo i zapobieganie",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T10:45:51.845403",
+          "complexity": "średnie"
+        }
+      ],
+      "przepisy": [
+        {
+          "content": "ICAO Annex 3 – wytyczne dotyczące usług meteorologicznych i raportowania niebezpiecznych zjawisk pogodowych (w tym oblodzenia).\nFAA AC 91-74 – „Pilot Guide: Flight in Icing Conditions” – szczegółowe p...",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T10:57:33.665471",
+          "complexity": "złożone"
+        }
+      ],
+      "awionika": [
+        {
+          "content": "Masa samolotu i rozkład masy – większa masa zwiększa drogę startu i zmniejsza kąt wznoszenia; nieprawidłowy balans może obniżyć stabilność i sterowność.\nWarunki atmosferyczne – gęstość powietrza (zale...",
+          "user_id": "admin",
+          "timestamp": "2025-07-25T11:18:34.178822",
+          "complexity": "złożone"
         }
       ]
     }
@@ -445,36 +616,80 @@
   },
   "topic_distribution": {
     "topic_distribution": {
-      "nawigacja": 3,
-      "ogólne": 11
+      "nawigacja": 5,
+      "ogólne": 16,
+      "pilotaż": 5,
+      "meteorologia": 2,
+      "przepisy": 1,
+      "awionika": 1
     },
     "most_popular_topics": [
       {
         "topic": "ogólne",
-        "count": 11
+        "count": 16
       },
       {
         "topic": "nawigacja",
-        "count": 3
+        "count": 5
+      },
+      {
+        "topic": "pilotaż",
+        "count": 5
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "przepisy",
+        "count": 1
+      },
+      {
+        "topic": "awionika",
+        "count": 1
       }
     ],
     "most_popular": [
       {
         "topic": "ogólne",
-        "count": 11
+        "count": 16
       },
       {
         "topic": "nawigacja",
-        "count": 3
+        "count": 5
+      },
+      {
+        "topic": "pilotaż",
+        "count": 5
+      },
+      {
+        "topic": "meteorologia",
+        "count": 2
+      },
+      {
+        "topic": "przepisy",
+        "count": 1
+      },
+      {
+        "topic": "awionika",
+        "count": 1
       }
     ],
     "topics_by_user": {
       "admin": [
         "nawigacja",
+        "przepisy",
+        "meteorologia",
+        "pilotaż",
+        "awionika",
+        "ogólne"
+      ],
+      "f404ca1e-385c-4d48-aee5-198e8e988f57": [
+        "pilotaż",
         "ogólne"
       ]
     },
-    "unique_topics": 2,
-    "avg_topics_per_user": 2.0
+    "unique_topics": 6,
+    "avg_topics_per_user": 4.0
   }
 }
