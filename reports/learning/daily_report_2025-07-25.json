@@ -1,20 +1,110 @@
 {
-  "report_id": "0027062c-5c61-45e3-bf84-f6367d0264dc",
+  "report_id": "9a7e8336-dc85-478a-aa9d-77ae00fea21b",
   "report_type": "daily",
   "date": "2025-07-25",
-  "generated_at": "2025-07-25T13:08:10.105008",
+  "generated_at": "2025-07-26T02:00:27.187230",
   "period": {
     "start": "2025-07-25T00:00:00",
     "end": "2025-07-26T00:00:00"
   },
   "summary": {
     "total_users": 3,
-    "total_questions": 36,
+    "total_questions": 49,
     "total_feedback": 0,
-    "avg_questions_per_user": 12.0,
+    "avg_questions_per_user": 16.333333333333332,
     "feedback_ratio": 0
   },
   "user_activity": [
+    {
+      "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+      "username": "damian",
+      "role": "user",
+      "sessions_count": 4,
+      "questions_count": 6,
+      "responses_received": 7,
+      "feedback_given": 0,
+      "topics_discussed": [
+        "ogólne",
+        "przepisy",
+        "pilotaż"
+      ],
+      "session_duration_total": 0,
+      "first_activity": "2025-07-25T00:37:55.440218",
+      "last_activity": "2025-07-25T15:41:03.599995",
+      "learning_profile": {
+        "learning_level": "beginner",
+        "preferred_detail_level": "medium",
+        "learning_progress": {},
+        "preferences": {
+          "topics": [],
+          "question_style": "direct",
+          "response_length": "medium"
+        },
+        "statistics": {
+          "total_sessions": 0,
+          "total_messages": 0,
+          "avg_session_length": 0,
+          "learning_streak": 0,
+          "mastered_topics": []
+        },
+        "recent_activity": {
+          "last_session": null,
+          "recent_topics": [],
+          "improvement_areas": []
+        }
+      },
+      "detailed_activity": [
+        {
+          "timestamp": "2025-07-25T00:37:55.440218",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "opracuj temat:\nrozdział: systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "session_id": "94cb0c44-23af-401d-aad0-359c372e76f6"
+        },
+        {
+          "timestamp": "2025-07-25T00:45:01.923601",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "opracuj:\nsystemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:46:46.125593",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność  opracuj",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:47:34.897836",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "podaj mi id asystenta open ai",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T00:50:33.531225",
+          "type": "question",
+          "topic": "pilotaż",
+          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność\n opracuj ten temat",
+          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
+        },
+        {
+          "timestamp": "2025-07-25T15:39:29.010385",
+          "type": "question",
+          "topic": "przepisy",
+          "content_preview": "regulacje i przydział pasm częstotliwości rozwin",
+          "session_id": "a2574301-6ccc-40c7-a72b-e7d0d81105f8"
+        }
+      ],
+      "learning_level": "beginner",
+      "preferred_detail_level": "medium",
+      "preferences": {
+        "topics": [],
+        "question_style": "direct",
+        "response_length": "medium"
+      }
+    },
     {
       "user_id": "admin",
       "username": "admin",
@@ -24,12 +114,12 @@
       "responses_received": 28,
       "feedback_given": 0,
       "topics_discussed": [
-        "nawigacja",
-        "przepisy",
-        "meteorologia",
         "pilotaż",
+        "meteorologia",
+        "ogólne",
         "awionika",
-        "ogólne"
+        "przepisy",
+        "nawigacja"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-25T00:10:55.799981",
@@ -137,102 +227,21 @@
       }
     },
     {
-      "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
-      "username": "damian",
-      "role": "user",
-      "sessions_count": 2,
-      "questions_count": 5,
-      "responses_received": 5,
-      "feedback_given": 0,
-      "topics_discussed": [
-        "pilotaż",
-        "ogólne"
-      ],
-      "session_duration_total": 0,
-      "first_activity": "2025-07-25T00:37:55.440218",
-      "last_activity": "2025-07-25T00:51:54.143614",
-      "learning_profile": {
-        "learning_level": "beginner",
-        "preferred_detail_level": "medium",
-        "learning_progress": {},
-        "preferences": {
-          "topics": [],
-          "question_style": "direct",
-          "response_length": "medium"
-        },
-        "statistics": {
-          "total_sessions": 0,
-          "total_messages": 0,
-          "avg_session_length": 0,
-          "learning_streak": 0,
-          "mastered_topics": []
-        },
-        "recent_activity": {
-          "last_session": null,
-          "recent_topics": [],
-          "improvement_areas": []
-        }
-      },
-      "detailed_activity": [
-        {
-          "timestamp": "2025-07-25T00:37:55.440218",
-          "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "opracuj temat:\nrozdział: systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
-          "session_id": "94cb0c44-23af-401d-aad0-359c372e76f6"
-        },
-        {
-          "timestamp": "2025-07-25T00:45:01.923601",
-          "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "opracuj:\nsystemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność",
-          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
-        },
-        {
-          "timestamp": "2025-07-25T00:46:46.125593",
-          "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność  opracuj",
-          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
-        },
-        {
-          "timestamp": "2025-07-25T00:47:34.897836",
-          "type": "question",
-          "topic": "ogólne",
-          "content_preview": "podaj mi id asystenta open ai",
-          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
-        },
-        {
-          "timestamp": "2025-07-25T00:50:33.531225",
-          "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "systemy nadzoru w lotnictwie – dane nadzorcze i interoperacyjność\n opracuj ten temat",
-          "session_id": "aa4e1e97-c369-4a23-9a93-d9853f8a93ae"
-        }
-      ],
-      "learning_level": "beginner",
-      "preferred_detail_level": "medium",
-      "preferences": {
-        "topics": [],
-        "question_style": "direct",
-        "response_length": "medium"
-      }
-    },
-    {
       "user_id": "e9239560-fdac-465c-99d9-11343825e46b",
       "username": "User_e9239560",
       "role": "user",
-      "sessions_count": 1,
-      "questions_count": 3,
-      "responses_received": 3,
+      "sessions_count": 2,
+      "questions_count": 15,
+      "responses_received": 15,
       "feedback_given": 0,
       "topics_discussed": [
+        "ogólne",
         "pilotaż",
-        "ogólne"
+        "nawigacja"
       ],
       "session_duration_total": 0,
       "first_activity": "2025-07-25T12:32:43.305530",
-      "last_activity": "2025-07-25T12:55:08.813396",
+      "last_activity": "2025-07-25T14:18:04.028797",
       "learning_profile": {
         "learning_level": "beginner",
         "preferred_detail_level": "medium",
@@ -257,25 +266,74 @@
       },
       "detailed_activity": [
         {
-          "timestamp": "2025-07-25T12:32:43.305530",
+          "timestamp": "2025-07-25T13:38:39.897669",
           "type": "question",
           "topic": "ogólne",
-          "content_preview": "co to jest ortodroma ?",
+          "content_preview": "w opisie powyższym musisz przytoczyć też definicję konta centralnego, co to jest ?",
           "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
         },
         {
-          "timestamp": "2025-07-25T12:33:49.975390",
+          "timestamp": "2025-07-25T13:56:21.626906",
           "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "co to jest ortodroma w lotnictwie",
+          "topic": "ogólne",
+          "content_preview": "a jaka jest idea i zastosowanie loksodromy ?",
           "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
         },
         {
-          "timestamp": "2025-07-25T12:53:49.068027",
+          "timestamp": "2025-07-25T13:59:08.167787",
           "type": "question",
-          "topic": "pilotaż",
-          "content_preview": "piszesz ogólnikowo, a potrzebne są konkretne definicje i zastosowania w lataniu i planowaniu nawigac...",
+          "topic": "nawigacja",
+          "content_preview": "a w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ...",
           "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
+        },
+        {
+          "timestamp": "2025-07-25T14:01:52.192345",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "a w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ...",
+          "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
+        },
+        {
+          "timestamp": "2025-07-25T14:03:06.142778",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "a w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ...",
+          "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
+        },
+        {
+          "timestamp": "2025-07-25T14:05:45.297727",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ka...",
+          "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
+        },
+        {
+          "timestamp": "2025-07-25T14:06:48.526713",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "siła nosna",
+          "session_id": "94c0f69b-653d-4221-86ec-70f428267e39"
+        },
+        {
+          "timestamp": "2025-07-25T14:08:13.219024",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ka...",
+          "session_id": "94c0f69b-653d-4221-86ec-70f428267e39"
+        },
+        {
+          "timestamp": "2025-07-25T14:09:49.323445",
+          "type": "question",
+          "topic": "nawigacja",
+          "content_preview": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do warszawy skoro w ka...",
+          "session_id": "1cc985bc-71ad-43df-ac5f-273dd296630e"
+        },
+        {
+          "timestamp": "2025-07-25T14:16:24.119489",
+          "type": "question",
+          "topic": "ogólne",
+          "content_preview": "jak to działa praktycznie?",
+          "session_id": "94c0f69b-653d-4221-86ec-70f428267e39"
         }
       ],
       "learning_level": "beginner",
@@ -288,21 +346,21 @@
     }
   ],
   "questions_analysis": {
-    "total_questions": 36,
+    "total_questions": 49,
     "unique_users": 3,
-    "avg_per_user": 12.0,
+    "avg_per_user": 16.333333333333332,
     "questions_by_type": {
-      "definicyjne": 5,
-      "inne": 16,
-      "proceduralne": 14,
+      "definicyjne": 6,
+      "inne": 18,
+      "proceduralne": 24,
       "faktyczne": 1
     },
     "questions_by_complexity": {
-      "proste": 12,
-      "średnie": 20,
-      "złożone": 4
+      "proste": 16,
+      "średnie": 27,
+      "złożone": 6
     },
-    "avg_question_length": 104.66666666666667,
+    "avg_question_length": 106.26530612244898,
     "sample_questions": [
       {
         "content": "do jakich plikow masz dostep?",
@@ -442,94 +500,94 @@
     ],
     "recent_questions": [
       {
-        "content": "napisz rozszerzenia działu osiągi",
-        "length": 33,
-        "type": "inne",
-        "complexity": "proste",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T11:14:40.666223",
-        "user_id": "admin"
-      },
-      {
-        "content": "Masa samolotu i rozkład masy – większa masa zwiększa drogę startu i zmniejsza kąt wznoszenia; nieprawidłowy balans może obniżyć stabilność i sterowność.\nWarunki atmosferyczne – gęstość powietrza (zale...",
-        "length": 595,
-        "type": "inne",
-        "complexity": "złożone",
-        "topic": "awionika",
-        "timestamp": "2025-07-25T11:18:34.178822",
-        "user_id": "admin"
-      },
-      {
-        "content": "Kim jestes? jakie masz zadanie jakie instrukcje",
-        "length": 47,
+        "content": "A jaka jest idea i zastosowanie Loksodromy ?",
+        "length": 44,
         "type": "proceduralne",
         "complexity": "proste",
         "topic": "ogólne",
-        "timestamp": "2025-07-25T11:24:26.731393",
-        "user_id": "admin"
-      },
-      {
-        "content": "Kim jestes? jakie masz zadanie jakie instrukcje",
-        "length": 47,
-        "type": "proceduralne",
-        "complexity": "proste",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T11:28:38.818445",
-        "user_id": "admin"
-      },
-      {
-        "content": "Co to jest ortodroma ?",
-        "length": 22,
-        "type": "definicyjne",
-        "complexity": "proste",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T12:32:43.305530",
+        "timestamp": "2025-07-25T13:56:21.626906",
         "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
       },
       {
-        "content": "Co to jest ortodroma w lotnictwie",
-        "length": 33,
-        "type": "definicyjne",
-        "complexity": "proste",
-        "topic": "pilotaż",
-        "timestamp": "2025-07-25T12:33:49.975390",
-        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
-      },
-      {
-        "content": "Co to jest ortodroma w lotnictwie",
-        "length": 33,
-        "type": "definicyjne",
-        "complexity": "proste",
-        "topic": "pilotaż",
-        "timestamp": "2025-07-25T12:38:40.186110",
-        "user_id": "admin"
-      },
-      {
-        "content": "daj odpowiedzi na pytania",
-        "length": 25,
-        "type": "inne",
-        "complexity": "proste",
-        "topic": "ogólne",
-        "timestamp": "2025-07-25T12:39:55.550923",
-        "user_id": "admin"
-      },
-      {
-        "content": "Jakie korzyści płyną z wykorzystania ortodromy podczas planowania lotów długodystansowych?",
-        "length": 90,
+        "content": "A w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni ?",
+        "length": 140,
         "type": "proceduralne",
         "complexity": "średnie",
-        "topic": "pilotaż",
-        "timestamp": "2025-07-25T12:46:57.657459",
-        "user_id": "admin"
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T13:59:08.167787",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
       },
       {
-        "content": "Piszesz ogólnikowo, a potrzebne są konkretne definicje i zastosowania w lataniu i planowaniu nawigacyjnym trasy lotniczej",
-        "length": 121,
-        "type": "inne",
+        "content": "A w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni ?",
+        "length": 140,
+        "type": "proceduralne",
         "complexity": "średnie",
-        "topic": "pilotaż",
-        "timestamp": "2025-07-25T12:53:49.068027",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T14:01:52.192345",
         "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "A w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni ?",
+        "length": 140,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T14:03:06.142778",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni",
+        "length": 136,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T14:05:45.297727",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "siła nosna",
+        "length": 10,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T14:06:48.526713",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni",
+        "length": 136,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T14:08:13.219024",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "w jaki sposób pilot ma planować lot będąc dokładnie nad biegunem aby dolecieć do Warszawy skoro w każdym kierunku kurs będzie 180 stopni",
+        "length": 136,
+        "type": "proceduralne",
+        "complexity": "średnie",
+        "topic": "nawigacja",
+        "timestamp": "2025-07-25T14:09:49.323445",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "Jak to działa praktycznie?",
+        "length": 26,
+        "type": "proceduralne",
+        "complexity": "proste",
+        "topic": "ogólne",
+        "timestamp": "2025-07-25T14:16:24.119489",
+        "user_id": "e9239560-fdac-465c-99d9-11343825e46b"
+      },
+      {
+        "content": "Regulacje i przydział pasm częstotliwości rozwin",
+        "length": 48,
+        "type": "inne",
+        "complexity": "proste",
+        "topic": "przepisy",
+        "timestamp": "2025-07-25T15:39:29.010385",
+        "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57"
       }
     ],
     "questions_by_topic": {
@@ -649,6 +707,12 @@
           "user_id": "admin",
           "timestamp": "2025-07-25T10:57:33.665471",
           "complexity": "złożone"
+        },
+        {
+          "content": "Regulacje i przydział pasm częstotliwości rozwin",
+          "user_id": "f404ca1e-385c-4d48-aee5-198e8e988f57",
+          "timestamp": "2025-07-25T15:39:29.010385",
+          "complexity": "proste"
         }
       ],
       "awionika": [
@@ -684,25 +748,25 @@
   },
   "topic_distribution": {
     "topic_distribution": {
-      "pilotaż": 9,
-      "ogólne": 18,
-      "nawigacja": 5,
+      "pilotaż": 11,
+      "ogólne": 22,
+      "nawigacja": 11,
       "meteorologia": 2,
-      "przepisy": 1,
+      "przepisy": 2,
       "awionika": 1
     },
     "most_popular_topics": [
       {
         "topic": "ogólne",
-        "count": 18
+        "count": 22
       },
       {
         "topic": "pilotaż",
-        "count": 9
+        "count": 11
       },
       {
         "topic": "nawigacja",
-        "count": 5
+        "count": 11
       },
       {
         "topic": "meteorologia",
@@ -710,7 +774,7 @@
       },
       {
         "topic": "przepisy",
-        "count": 1
+        "count": 2
       },
       {
         "topic": "awionika",
@@ -720,15 +784,15 @@
     "most_popular": [
       {
         "topic": "ogólne",
-        "count": 18
+        "count": 22
       },
       {
         "topic": "pilotaż",
-        "count": 9
+        "count": 11
       },
       {
         "topic": "nawigacja",
-        "count": 5
+        "count": 11
       },
       {
         "topic": "meteorologia",
@@ -736,7 +800,7 @@
       },
       {
         "topic": "przepisy",
-        "count": 1
+        "count": 2
       },
       {
         "topic": "awionika",
@@ -745,23 +809,25 @@
     ],
     "topics_by_user": {
       "admin": [
-        "nawigacja",
-        "przepisy",
-        "meteorologia",
         "pilotaż",
+        "meteorologia",
+        "ogólne",
         "awionika",
-        "ogólne"
+        "przepisy",
+        "nawigacja"
       ],
       "f404ca1e-385c-4d48-aee5-198e8e988f57": [
-        "pilotaż",
-        "ogólne"
+        "ogólne",
+        "przepisy",
+        "pilotaż"
       ],
       "e9239560-fdac-465c-99d9-11343825e46b": [
+        "ogólne",
         "pilotaż",
-        "ogólne"
+        "nawigacja"
       ]
     },
     "unique_topics": 6,
-    "avg_topics_per_user": 3.3333333333333335
+    "avg_topics_per_user": 4.0
   }
 }
